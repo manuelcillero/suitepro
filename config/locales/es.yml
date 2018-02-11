@@ -1217,7 +1217,7 @@ es:
   mail_body_security_notification_notify_disabled: Se han desactivado las notificaciones para el correo electrónico %{value}
   mail_body_settings_updated: ! 'Las siguientes opciones han sido actualizadas:'
   field_remote_ip: Dirección IP
-  label_wiki_page_new: Nueva pagina wiki
+  label_wiki_page_new: Nueva página
   label_relations: Relaciones
   button_filter: Filtro
   mail_body_password_updated: Su contraseña se ha cambiado.
