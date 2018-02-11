@@ -994,6 +994,10 @@ img.ui-datepicker-trigger {
 /* FORMS SPECIFIC */
 /**********************************************************/
 
+#user_login, #user_firstname, #user_lastname, #user_mail {
+	width: 76%;
+}
+
 input#issue_subject,
 input#content_comments {
 	width: 97%;
