@@ -209,7 +209,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 }
 #wrapper-header > h1 {
 	position: absolute;
-	bottom: 7px;
+	bottom: 4px;
 	padding: 0 0 0 126px;
 	margin: 0;
 	font-size: 15px;
@@ -225,7 +225,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	max-width: 300px;
 }
 #quick-search .drdn-trigger {
-	padding-top: 4px;
+	padding-top: 1px;
 	font-size: 12px;
 }
 
@@ -443,7 +443,7 @@ ul.social-menu .social-link-mail:hover a {
 
 #sidebar {
 	padding-right: 30px;
-	line-height: 1.3;
+	line-height: 1.42857em;
 }
 #sidebar h3 {
 	margin-top: 30px;
