@@ -23,7 +23,6 @@
 
 <div class="flyout-menu js-flyout-menu">
 
-
     <% if User.current.logged? || !Setting.login_required? %>
         <div class="flyout-menu__search">
             <%= form_tag({:controller => 'search', :action => 'index', :id => @project}, :method => :get ) do %>
@@ -61,17 +60,27 @@
 <div id="wrapper2">
 <div id="wrapper3">
 <div id="top-menu">
+    <div id="wrapper-top-menu">
+    <ul class="social-menu">
+        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="Blog" target="_blank" class="icon-blog"><span>Blog</span></a></li>
+        <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
+        <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
+        <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
+        <li class="social-link-github"><a href="https://github.com/manuelcillero" title="Github" target="_blank" class="icon-github"><span>Github</span></a></li>
+        <li class="social-link-mail"><a href="https://manuel.cillero.es/contact" title="Mail" target="_blank" class="icon-mail"><span>Mail</span></a></li>
+    </ul>
     <div id="account">
         <%= render_menu :account_menu -%>
     </div>
     <%= content_tag('div', "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe, :id => 'loggedas') if User.current.logged? %>
     <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
+    </div>
 </div>
 
 <div id="header">
-
     <a href="#" class="mobile-toggle-button js-flyout-menu-toggle-button"></a>
 
+    <div id="wrapper-header">
     <% if User.current.logged? || !Setting.login_required? %>
     <div id="quick-search">
         <%= form_tag({:controller => 'search', :action => 'index', :id => @project}, :method => :get ) do %>
@@ -85,21 +94,24 @@
         <%= render_project_jump_box %>
     </div>
     <% end %>
-
     <h1><%= page_header_title %></h1>
-
+    </div>
+    
     <% if display_main_menu?(@project) %>
     <div id="main-menu" class="tabs">
+        <div id="wrapper-main-menu">
         <%= render_main_menu(@project) %>
         <div class="tabs-buttons" style="display:none;">
             <button class="tab-left" onclick="moveTabLeft(this); return false;"></button>
             <button class="tab-right" onclick="moveTabRight(this); return false;"></button>
+        </div>
         </div>
     </div>
     <% end %>
 </div>
 
 <div id="main" class="<%= sidebar_content? ? '' : 'nosidebar' %>">
+    <div id="wrapper-main">
     <div id="sidebar">
         <%= yield :sidebar %>
         <%= view_layouts_base_sidebar_hook_response %>
@@ -111,6 +123,7 @@
         <%= call_hook :view_layouts_base_content %>
         <div style="clear:both;"></div>
     </div>
+    </div>
 </div>
 </div>
 
@@ -118,9 +131,19 @@
 <div id="ajax-modal" style="display:none;"></div>
 
 <div id="footer">
-  <div class="bgl"><div class="bgr">
-    Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %> &copy; 2006-2017 Jean-Philippe Lang
-  </div></div>
+    <div id="wrapper-footer">
+    <ul class="social-menu">
+        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="Blog" target="_blank" class="icon-blog"><span>Blog</span></a></li>
+        <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
+        <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
+        <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
+        <li class="social-link-github"><a href="https://github.com/manuelcillero" title="Github" target="_blank" class="icon-github"><span>Github</span></a></li>
+        <li class="social-link-mail"><a href="https://manuel.cillero.es/contact" title="Mail" target="_blank" class="icon-mail"><span>Mail</span></a></li>
+    </ul>
+    <div class="bgl"><div class="bgr">
+        <%= Time.current.year %> &copy; SuitePro (powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)
+    </div></div>
+    </div>
 </div>
 </div>
 </div>
