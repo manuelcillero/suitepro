@@ -204,16 +204,14 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	}
 } */
 
-#wrapper-header > h1::before {
-	content: "-";
-	margin-right: 12px;
-}
 #wrapper-header > h1 {
 	position: absolute;
-	bottom: 4px;
-	padding: 0 0 0 126px;
+	bottom: 2px;
+	padding-left: 33px;
 	margin: 0;
 	font-size: 15px;
+	letter-spacing: 3px;
+	color: #ccc;
 }
 #wrapper-header > h1 .breadcrumbs {
 	margin-top: -5px;
