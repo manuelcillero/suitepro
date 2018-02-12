@@ -2,7 +2,7 @@
 
 allowedContent: true
 bodyClass: 'wiki'
-removePlugins: 'div,flash,forms,iframe,elementspath'
+removePlugins: 'codemirror,div,flash,forms,iframe,elementspath'
 forcePasteAsPlainText: false
 entities: false
 
