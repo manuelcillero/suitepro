@@ -53,17 +53,17 @@ a, a:link, a:visited {
 	text-decoration: none;
 }
 
-body.ckeditor,
+body.wiki,
 div#content p {
 	text-align: justify;
 	word-wrap: break-word;
 }
 
-body.ckeditor table {
+body.wiki table {
 	border: 1px solid #bbb;
 	border-collapse: collapse;
 } 
-body.ckeditor td, body.ckeditor th {
+body.wiki td, body.wiki th {
 	padding: 4px;
 } 
 
