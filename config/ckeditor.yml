@@ -1,5 +1,6 @@
 # CKEditor configuration
 
+contentsCss: '/themes/circlepro/stylesheets/editor.css'
 allowedContent: true
 bodyClass: 'wiki'
 removePlugins: 'codemirror,div,flash,forms,iframe,copyformatting,elementspath'

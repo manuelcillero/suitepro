@@ -1,31 +1,15 @@
 @import url(../../../stylesheets/application.css);
-@import url(//fonts.googleapis.com/css?family=Lato:300,400,700);
+@import url(editor.css);
 
 /* CirclePro Theme, based on Circle Theme by Kirill Bezrukov */
 
 /**********************************************************/
-/* COMMON */
+/* GLOBAL */
 /**********************************************************/
 
-body {
-	color: #3d454c;
-	font-size: 16px;
-	line-height: 1.42857em;
-	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-smoothing: antialiased;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	text-rendering: optimizeLegibility;
-}
-h1, h2, h3, h4, h5, h6, input, textarea, select {
-	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
-}
 input, textarea, select {
+	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 12px;
-}
-
-a, a:link, a:visited {
-	color: #2996cc;
 }
 
 #wrapper-top-menu,
@@ -57,9 +41,6 @@ div#content {
 	width: 70%;
 	background-color: #fff;
 	border-right: 0;
-}
-div#content p {
-	word-wrap: break-word;
 }
 
 #footer {
@@ -97,14 +78,6 @@ input[type="text"].questions-search.autocomplete {
 
 input[type="text"].questions-search.autocomplete {
 	padding-left: 30px !important;
-}
-
-h2 {
-	color: #f30;
-	font-size: 46px;
-	font-weight: 600;
-	line-height: 1em;
-	margin-top: 10px;
 }
 
 #sidebar a.selected {
@@ -515,20 +488,6 @@ div.flash.warning, .conflict {
 /* WIKI */
 /**********************************************************/
 
-.wiki h1, .wiki h2, .wiki h3 {
-	font-weight: normal;
-	color: #000;
-}
-.wiki h1 {
-	font-size: 28px;
-	margin-top: 10px;
-}
-.wiki h2 {
-	font-size: 20px;
-}
-.wiki h3 {
-	font-size: 16px;
-}
 .wiki.wiki-page {
 	color: #6A6E71;
 }
