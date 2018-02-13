@@ -4,7 +4,7 @@
 /*
  * CirclePro Theme:
  *
- *	 1. GLOBAL
+ *	 1. GENERAL
  *	 2. FONT ICONS
  *	 3. HEADER
  *	 4. TOP-MENU
@@ -31,7 +31,7 @@
  */
 
 /**********************************************************/
-/* 1. GLOBAL */
+/* 1. GENERAL */
 /**********************************************************/
 
 #wrapper-top-menu,
@@ -109,6 +109,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 }
 
 p.breadcrumb {
+	padding: 10px 0;
 	text-align: left;
 	font-weight: bold;
 }
@@ -128,6 +129,10 @@ div#activity dt.icon {
 	padding: 0 !important;
 	background: transparent !important;
 	font-size: 15px;
+}
+
+.text-diff {
+	word-wrap: break-word;
 }
 
 /**********************************************************/
@@ -323,7 +328,7 @@ ul.social-menu .social-link-mail:hover a {
 	left: 0px;
 	width: 100%;
 	line-height: 1em;
-	background-color: #3d454c;
+	background-color: #001a21;
 	font-weight: 500;
 	font-size: 0.9em;
 	position: relative;
@@ -366,11 +371,12 @@ ul.social-menu .social-link-mail:hover a {
 }
 /* New object + button */
 #main-menu li a.new-object {
-	background-color: #3d454c;
+	background-color: #001a21;
 }
 #main-menu .menu-children {
 	border: 0px;
 	margin-top: 10px;
+	background: transparent;
 }
 #main-menu .menu-children,
 #main-menu .menu-children li {
@@ -378,15 +384,13 @@ ul.social-menu .social-link-mail:hover a {
 }
 #main-menu .menu-children li a {
 	padding: 10px 25px;
-}
-#main-menu .menu-children li a {
-	background: #3d454c;
+	background: rgba(0, 26, 33, 0.9);
 	color: #9da2a6;
 	font-weight: bold;
 }
 #main-menu .menu-children li a:hover {
 	color: #fff;
-	background: #3d454c;
+	background: #001a21;
 }
 /* Tab buttons */
 #main-menu div.tabs-buttons {
@@ -394,7 +398,7 @@ ul.social-menu .social-link-mail:hover a {
 	right: 0;
 	width: 60px;
 	height: 100%;
-	background: #3d454c;
+	background: #001a21;
 	bottom: 0;
 	border: 0px;
 }
@@ -407,12 +411,12 @@ ul.social-menu .social-link-mail:hover a {
 	width: 25px;
 	bottom: 0px;
 	border-radius: 0px;
-	background: #3d454c;
+	background: #001a21;
 	color: #9da2a6;
 	font-weight: bold;
 }
 #main-menu button.tab-left:hover, #main-menu button.tab-right:hover {
-	background-color: #3d454c;
+	background-color: #001a21;
 	color: #fff;
 }
 #main-menu button.tab-left:focus, #main-menu button.tab-right:focus {
@@ -431,7 +435,7 @@ ul.social-menu .social-link-mail:hover a {
 	background: none;
 }
 #main-menu button.tab-left.disabled, #main-menu button.tab-right.disabled {
-	background-color: #3d454c;
+	background-color: #001a21;
 	cursor: unset;
 	color: #777;
 }
