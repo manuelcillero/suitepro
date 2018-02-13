@@ -120,6 +120,10 @@ p.author {
 	font-size: 13px;
 }
 
+div#activity dt.icon {
+	background-position: 0 4px !important;
+}
+
 .hljs {
 	padding: 0 !important;
 	background: transparent !important;
@@ -455,7 +459,7 @@ ul.social-menu .social-link-mail:hover a {
 	position: absolute;
 }
 #sidebar div {
-	margin-top: 30px;
+	margin-top: 40px;
 }
 #sidebar p {
 	margin-top: 5px;
@@ -573,19 +577,19 @@ div#content .contacts-tags-edit ul.tagit {
 /* 12. CONTEXT-MENU */
 /**********************************************************/
 
-.contextual {
+div#content > div.contextual:first-child {
 	float: none;
 	text-align: right;
 	background-color: #f2f2f2;
 	margin-top: 0;
 	padding-right: 8px;
 }
-.contextual a {
+div#content > div.contextual:first-child a {
 	display: inline-block;
 	height: 33px;
 	line-height: 33px;
 }
-.contextual .icon {
+div#content > div.contextual:first-child .icon {
 	padding: 0 0 0 20px;
 }
 
@@ -760,6 +764,13 @@ div.modal {
 	right: 1em;
 	background: #fafafa;
 	border: 0px;
+}
+.ui-dialog .tabular p {
+	padding-left: 145px;
+}
+.ui-dialog .tabular label {
+    margin-left: -145px;
+    width: 140px;
 }
 
 .ui-widget-header .ui-icon.ui-icon-closethick {
