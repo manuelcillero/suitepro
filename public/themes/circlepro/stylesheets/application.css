@@ -110,6 +110,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 
 p.breadcrumb {
 	text-align: left;
+	font-weight: bold;
 }
 
 div.subject h3 {
@@ -1053,36 +1054,29 @@ input#content_comments {
 /* 19. TABLES */
 /**********************************************************/
 
-table.list tbody td, table.list tbody tr:hover td { border: solid 1px #d7d7d7; }
-table.list thead th {
-    border-width: 1px;
-    border-style: solid;
-    border-top-color: #d7d7d7;
-    border-right-color: #d7d7d7;
-    border-left-color: #d7d7d7;
-    border-bottom-color: #d7d7d7;
-}
+table.list thead th, table.list tbody td, table.list tbody tr:hover td { border: solid 1px #d7d7d7; }
 
 table.list td,
-table.list th {padding: 5px;}
-table.list input[type="checkbox"] {margin-top: 6px;}
+table.list th { padding: 5px; }
+table.list input[type="checkbox"] { margin-top: 6px; }
 
-table.list tbody tr:hover {background-color: #dfeff7;}
+table.list tbody tr:hover { background-color: #dfeff7; }
 table.list tr.issue a { color: #666; }
+table.list tr.issue a:hover { text-decoration: underline; }
 
 tr.odd.priority-highest, table.list tbody tr.odd.priority-highest:hover { color: #900; font-weight: bold; }
-tr.odd.priority-highest { background: #FFE2E2; }
+tr.odd.priority-highest { background: #ffe2e2; }
 tr.even.priority-highest, table.list tbody tr.even.priority-highest:hover { color: #900; font-weight: bold; }
-tr.even.priority-highest { background: #FAEFEF; }
+tr.even.priority-highest { background: #faefef; }
 tr.priority-highest a, tr.priority-5:hover a { color: #900; }
-tr.odd.priority-highest td, tr.even.priority-highest td { border-color: #FDC9C9; }
+tr.odd.priority-highest td, tr.even.priority-highest td { border-color: #fdc9c9; }
 
 tr.odd.priority-high2, table.list tbody tr.odd.priority-high4:hover { color: #900; }
-tr.odd.priority-high2 { background: #FFE2E2; }
+tr.odd.priority-high2 { background: #ffe2e2; }
 tr.even.priority-high2, table.list tbody tr.even.priority-high4:hover { color: #900; }
-tr.even.priority-high2 { background: #FAEFEF; }
+tr.even.priority-high2 { background: #faefef; }
 tr.priority-high2 a { color: #900; }
-tr.odd.priority-high2 td, tr.even.priority-high4 td { border-color: #FDC9C9; }
+tr.odd.priority-high2 td, tr.even.priority-high4 td { border-color: #fdc9c9; }
 
 tr.odd.priority-high3, table.list tbody tr.odd.priority-high3:hover { color: #900; }
 tr.odd.priority-high3 { background: #fee; }
@@ -1096,7 +1090,7 @@ tr.odd.priority-lowest { background: #eaf7ff; }
 tr.even.priority-lowest, table.list tbody tr.even.priority-lowest:hover { color: #559; }
 tr.even.priority-lowest { background: #f2faff; }
 tr.priority-lowest a { color: #559; }
-tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #D2EAFA; }
+tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #d2eafa; }
 
 /**********************************************************/
 /* 20. OBJECTS */

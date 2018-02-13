@@ -48,8 +48,11 @@ div#content h1 {
 }
 
 a, a:link, a:visited {
-	color: #2996cc;
+	color: #3c8dbc;
 	text-decoration: none;
+}
+a:hover, a:focus {
+    color: #f70a0a;
 }
 
 body.wiki,
