@@ -108,11 +108,21 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	left: 35px;	
 }
 
+p.breadcrumb {
+	text-align: left;
+}
+
 div.subject h3 {
 	font-size: 20px;
 }
 p.author {
 	font-size: 13px;
+}
+
+.hljs {
+	padding: 0 !important;
+	background: transparent !important;
+	font-size: 15px;
 }
 
 /**********************************************************/
@@ -561,6 +571,22 @@ div#content .contacts-tags-edit ul.tagit {
 /**********************************************************/
 /* 12. CONTEXT-MENU */
 /**********************************************************/
+
+.contextual {
+	float: none;
+	text-align: right;
+	background-color: #f2f2f2;
+	margin-top: 0;
+	padding-right: 8px;
+}
+.contextual a {
+	display: inline-block;
+	height: 33px;
+	line-height: 33px;
+}
+.contextual .icon {
+	padding: 0 0 0 20px;
+}
 
 div#content .context-menu-selection {
 	background-color: #2996cc !important;
