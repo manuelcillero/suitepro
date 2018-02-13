@@ -10,30 +10,29 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 }
+
+/* Headers */
 h1, h2, h3, h4, h5, h6 {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
-.wiki h1 {
-	font-size: 32px;
-}
-.wiki h2 {
-	font-size: 24px;
-}
-.wiki h3 {
-	font-size: 20px;
-}
-.wiki h4 {
-	font-size: 17px;
-	border-bottom: 1px dotted #bbb;
-}
-.wiki h5 {
-	font-size: 17px;
-}
-.wiki h6 {
-	font-size: 16px;
-}
+h1, .wiki h1 { font-size: 32px; }
+h2, .wiki h2 { font-size: 24px; }
+h3, .wiki h3 { font-size: 20px; }
+h4, .wiki h4 { font-size: 17px; }
+h5, .wiki h5 { font-size: 17px; }
+h6, .wiki h6 { font-size: 16px; }
 h1, h2, h3 {
 	color: #b40b51;
+}
+h4, .wiki h4 {
+	color: #585b5a;
+	border-bottom: 1px dotted #585b5a;
+}
+h5, .wiki h5 {
+	color: #6a6e71;
+}
+h6, .wiki h6 {
+	color: #81868b;
 }
 div#content div.wiki-page > a:first-child + h1, h2 {
 	color: #f30;

@@ -1,16 +1,38 @@
 @import url(../../../stylesheets/application.css);
 @import url(editor.css);
 
-/* CirclePro Theme, based on Circle Theme by Kirill Bezrukov */
+/*
+ * CirclePro Theme:
+ *
+ *	 1. GLOBAL
+ *	 2. FONT ICONS
+ *	 3. HEADER
+ *	 4. TOP-MENU
+ *	 5. SOCIAL-MENU
+ *	 6. MAIN-MENU
+ *	 7. SIDEBAR
+ *	 8. FOOTER
+ *	 9. FLASH MESSAGES
+ *	10. LOGIN FORM
+ *	11. TAGS
+ *	12. CONTEXT-MENU
+ *	13. TIP
+ *	14. jQuery UI
+ *	15. BUTTONS
+ *	16. FORMS COMMON
+ *	17. FORMS SPECIFIC
+ *	18. TABS
+ *	19. TABLES
+ *	20. OBJECTS
+ *	21. RESPONSIVE
+ *	22. SELECT2
+ *
+ * Based on Circle Theme by Kirill Bezrukov.
+ */
 
 /**********************************************************/
-/* GLOBAL */
+/* 1. GLOBAL */
 /**********************************************************/
-
-input, textarea, select {
-	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
-	font-size: 12px;
-}
 
 #wrapper-top-menu,
 #wrapper-header,
@@ -43,26 +65,9 @@ div#content {
 	border-right: 0;
 }
 
-#footer {
-	height: 36px;
-	padding: 0;
-	border: 1px solid #182230;
-	background-color: #182330;
-	text-align: left;
-	font-size: 11px;
-	font-weight: bold;
-	color: #fff;
-}
-#footer div.bgl {
-	display: inline-block;
-	margin: 14px 0 0 30px;
-}
-#footer a, #footer a:visited {
-	color: #ced4d9;
-}
-#footer a:hover {
-	color: #2996cc;
-	text-decoration: none;
+input, textarea, select {
+	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
 }
 
 input[type="text"].live_search_field,
@@ -103,8 +108,15 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	left: 35px;	
 }
 
+div.subject h3 {
+	font-size: 20px;
+}
+p.author {
+	font-size: 13px;
+}
+
 /**********************************************************/
-/* FONT ICONS */
+/* 2. FONT ICONS */
 /**********************************************************/
 
 @font-face {
@@ -135,11 +147,11 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	font-variant: normal;
 	text-transform: none;
 
-	/* fix buttons height, for twitter bootstrap */
+	/* Fix buttons height, for twitter bootstrap */
 	line-height: 1em;
 
 	/* Animation center compensation - margins should be symmetric */
-	/* remove if not needed */
+	/* Remove if not needed */
 	margin-left: .2em;
 
 	/* Font smoothing. That was taken from TWBS */
@@ -156,7 +168,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 .icon-linkedin:before { content: '\f318'; }
 
 /**********************************************************/
-/* HEADER */
+/* 3. HEADER */
 /**********************************************************/
 
 #header {
@@ -202,7 +214,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 }
 
 /**********************************************************/
-/* TOP-MENU */
+/* 4. TOP-MENU */
 /**********************************************************/
 
 #top-menu {
@@ -231,7 +243,7 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 }
 
 /**********************************************************/
-/* SOCIAL-MENU */
+/* 5. SOCIAL-MENU */
 /**********************************************************/
 
 ul.social-menu {
@@ -289,7 +301,7 @@ ul.social-menu .social-link-mail:hover a {
 }
 
 /**********************************************************/
-/* MAIN-MENU */
+/* 6. MAIN-MENU */
 /**********************************************************/
 
 #main-menu {
@@ -331,13 +343,13 @@ ul.social-menu .social-link-mail:hover a {
 	width: 24px;
 	height: 16px;
 	background: url(../images/menu_button.png) no-repeat;
-	background-size: 16px 16px; /* for retina displays */
+	background-size: 16px 16px; /* For retina displays */
 }
 #main-menu .menu-button:hover {
 	background: url(../images/menu_button_hover.png) no-repeat;
-	background-size: 16px 16px; /* for retina displays */
+	background-size: 16px 16px; /* For retina displays */
 }
-/* new object + button */
+/* New object + button */
 #main-menu li a.new-object {
 	background-color: #3d454c;
 }
@@ -361,7 +373,7 @@ ul.social-menu .social-link-mail:hover a {
 	color: #fff;
 	background: #3d454c;
 }
-/* tab buttons*/
+/* Tab buttons */
 #main-menu div.tabs-buttons {
 	position: absolute;
 	right: 0;
@@ -410,7 +422,7 @@ ul.social-menu .social-link-mail:hover a {
 }
 
 /**********************************************************/
-/* SIDEBAR */
+/* 7. SIDEBAR */
 /**********************************************************/
 
 #sidebar {
@@ -439,7 +451,33 @@ ul.social-menu .social-link-mail:hover a {
 }
 
 /**********************************************************/
-/* FLASH MESSAGES */
+/* 8. FOOTER */
+/**********************************************************/
+
+#footer {
+	height: 36px;
+	padding: 0;
+	border: 1px solid #182230;
+	background-color: #182330;
+	text-align: left;
+	font-size: 11px;
+	font-weight: bold;
+	color: #fff;
+}
+#footer div.bgl {
+	display: inline-block;
+	margin: 14px 0 0 30px;
+}
+#footer a, #footer a:visited {
+	color: #ced4d9;
+}
+#footer a:hover {
+	color: #2996cc;
+	text-decoration: none;
+}
+
+/**********************************************************/
+/* 9. FLASH MESSAGES */
 /**********************************************************/
 
 #errorExplanation, div.flash, .nodata, .warning, .conflict {
@@ -468,7 +506,7 @@ div.flash.warning, .conflict {
 }
 
 /**********************************************************/
-/* LOGIN FORM */
+/* 10. LOGIN FORM */
 /**********************************************************/
 
 #login-form table {
@@ -485,15 +523,7 @@ div.flash.warning, .conflict {
 }
 
 /**********************************************************/
-/* WIKI */
-/**********************************************************/
-
-.wiki.wiki-page {
-	color: #6A6E71;
-}
-
-/**********************************************************/
-/* TAGS */
+/* 11. TAGS */
 /**********************************************************/
 
 span.tag-label-color {
@@ -502,7 +532,6 @@ span.tag-label-color {
 	border-radius: 20px !important;
 	line-height: 13px;
 }
-
 span.tag-label-color:hover {
 	opacity: 0.7;
 }
@@ -530,21 +559,18 @@ div#content .contacts-tags-edit ul.tagit {
 }
 
 /**********************************************************/
-/* Context Menu */
+/* 12. CONTEXT-MENU */
 /**********************************************************/
 
 div#content .context-menu-selection {
 	background-color: #2996cc !important;
 }
-
 div#content #context-menu ul {
 	border-radius: 4px;
 }
-
 div#content #context-menu li a {
 	color: #333;
 }
-
 div#content #context-menu li:hover {
 	background: #f2f4f5;
 	color: #3d454c;
@@ -557,7 +583,7 @@ div#content #context-menu a.disabled, div#content #context-menu a.disabled:hover
 }
 
 /**********************************************************/
-/* TIP */
+/* 13. TIP */
 /**********************************************************/
 
 div.tooltip:hover span.tip {
@@ -570,7 +596,7 @@ div.tooltip:hover span.tip {
 }
 
 /**********************************************************/
-/* jQuery UI */
+/* 14. jQuery UI */
 /**********************************************************/
 
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
@@ -590,7 +616,6 @@ div.tooltip:hover span.tip {
 
 div.modal {
 	padding: 10px;
-
 }
 
 .ui-dialog.modal .ui-widget-header {
@@ -606,15 +631,6 @@ div.modal {
 	border-bottom: solid 1px #ced4d9;
 	margin: -10px -10px 5px -10px;
 	border-radius: 0px;
-}
-
-.ui-datepicker .ui-widget-header {
-	background: #fff;
-	border: 0px;
-	border-bottom: solid 1px #ced4d9;
-	border-radius: 0px;
-	padding: 5px;
-	margin: -1px;
 }
 
 .ui-widget-content {
@@ -645,10 +661,6 @@ div.modal {
 	border: 1px solid #f2f4f5;
 }
 
-.ui-datepicker .ui-datepicker-buttonpane button {
-	font-weight: normal;
-}
-
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
 	background: #FFD5C9;
 }
@@ -660,27 +672,34 @@ div.modal {
 .ui-widget-header .ui-icon-circle-triangle-e {
 	background: url(../images/next.png) no-repeat 0px 0px;
 }
-
 .ui-widget-header .ui-icon-circle-triangle-w {
 	background: url(../images/prev.png) no-repeat 0px 0px;
 }
 
+.ui-datepicker .ui-widget-header {
+	background: #fff;
+	border: 0px;
+	border-bottom: solid 1px #ced4d9;
+	border-radius: 0px;
+	padding: 5px;
+	margin: -1px;
+}
+.ui-datepicker .ui-datepicker-buttonpane button {
+	font-weight: normal;
+}
 .ui-datepicker .ui-datepicker-next {
 	top: 5px;
 	right: 10px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
 	top: 5px;
 	left: 10px;
 }
-
 .ui-datepicker th {
 	/*font-size: 13px;*/
 	color: #aaa;
 	font-weight: 500;
 }
-
 .ui-datepicker .ui-state-default {
   /*font-size: 13px;*/
   font-weight: 500;
@@ -688,31 +707,24 @@ div.modal {
   border: 1px solid #fff;
   background: #fff;
 }
-
 .ui-datepicker .ui-state-default:hover {
 	background: #f6f6f6;
 }
-
 .ui-datepicker .ui-state-active {
 	background: #D2EEFF;
 }
-
 .ui-datepicker .ui-state-highlight {
 	color: #ff3b30;
 }
-
 .ui-datepicker .ui-state-highlight:hover {
 	background-color: #ffd8d6;
 }
-
 #ui-datepicker-div {
 	padding: 10px;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
 	padding-top: 0.5em;
 }
-
 .ui-datepicker-week-col, .ui-datepicker .ui-priority-secondary {
 	color: #aaa;
 }
@@ -726,13 +738,12 @@ div.modal {
 .ui-widget-header .ui-icon.ui-icon-closethick {
 	background: url(../images/close.png) no-repeat 0px 0px;
 }
-
 .ui-widget-header .ui-state-hover .ui-icon.ui-icon-closethick {
 	background: url(../images/close_active.png);
 }
 
 /**********************************************************/
-/* BUTTONS */
+/* 15. BUTTONS */
 /**********************************************************/
 
 #ajax-modal p.buttons input,
@@ -818,7 +829,7 @@ input[type="submit"].small {
 }
 
 /**********************************************************/
-/* FORMS COMMON */
+/* 16. FORMS COMMON */
 /**********************************************************/
 
 .tabular.settings p {
@@ -948,9 +959,8 @@ img.ui-datepicker-trigger {
 	margin-right: 10px;
 }
 
-
 /**********************************************************/
-/* FORMS SPECIFIC */
+/* 17. FORMS SPECIFIC */
 /**********************************************************/
 
 #user_login, #user_firstname, #user_lastname, #user_mail {
@@ -967,41 +977,35 @@ input#content_comments {
 }
 
 /**********************************************************/
-/* TABS */
+/* 18. TABS */
 /**********************************************************/
 
 #content .tabs ul {
 	border-bottom: 1px solid #ECECEC;
 }
-
 #content .tabs ul li a {
 	border: 1px solid #ECECEC;
 	background-color: #ECECEC;
 	border-radius: 0px;
 }
-
 #content .tabs ul li a.selected {
 	border: 1px solid #ECECEC;
 	border-bottom: 1px solid #FFF;
 }
-
 #content .tabs ul li a.selected:hover {
 	border-top: 1px solid #ECECEC;
 	border-left: 1px solid #ECECEC;
 	border-right: 1px solid #ECECEC;
 }
-
 #content .tabs ul li a:hover {
 	border-top: 1px solid #ffffdd;
 	border-left: 1px solid #ffffdd;
 	border-right: 1px solid #ffffdd;
 }
-
 #content .box .tabs ul li a.selected {
 	background-color: #fafafa;
 	border-bottom: 1px solid #fafafa;
 }
-
 #content .tabs .tabs-buttons {
 	background: #fff;
 	border: 0px;
@@ -1009,20 +1013,18 @@ input#content_comments {
 	width: 50px;
 	border-bottom: 1px solid #ECECEC;
 }
-
 #content .tabs .tabs-buttons  button.tab-left, #content .tabs .tabs-buttons  button.tab-right {
 	cursor: pointer;
 	height: 100%;
 	border: 1px solid #ECECEC;
 	border-radius: 0px;
 }
-
 #content .tabs .tabs-buttons button.tab-left.disabled, #content .tabs .tabs-buttons button.tab-right.disabled {
 	border: 1px solid #ccc;
 }
 
 /**********************************************************/
-/* TABLES */
+/* 19. TABLES */
 /**********************************************************/
 
 table.list tbody td, table.list tbody tr:hover td { border: solid 1px #d7d7d7; }
@@ -1071,7 +1073,7 @@ tr.priority-lowest a { color: #559; }
 tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #D2EAFA; }
 
 /**********************************************************/
-/* OBJECTS */
+/* 20. OBJECTS */
 /**********************************************************/
 
 div.issue,
@@ -1087,7 +1089,7 @@ table.progress td { padding: 0px; }
 div.details { padding: 20px !important; }
 
 /**********************************************************/
-/* RESPONSIVE */
+/* 21. RESPONSIVE */
 /**********************************************************/
 
 @media all and (max-width: 899px) {
@@ -1125,7 +1127,7 @@ div.details { padding: 20px !important; }
 }
 
 /**********************************************************/
-/* SELECT2 */
+/* 22. SELECT2 */
 /**********************************************************/
 
 .theme-Circlepro .select2-container--default .select2-selection--single {
