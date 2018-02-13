@@ -465,6 +465,9 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar div {
 	margin-top: 40px;
 }
+#sidebar div#admin-menu {
+	margin-top: 10px;
+}
 #sidebar p {
 	margin-top: 5px;
 }
@@ -594,7 +597,7 @@ div#content > div.contextual:first-child a {
 	line-height: 33px;
 }
 div#content > div.contextual:first-child .icon {
-	padding: 0 0 0 20px;
+	padding: 0 3px 0 20px;
 }
 
 div#content .context-menu-selection {
@@ -1127,6 +1130,20 @@ div.details { padding: 20px !important; }
 /* 21. RESPONSIVE */
 /**********************************************************/
 
+@media screen and (max-width: 1239px) {
+	#wrapper3 {
+		padding-bottom: 0;
+	}
+}
+@media screen and (max-width: 899px) {
+	#top-menu {
+		display: block !important;
+	}
+	#wrapper-top-menu div,
+	#wrapper-top-menu ul:last-child {
+		display: none;
+	}
+}
 @media all and (max-width: 899px) {
 	body #header {
 		background-color: #3d454c;
@@ -1158,6 +1175,29 @@ div.details { padding: 20px !important; }
 	body .flyout-menu h3 {
 		background-color: #000;
 		border-color: #000;
+	}
+
+	div#content {
+		padding-left: 3.333333%;
+		padding-right: 3.333333%;
+	}	
+}
+@media screen and (max-width: 767px) {
+	#wrapper-top-menu {
+		text-align: center;
+	}
+	#wrapper-top-menu ul.social-menu {
+		float: none;
+		display: inline-block;
+	}
+	#wrapper-top-menu ul.social-menu > li a {
+		color: #fff;
+	}
+	ul.social-menu > li a {
+		width: 24px;
+	}
+	ul.social-menu > li a:hover {
+		background: transparent !important;
 	}
 }
 
