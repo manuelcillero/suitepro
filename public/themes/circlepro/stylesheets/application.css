@@ -112,13 +112,14 @@ p.breadcrumb {
 	padding: 10px 0;
 	text-align: left;
 	font-weight: bold;
+	font-size: 13px !important;
 }
 
 div.subject h3 {
 	font-size: 20px;
 }
 p.author {
-	font-size: 13px;
+	font-size: 13px !important;
 }
 
 div#activity dt.icon {
@@ -766,7 +767,9 @@ div.modal {
 .ui-datepicker-week-col, .ui-datepicker .ui-priority-secondary {
 	color: #aaa;
 }
-
+.ui-dialog .ui-dialog-title {
+	line-height: 1.2em;
+}
 .ui-dialog .ui-dialog-titlebar-close {
 	right: 1em;
 	background: #fafafa;
