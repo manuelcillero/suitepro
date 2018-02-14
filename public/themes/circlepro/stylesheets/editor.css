@@ -69,7 +69,8 @@ body.wiki, .wiki p, .wiki li {
 }
 
 .wiki li {
-	margin-bottom: 6px;
+	margin-top: 3px;
+	margin-bottom: 3px;
 }
 
 .wiki table {
@@ -80,11 +81,13 @@ body.wiki, .wiki p, .wiki li {
 	padding: 4px;
 } 
 
-blockquote { 
-	font-size: 22.5px;
+blockquote {
 	line-height: 1.2em;
 	padding: 1px 12.5px;
 	border-left: 5px solid #eee;
+}
+blockquote, blockquote > p {
+	font-size: 22.5px !important;
 }
 
 hr {
