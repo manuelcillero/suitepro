@@ -112,13 +112,13 @@ p.breadcrumb {
 	padding: 10px 0;
 	text-align: left;
 	font-weight: bold;
-	font-size: 13px !important;
 }
 
 div.subject h3 {
 	font-size: 20px;
 }
-p.author {
+
+p.breadcrumb, p.buttons, p.author, p.other-formats {
 	font-size: 13px !important;
 }
 
