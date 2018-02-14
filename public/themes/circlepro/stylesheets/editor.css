@@ -62,19 +62,6 @@ a:hover, a:focus {
 body.wiki, .wiki p, .wiki li {
 	font-size: 18px;
 }
-@media screen and (max-width: 767px) {
-	.wiki p, .wiki li {
-		text-align: left;
-	}	
-	body.wiki, .wiki p, .wiki li {
-		font-size: 16px;
-	}
-}
-@media screen and (min-width: 768px) and (max-width: 899px) {
-	body.wiki, .wiki p, .wiki li {
-		font-size: 17px;
-	}
-}
 
 .wiki li {
 	margin-top: 3px;
@@ -107,4 +94,25 @@ hr {
 	height: 1px;
 	background: #ccc;
 	border: 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 767px) {
+	.wiki p, .wiki li {
+		text-align: left;
+	}	
+	body.wiki, .wiki p, .wiki li {
+		font-size: 16px;
+	}
+	blockquote, blockquote > p {
+		font-size: 18.5px !important;
+	}
+}
+@media screen and (min-width: 768px) and (max-width: 899px) {
+	body.wiki, .wiki p, .wiki li {
+		font-size: 17px;
+	}
+	blockquote, blockquote > p {
+		font-size: 21.5px !important;
+	}
 }
