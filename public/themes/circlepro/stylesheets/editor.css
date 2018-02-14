@@ -59,17 +59,20 @@ a:hover, a:focus {
 	text-align: justify;
 	word-wrap: break-word;
 }
+body.wiki, .wiki p, .wiki li {
+	font-size: 18px;
+}
 @media screen and (max-width: 767px) {
 	.wiki p, .wiki li {
 		text-align: left;
 	}	
-}
-body.wiki, .wiki p, .wiki li {
-	font-size: 18px;
-}
-@media screen and (max-width: 900px) {
 	body.wiki, .wiki p, .wiki li {
 		font-size: 16px;
+	}
+}
+@media screen and (min-width: 768px) and (max-width: 899px) {
+	body.wiki, .wiki p, .wiki li {
+		font-size: 17px;
 	}
 }
 
@@ -87,9 +90,13 @@ body.wiki, .wiki p, .wiki li {
 } 
 
 blockquote {
+	margin-right: 0;
 	line-height: 1.2em;
-	padding: 1px 12.5px;
+	padding: 8.5px 25px 12.5px;
 	border-left: 5px solid #eee;
+}
+blockquote p {
+	margin: 12.5px 0;
 }
 blockquote, blockquote > p {
 	font-size: 22.5px !important;
