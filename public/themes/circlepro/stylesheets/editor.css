@@ -55,24 +55,28 @@ a:hover, a:focus {
     color: #f70a0a;
 }
 
-body.wiki,
-div#content p {
-	font-size: 18px;
+.wiki p {
 	text-align: justify;
 	word-wrap: break-word;
 }
 @media screen and (max-width: 767px) {
-	body.wiki,
-	div#content p {
+	.wiki p {
 		text-align: left;
 	}	
 }
+body.wiki, .wiki p, .wiki li {
+	font-size: 18px;
+}
 
-body.wiki table {
+.wiki li {
+	margin-bottom: 6px;
+}
+
+.wiki table {
 	border: 1px solid #bbb;
 	border-collapse: collapse;
 } 
-body.wiki td, body.wiki th {
+.wiki td, .wiki th {
 	padding: 4px;
 } 
 
