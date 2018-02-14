@@ -60,6 +60,12 @@ div#content p {
 	text-align: justify;
 	word-wrap: break-word;
 }
+@media screen and (max-width: 767px) {
+	body.wiki,
+	div#content p {
+		text-align: left;
+	}	
+}
 
 body.wiki table {
 	border: 1px solid #bbb;
