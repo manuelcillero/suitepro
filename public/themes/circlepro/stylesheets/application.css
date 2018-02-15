@@ -790,6 +790,10 @@ div.modal {
 	background: url(../images/close_active.png);
 }
 
+.ui-helper-hidden-accessible {
+	background-color: #182330;
+}
+
 /**********************************************************/
 /* 15. BUTTONS */
 /**********************************************************/
@@ -1186,6 +1190,9 @@ div.details { padding: 20px !important; }
 	body .flyout-menu h3 {
 		background-color: #000;
 		border-color: #000;
+	}
+	body .flyout-menu ul.social-menu {
+		display: none;
 	}
 
 	div#content {
