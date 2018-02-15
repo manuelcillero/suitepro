@@ -1198,6 +1198,12 @@ div.details { padding: 20px !important; }
 	div#content {
 		padding-left: 3.333333%;
 		padding-right: 3.333333%;
+	}
+	#footer div.bgl {
+		margin-left: 3.333333%;
+	}
+	#footer ul.social-menu {
+		margin-right: 3.333333%;
 	}	
 }
 @media screen and (max-width: 767px) {
