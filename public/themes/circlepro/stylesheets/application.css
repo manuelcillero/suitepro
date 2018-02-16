@@ -64,6 +64,18 @@ div#content {
 	background-color: #fff;
 	border-right: 0;
 }
+div#content div.wiki-page > a:first-child + h1, h2 {
+	color: #f30;
+	font-size: 46px;
+	font-weight: 600;
+	line-height: 1em;
+}
+div#content h1 {
+	color: #b40b51;	
+}
+.wiki h2 {
+	color: #b40b51;
+}
 
 input, textarea, select {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -331,7 +343,7 @@ ul.social-menu .social-link-mail:hover a {
 	line-height: 1em;
 	background-color: #001a21;
 	font-weight: 500;
-	font-size: 0.9em;
+	font-size: 14px;
 	position: relative;
 	height: auto;
 	box-sizing: border-box;

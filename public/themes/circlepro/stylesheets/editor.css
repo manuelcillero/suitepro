@@ -15,12 +15,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
-h1, .wiki h1 { font-size: 32px; }
-h2, .wiki h2 { font-size: 24px; }
-h3, .wiki h3 { font-size: 20px; }
-h4, .wiki h4 { font-size: 17px; }
-h5, .wiki h5 { font-size: 17px; }
-h6, .wiki h6 { font-size: 16px; }
+h1, .wiki h1 { font-size: 34px; }
+h2, .wiki h2 { font-size: 28px; }
+h3, .wiki h3 { font-size: 22px; }
+h4, .wiki h4 { font-size: 20px; }
+h5, .wiki h5 { font-size: 19px; }
+h6, .wiki h6 { font-size: 18px; }
 h1, h2, h3 {
 	color: #b40b51;
 }
@@ -33,18 +33,6 @@ h5, .wiki h5 {
 }
 h6, .wiki h6 {
 	color: #81868b;
-}
-div#content div.wiki-page > a:first-child + h1, h2 {
-	color: #f30;
-	font-size: 46px;
-	font-weight: 600;
-	line-height: 1em;
-}
-div#content h1 {
-	color: #b40b51;	
-}
-.wiki h2 {
-	color: #b40b51;
 }
 
 a, a:link, a:visited {
