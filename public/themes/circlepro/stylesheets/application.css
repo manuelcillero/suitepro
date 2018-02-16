@@ -76,6 +76,13 @@ div#content h1 {
 .wiki h2 {
 	color: #b40b51;
 }
+div.journal div[id^="note-"] > h4:first-child {
+	font-size: 13px;
+	padding-right: 0;
+}
+div.journal div[id^="note-"] > h4:first-child > a:first-child {
+	font-size: 18px;
+}
 
 input, textarea, select {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
