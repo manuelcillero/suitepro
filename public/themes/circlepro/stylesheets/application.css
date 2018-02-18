@@ -97,6 +97,7 @@ h4 img.gravatar {
 	display: block;
 	float: left;
 	margin-right: 6px;
+	margin-bottom: 4px;
 }
 div.gravatar-with-child > img.gravatar:nth-child(2) {
 	border: solid 1px #d5d5d5;
