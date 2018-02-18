@@ -80,6 +80,7 @@ div#content h1 {
 div.journal div[id^="note-"] > h4:first-child {
 	font-size: 13px;
 	padding-right: 0;
+	line-height: 15px;
 }
 .journal-link {
 	font-size: 18px;
@@ -104,6 +105,10 @@ div.gravatar-with-child > img.gravatar:nth-child(2) {
 	border-radius: inherit;
 	top: 35px;
 	left: 35px;
+}
+div.gravatar-with-child + div.subject,
+div.gravatar-with-child + div.subject + p.author {
+	padding-left: 68px;
 }
 
 input, textarea, select {
@@ -1173,6 +1178,7 @@ div.details { padding: 20px !important; }
 		display: block !important;
 		position: fixed;
 		width: 100%;
+		z-index: 8888;
 	}
 	#wrapper-top-menu div,
 	#wrapper-top-menu ul:last-child {
