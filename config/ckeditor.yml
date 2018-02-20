@@ -1,5 +1,4 @@
-# CKEditor configuration
-
+# CKEditor configuration:
 contentsCss: '/themes/circlepro/stylesheets/editor.css'
 allowedContent: true
 bodyClass: 'wiki'
@@ -7,8 +6,10 @@ removePlugins: 'codemirror,div,flash,forms,iframe,copyformatting,elementspath'
 forcePasteAsPlainText: false
 entities: false
 
-# HTML sanitizer configuration
+# Youtube plugin defaults:
+youtube_responsive: true
 
+# HTML sanitizer configuration:
 allowedProtocols:
   - afs
   - aim

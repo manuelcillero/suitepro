@@ -84,6 +84,22 @@ hr {
 	border: 0;
 }
 
+/* Youtube plugin */
+div.youtube-embed-wrapper {
+	position: relative;
+	padding-bottom: 56.25%;
+	padding-top: 30px;
+	height: 0;
+	overflow: hidden;
+}
+div.youtube-embed-wrapper .responsive-view {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
 /* Responsive */
 @media screen and (max-width: 767px) {
 	.wiki p, .wiki li {

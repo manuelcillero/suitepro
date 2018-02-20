@@ -80,6 +80,7 @@ div#content h1 {
 div.journal div[id^="note-"] > h4:first-child {
 	font-size: 13px;
 	padding-right: 0;
+	margin: 10px 0 20px;
 	line-height: 15px;
 }
 .journal-link {
@@ -98,7 +99,6 @@ h4 img.gravatar {
 	display: block;
 	float: left;
 	margin-right: 6px;
-	margin-bottom: 4px;
 }
 div.gravatar-with-child > img.gravatar:nth-child(2) {
 	border: solid 1px #d5d5d5;
