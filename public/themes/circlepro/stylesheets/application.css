@@ -628,6 +628,11 @@ div#content > div.contextual:first-child a {
 	height: 33px;
 	line-height: 33px;
 }
+div#content > div.contextual:first-child select {
+	margin: 3px 0;
+	height: 27px;
+	line-height: 27px;
+}
 div#content > div.contextual:first-child .icon {
 	padding: 0 3px 0 20px;
 }
