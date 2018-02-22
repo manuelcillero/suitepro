@@ -60,9 +60,10 @@ body.wiki, .wiki p, .wiki li {
 	border: 1px solid #bbb;
 	border-collapse: collapse;
 } 
-.wiki td, .wiki th {
+.wiki table td, .wiki table th {
 	padding: 4px;
-} 
+	font-size: 16px;
+}
 
 blockquote {
 	margin-right: 0;
