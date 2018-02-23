@@ -616,24 +616,28 @@ div#content .contacts-tags-edit ul.tagit {
 /* 12. CONTEXT-MENU */
 /**********************************************************/
 
-div#content > div.contextual:first-child {
+div#content > div.contextual:first-child,
+div.flash + div.contextual {
 	float: none;
 	text-align: right;
 	background-color: #f2f2f2;
 	margin-top: 0;
 	padding-right: 8px;
 }
-div#content > div.contextual:first-child a {
+div#content > div.contextual:first-child a,
+div.flash + div.contextual a {
 	display: inline-block;
 	height: 33px;
 	line-height: 33px;
 }
-div#content > div.contextual:first-child select {
+div#content > div.contextual:first-child select,
+div.flash + div.contextual select {
 	margin: 3px 0;
 	height: 27px;
 	line-height: 27px;
 }
-div#content > div.contextual:first-child .icon {
+div#content > div.contextual:first-child .icon,
+div.flash + div.contextual .icon {
 	padding: 0 3px 0 20px;
 }
 
