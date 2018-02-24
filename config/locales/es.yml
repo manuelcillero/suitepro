@@ -1233,7 +1233,7 @@ es:
   label_font_monospace: Fuente Monospaced
   label_font_proportional: Fuente Proportional
   setting_timespan_format: Time span format
-  label_table_of_contents: Table of contents
+  label_table_of_contents: Tabla de contenidos
   setting_commit_logs_formatting: Apply text formatting to commit messages
   setting_mail_handler_enable_regex_delimiters: Enable regular expressions
   error_move_of_child_not_possible: 'Subtask %{child} could not be moved to the new
