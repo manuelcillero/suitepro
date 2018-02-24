@@ -138,8 +138,8 @@ div.youtube-embed-wrapper .responsive-view {
 .note-green,
 .note-orange,
 .note-yellow {
-	color: #222; /*
-	margin: .5em; */
+	color: #222;
+	margin: .5em;
 	padding: .5em;
 }
 .note-red {
