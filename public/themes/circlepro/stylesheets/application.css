@@ -172,6 +172,12 @@ div#activity dt.icon {
 	word-wrap: break-word;
 }
 
+div.wiki .external {
+	padding-left: 0;
+	padding-right: 12px;
+	background-position: right 60%;
+}
+
 /**********************************************************/
 /* 2. FONT ICONS */
 /**********************************************************/
