@@ -92,6 +92,12 @@ body.wiki, .wiki p, .wiki li {
 .wiki table td, .wiki table th {
 	padding: 4px;
 	font-size: 16px;
+	vertical-align: top;
+}
+.wiki table td p, .wiki table th p {
+	font-size: 16px;
+	line-height: 1.42857em;
+	margin: 0;
 }
 
 blockquote {
