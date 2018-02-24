@@ -539,8 +539,11 @@ ul.social-menu .social-link-mail:hover a {
 /* 9. WIKI */
 /**********************************************************/
 
-ul.toc {
+div.wiki ul.toc {
 	float: right;
+	margin-right: 0;
+	margin-left: 12px;
+	padding: 4px 8px;
 }
 #preview fieldset {
 	width: auto;
