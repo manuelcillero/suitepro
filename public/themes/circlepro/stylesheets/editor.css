@@ -164,7 +164,14 @@ div.youtube-embed-wrapper .responsive-view {
 .note-yellow {
 	background-color: BlanchedAlmond;
 }
- 
+
+/*
+ * Editor styles.
+ */
+select.cke_dialog_ui_input_select {
+	line-height: 20px !important;
+}
+
 /* Responsive */
 @media screen and (max-width: 767px) {
 	.wiki p, .wiki li {
