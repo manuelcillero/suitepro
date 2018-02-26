@@ -26,6 +26,8 @@ CKEDITOR.stylesSet.add( 'default', [
 	{ name: 'D !',              element: 'p',      attributes: { 'class': 'note-orange' } },
 	{ name: 'E !',              element: 'p',      attributes: { 'class': 'note-red' } },
 
+	{ name: 'Contenedor tabla', element: 'div',    attributes: { 'class': 'autoscroll' } },
+
 	// These styles are already available in the "Format" drop-down list ("format" plugin),
 	// so they are not needed here by default. You may enable them to avoid
 	// placing the "Format" combo in the toolbar, maintaining the same features.

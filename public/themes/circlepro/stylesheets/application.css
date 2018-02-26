@@ -160,7 +160,6 @@ p.breadcrumb, p.buttons, p.author, p.other-formats {
 
 /*
  * Avoid break inside each project block when use columns in the project's page.
- *
  * See https://stackoverflow.com/q/7785374
  */
 #projects-index {
