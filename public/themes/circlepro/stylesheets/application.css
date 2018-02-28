@@ -567,6 +567,10 @@ div.wiki ul.toc {
 	margin-left: 12px;
 	padding: 4px 8px;
 }
+div.wiki ul.toc li {
+	line-height: 1em;
+	margin-top: .3em;
+}
 #preview fieldset {
 	width: auto;
 	min-width: auto;
@@ -1292,6 +1296,11 @@ div.details { padding: 20px !important; }
 
 	div.details {
 		padding: 2% !important;
+	}
+
+	div.wiki ul.toc {
+		float: none;
+		margin-left: 0;
 	}
 }
 @media screen and (max-width: 767px) {
