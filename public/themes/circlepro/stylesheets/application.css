@@ -719,6 +719,10 @@ div.tooltip:hover span.tip {
 	-ms-border-radius: 4px;
 	-o-border-radius: 4px;
 	border-radius: 4px;
+	background-color: #EBF5FB;
+}
+div.tooltip:hover span.tip a {
+	font-weight: bold !important;
 }
 
 /**********************************************************/
@@ -1215,6 +1219,8 @@ div.deal {
 	border: 0px !important;
 	padding: 10px !important;
 }
+
+table.cal div.issue { line-height: 1.2em; }
 
 table.progress td { padding: 0px; }
 
