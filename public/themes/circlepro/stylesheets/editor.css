@@ -89,7 +89,7 @@ body.wiki, .wiki p, .wiki li {
 .wiki table {
 	border: 1px solid #bbb;
 	border-collapse: collapse;
-} 
+}
 .wiki table td, .wiki table th {
 	padding: 4px;
 	font-size: 16px;
