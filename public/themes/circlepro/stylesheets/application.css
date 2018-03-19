@@ -278,7 +278,16 @@ div.wiki .external {
 	color: #ccc;
 }
 #wrapper-header > h1 .breadcrumbs {
-	margin-top: -5px;
+	display: inline;
+	font-size: 15px;
+}
+#wrapper-header > h1 .breadcrumbs a {
+	color: #ccc;
+	font-weight: normal;
+	letter-spacing: 1px;
+}
+#wrapper-header > h1 .breadcrumbs a:hover {
+	color: #fff;
 }
 
 #quick-search {
