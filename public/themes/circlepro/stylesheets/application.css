@@ -576,6 +576,9 @@ div.wiki ul.toc {
 	margin-left: 12px;
 	padding: 4px 8px;
 }
+div.wiki ul.toc a {
+	font-size: 0.98em;
+}
 div.wiki ul.toc li {
 	line-height: 1em;
 	margin-top: .3em;
