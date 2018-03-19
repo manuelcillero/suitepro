@@ -1250,7 +1250,7 @@ div.details { padding: 20px !important; }
 	}
 	div#content > div.contextual:first-child {
 		margin-top: 18px;
-	}	
+	}
 }
 @media all and (max-width: 899px) {
 	body #header {
@@ -1324,6 +1324,13 @@ div.details { padding: 20px !important; }
 	}
 	ul.social-menu > li a:hover {
 		background: transparent !important;
+	}
+
+	.search-magnifier--flyout {
+		margin-left: -1px;
+	}
+	.flyout-menu__search input[type='text'] {
+		padding-left: 32px !important;
 	}
 }
 
