@@ -35,6 +35,10 @@
 /* 1. GENERAL */
 /**********************************************************/
 
+html {
+	background: transparent url(../images/bg_wa.png) repeat-x 0 bottom;
+}
+
 #wrapper-top-menu,
 #wrapper-header,
 #wrapper-main-menu,
@@ -1313,6 +1317,18 @@ div.details { padding: 20px !important; }
 
 	div.details {
 		padding: 2% !important;
+	}
+
+	#relations table.list td.buttons,
+	#relations table.list td.done_ratio {
+		border: 0;
+	}
+	#relations table.list td.subject {
+		border-bottom: 0;
+	}
+	#relations table.list td.start_date,
+	#relations table.list td.due_date {
+		min-height: 31px;
 	}
 
 	div.wiki ul.toc {
