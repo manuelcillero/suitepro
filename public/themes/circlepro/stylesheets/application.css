@@ -246,6 +246,7 @@ div.wiki .external {
 .icon-mail:before { content: '\e801'; }
 .icon-blog:before { content: '\e802'; }
 .icon-github:before { content: '\f09b'; }
+.icon-gitlab:before { content: '\f296'; }
 .icon-twitter:before { content: '\f309'; }
 .icon-facebook:before { content: '\f30c'; }
 .icon-linkedin:before { content: '\f318'; }
@@ -378,7 +379,8 @@ ul.social-menu .social-link-facebook:hover a {
 ul.social-menu .social-link-linkedin:hover a {
 	background-color: #419cca;
 }
-ul.social-menu .social-link-github:hover a {
+ul.social-menu .social-link-github:hover a,
+ul.social-menu .social-link-gitlab:hover a {
 	background-color: #bd2c00;
 }
 ul.social-menu .social-link-mail:hover a {
