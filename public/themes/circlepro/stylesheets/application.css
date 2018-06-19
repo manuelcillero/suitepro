@@ -1315,6 +1315,7 @@ div.details { padding: 20px !important; }
 	}
 	#footer ul.social-menu {
 		margin-right: 3.333333%;
+		padding-left: 0;
 	}
 
 	div.details {
@@ -1361,6 +1362,11 @@ div.details { padding: 20px !important; }
 	}
 	.flyout-menu__search input[type='text'] {
 		padding-left: 32px !important;
+	}
+}
+@media screen and (max-width: 399px) {
+	#footer ul.social-menu {
+		display: none;
 	}
 }
 
