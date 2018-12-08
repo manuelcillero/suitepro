@@ -1256,3 +1256,41 @@ es:
   permission_view_news: View news
   label_no_preview_alternative_html: No preview available. %{link} the file instead.
   label_no_preview_download: Download
+
+
+  welcome_suitepro: Potencia y sencillez para planificar, compartir conocimiento, prestar soporte a clientes y acelerar la productividad.
+  welcome_discover: Descubre
+  welcome_suitepro_is_redmine: "%{suitepro} es %{redmine}, la conocida herramienta para la gestión de proyectos y el seguimiento de peticiones basada en Ruby on Rails. Redmine apremia la finalización de las tareas y mantiene la información en un único sitio."
+
+  welcome_spotlight_1_title: "Lo Básico: Proyectos,<br /> Tareas, Peticiones"
+  welcome_spotlight_1_text: Podrás hacer un seguimiento completo de todo, monitorizar tareas y subtareas para estar al día de los hitos de proyecto, controlar los tiempos, los flujos de trabajo o cualquier elemento que requiera atención.
+  welcome_spotlight_2_title: "Documentos, Wikis,<br /> Gestión de Archivos"
+  welcome_spotlight_2_text: Organizados para disponer de los documentos y los archivos allá donde se esté. Y el wiki de proyecto para estructurar los requerimientos, las guías de instalación y de usuario, o las actas de trabajo.
+  welcome_spotlight_3_title: "Control de accesos<br /> flexible"
+  welcome_spotlight_3_text: Usando permisos agrupados en roles para establecer cómo pueden operar los usuarios en los proyectos. Cada miembro de un proyecto podrá tener uno o más roles asignados por los administradores.
+
+  welcome_other_features: Otras Características
+  welcome_feature_1_title: Diagrama de Gantt y Calendario
+  welcome_feature_1_text: El diagrama de Gantt muestra las tareas que tienen fecha de inicio y vencimiento. Y el calendario da una visión general de los proyectos en una vista mensual.
+  welcome_feature_2_title: Noticias y Foros
+  welcome_feature_2_text: Las noticias muestran información sobre novedades en los proyectos u otros temas de interés. Y los foros permiten que los usuarios de un proyecto se comuniquen entre sí.
+  welcome_feature_3_title: Notificaciones y Sindicación
+  welcome_feature_3_text: SuitePro se puede configurar para recibir notificaciones por correo electrónico. Y también proporciona sindicaciones para utilizar con agregadores externos.
+  welcome_feature_4_title: Repositorios de Código
+  welcome_feature_4_text: Sistemas de Control de Versiones como Git o Subversion pueden usarse como repositorios de código y seguir desde SuitePro los cambios realizados en el código.
+  welcome_feature_5_title: Responsive Design
+  welcome_feature_5_text: SuitePro está optimizado para visualizarse en dispositivos móviles. Las páginas se adaptan automáticamente al tamaño de la pantalla, ya sea un teléfono móvil, una tableta o un ordenador.
+  welcome_feature_6_title: Es Software de Código Abierto
+  welcome_feature_6_text: Esto supone no estar limitado por ningún proveedor, y seguir en permanente evolución con desarrolladores que se involucran continuamente.
+
+  welcome_any_questions: ¿Alguna Pregunta?
+  welcome_please_contact: No dudar en contactar conmigo para obtener más información.
+  welcome_contact: Contactar
+  welcome_about_me: Más Sobre Mí
+
+  link_my_blog: Mi blog personal
+
+  label_legal: Aviso legal
+  label_legal_privacy: Política de privacidad
+  label_legal_cookies: Uso de cookies
+  label_legal_conditions: Términos de uso

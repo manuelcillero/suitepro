@@ -11,13 +11,16 @@
 <%= favicon %>
 <%= stylesheet_link_tag 'jquery/jquery-ui-1.11.0', 'application', 'responsive', :media => 'all' %>
 <%= stylesheet_link_tag 'rtl', :media => 'all' if l(:direction) == 'rtl' %>
+<% is_welcome = !User.current.logged? && current_page?(:controller => 'welcome', :action => 'index') %>
+<%= stylesheet_link_tag 'frontpage', :media => 'all' if is_welcome %>
+
 <%= javascript_heads %>
 <%= heads_for_theme %>
 <%= call_hook :view_layouts_base_html_head %>
 <!-- page specific tags -->
 <%= yield :header_tags -%>
 </head>
-<body class="<%= body_css_classes %>">
+<body class="<%= body_css_classes %><%= ' is-preload' if is_welcome %>">
 <%= call_hook :view_layouts_base_body_top %>
 <div id="wrapper">
 
@@ -62,7 +65,7 @@
 <div id="top-menu">
     <div id="wrapper-top-menu">
     <ul class="social-menu">
-        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="Blog" target="_blank" class="icon-blog"><span>Blog</span></a></li>
+        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="<%= l(:link_my_blog) %>" target="_blank" class="icon-blog"><span><%= l(:link_my_blog) %></span></a></li>
         <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
         <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
         <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
@@ -127,13 +130,15 @@
 </div>
 </div>
 
+<a href="#" id="scrollup"><%=l(:label_sort_higher)%></a><%= javascript_tag "$('#scrollup').click(function(){$('html,body').animate({scrollTop:0},600);return false;});" %>
+
 <div id="ajax-indicator" style="display:none;"><span><%= l(:label_loading) %></span></div>
 <div id="ajax-modal" style="display:none;"></div>
 
 <div id="footer">
     <div id="wrapper-footer">
     <ul class="social-menu">
-        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="Blog" target="_blank" class="icon-blog"><span>Blog</span></a></li>
+        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="<%= l(:link_my_blog) %>" target="_blank" class="icon-blog"><span><%= l(:link_my_blog) %></span></a></li>
         <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
         <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
         <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
@@ -141,6 +146,12 @@
         <li class="social-link-mail"><a href="https://manuel.cillero.es/contact" title="Mail" target="_blank" class="icon-mail"><span>Mail</span></a></li>
     </ul>
     <div class="bgl"><div class="bgr">
+        <div id="legal">
+        <span class="legal-notice"><a href="/projects/suitepro/wiki/Legal"><%= l(:label_legal) %></a></span>
+        <span class="legal-privacy"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_privacidad"><%= l(:label_legal_privacy) %></a></span>
+        <span class="legal-cookies"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_cookies"><%= l(:label_legal_cookies) %></a></span>
+        <span class="legal-terms"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Términos_de_uso"><%= l(:label_legal_conditions) %></a></span>
+        </div>
         <%= Time.current.year %> &copy; SuitePro (powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)
     </div></div>
     </div>

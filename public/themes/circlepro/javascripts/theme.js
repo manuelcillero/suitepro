@@ -66,6 +66,16 @@ if (window.jQuery) {
 		$("a").filter(function() {
 			return this.hostname && this.hostname !== location.hostname;
 		}).addClass("external").attr("target", "_blank");
+
+	});
+
+	// Scroll to top:
+	$(window).scroll(function(){
+		if ($(this).scrollTop() > 100) {
+			$('#scrollup').fadeIn();
+		} else {
+			$('#scrollup').fadeOut();
+		}
 	});
 } else {
 	document.observe("dom:loaded", function() {
