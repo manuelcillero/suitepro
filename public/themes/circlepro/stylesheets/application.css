@@ -27,6 +27,7 @@
  *	21. OBJECTS
  *	22. RESPONSIVE
  *	23. SELECT2
+ *  24. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
@@ -706,6 +707,7 @@ body.action-login #content {
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
+	min-height: 525px;
 	padding: 6em 2.35em;
 }
 #login-form {
@@ -1576,4 +1578,47 @@ div.details { padding: 20px !important; }
 .theme-Circlepro .select2-dropdown {
 	border: 1px solid #2996cc;
 	border-radius: 3px;
+}
+
+/**********************************************************/
+/* 24. PRINTING */
+/**********************************************************/
+
+@media print {
+	@page {
+		size: A4;
+		margin: 1cm;
+	}
+	html, body {
+		margin: 0;
+		padding: 0;
+		background: #fff;
+		-webkit-print-color-adjust: exact;
+	}
+	table tr td,
+	table tr th {
+		page-break-inside: avoid;
+	}
+	#wrapper3,
+	#main,
+	#header {
+		background: #fff;
+	}
+	#header {
+		display: block;
+	}
+	#header h1 {
+		color: #3d454c;
+		padding-left: 0;
+	}
+	#wrapper-header {
+		background: url(../images/logo_print.png) no-repeat 0 0;
+	}	
+	#quick-search {
+		display: none;
+	}
+	div#content {
+		width: 100%;
+		padding: 0;
+	}
 }
