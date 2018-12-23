@@ -218,6 +218,18 @@ div.wiki .external {
 	background-position: right 60%;
 }
 
+/* Cookies notice */
+.cc-window .cc-btn {
+	font-weight: normal;
+}
+.cc-window .cc-message {
+	font-size: .92em;
+}
+.cc-window .cc-link {
+	padding: 0;
+	text-decoration: underline;
+}
+
 /**********************************************************/
 /* 2. FONT ICONS */
 /**********************************************************/
