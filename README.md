@@ -57,5 +57,5 @@ suitepro/
    |             |
    |             +-- /es.yml
    |
-   +-- README.rdoc  (este mismo archivo, para documentación añadida)
+   +-- README.md  (este mismo archivo, para documentación añadida)
 ```
