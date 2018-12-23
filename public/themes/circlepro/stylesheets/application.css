@@ -227,6 +227,7 @@ div.wiki .external {
 }
 .cc-window .cc-message {
 	font-size: .92em;
+	text-align: justify;
 }
 .cc-window .cc-link {
 	padding: 0;
