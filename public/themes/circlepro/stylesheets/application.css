@@ -219,6 +219,9 @@ div.wiki .external {
 }
 
 /* Cookies notice */
+.cc-floating.cc-theme-classic {
+	border-radius: 0;
+}
 .cc-window .cc-btn {
 	font-weight: normal;
 }
