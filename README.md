@@ -32,6 +32,8 @@ mi sitio web personal en https://manuel.cillero.es.
   * ckeditor 1.1.5
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
+  * Con la librería highlight.js 9.13.1 (https://highlightjs.org) actualizada y
+    descargada sólo para los lenguajes requeridos (ver `config/ckeditor.yml`)
 
 ### Redmine Q&A plugin
 

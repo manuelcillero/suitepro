@@ -6,6 +6,34 @@ removePlugins: 'codemirror,div,flash,forms,iframe,copyformatting,elementspath'
 forcePasteAsPlainText: false
 entities: false
 
+# CodeSnipet plugin configuration:
+codeSnippet_languages: {
+  apache: 'Apache',
+  awk: 'Awk',
+  bash: 'Bash',
+  bat: '.bat / DOS',
+  cpp: 'C++',
+  css: 'CSS',
+  diff: 'Diff',
+  dockerfile: 'Dockerfile',
+  html: 'HTML',
+  ini: '.ini / TOML',
+  java: 'Java',
+  javascript: 'JavaScript',
+  json: 'JSON',
+  makefile: 'Makefile',
+  markdown: 'Markdown',
+  nginx: 'Nginx',
+  php: 'PHP',
+  perl: 'Perl',
+  ruby: 'Ruby',
+  rust: 'Rust',
+  sql: 'SQL',
+  xhtml: 'XHTML',
+  xml: 'XML',
+  yaml: 'YAML'
+}
+
 # Youtube plugin defaults:
 youtube_responsive: true
 
