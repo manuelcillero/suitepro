@@ -14,21 +14,22 @@
  *	 8. FOOTER
  +   9. NEWS
  *	10. WIKI
- *	11. FLASH MESSAGES
- *	12. LOGIN FORM
- *	13. TAGS
- *	14. CONTEXT-MENU
- *	15. TIP
- *	16. jQuery UI
- *	17. BUTTONS
- *	18. FORMS COMMON
- *	19. FORMS SPECIFIC
- *	10. TABS
- *	21. TABLES
- *	22. OBJECTS
- *	23. RESPONSIVE
- *	24. SELECT2
- *	25. PRINTING
+ *  11. DOCUMENTS
+ *	12. FLASH MESSAGES
+ *	13. LOGIN FORM
+ *	14. TAGS
+ *	15. CONTEXT-MENU
+ *	16. TIP
+ *	17. jQuery UI
+ *	18. BUTTONS
+ *	19. FORMS COMMON
+ *	20. FORMS SPECIFIC
+ *	21. TABS
+ *	22. TABLES
+ *	23. OBJECTS
+ *	24. RESPONSIVE
+ *	25. SELECT2
+ *	26. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
@@ -696,7 +697,28 @@ div.wiki ul.toc li {
 }
 
 /**********************************************************/
-/* 11. FLASH MESSAGES */
+/* 11. DOCUMENTS */
+/**********************************************************/
+
+body.controller-documents.action-index #content > h4 {
+	background-color: #f2f2f2;
+	padding: 6px 20px 8px 8px;
+	margin: 36px 15% 0 0;
+	border: 0;
+	border-radius: 0 15px 15px 0;
+}
+body.controller-documents.action-index #content > h4 + p {
+	margin-top: 2px;
+	padding-left: 8px;
+	color: #999;
+}
+body.controller-documents.action-index #content > h4 + p em {
+	font-style: normal;
+	font-size: 86%;
+}
+
+/**********************************************************/
+/* 12. FLASH MESSAGES */
 /**********************************************************/
 
 #errorExplanation, div.flash, .nodata, .warning, .conflict {
@@ -725,7 +747,7 @@ div.flash.warning, .conflict {
 }
 
 /**********************************************************/
-/* 12. LOGIN FORM */
+/* 13. LOGIN FORM */
 /**********************************************************/
 
 body.action-login #wrapper-main {
@@ -857,7 +879,7 @@ body.action-login #content {
 }
 
 /**********************************************************/
-/* 13. TAGS */
+/* 14. TAGS */
 /**********************************************************/
 
 span.tag-label-color {
@@ -893,7 +915,7 @@ div#content .contacts-tags-edit ul.tagit {
 }
 
 /**********************************************************/
-/* 14. CONTEXT-MENU */
+/* 15. CONTEXT-MENU */
 /**********************************************************/
 
 div#content > div.contextual:first-child,
@@ -943,7 +965,7 @@ div#content #context-menu a.disabled, div#content #context-menu a.disabled:hover
 }
 
 /**********************************************************/
-/* 15. TIP */
+/* 16. TIP */
 /**********************************************************/
 
 div.tooltip:hover span.tip {
@@ -960,7 +982,7 @@ div.tooltip:hover span.tip a {
 }
 
 /**********************************************************/
-/* 16. jQuery UI */
+/* 17. jQuery UI */
 /**********************************************************/
 
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
@@ -1120,7 +1142,7 @@ div.modal {
 }
 
 /**********************************************************/
-/* 17. BUTTONS */
+/* 18. BUTTONS */
 /**********************************************************/
 
 #ajax-modal p.buttons input,
@@ -1201,7 +1223,7 @@ input[type="submit"].small {
 }
 
 /**********************************************************/
-/* 18. FORMS COMMON */
+/* 19. FORMS COMMON */
 /**********************************************************/
 
 .tabular.settings p {
@@ -1326,7 +1348,7 @@ img.ui-datepicker-trigger {
 }
 
 /**********************************************************/
-/* 19. FORMS SPECIFIC */
+/* 20. FORMS SPECIFIC */
 /**********************************************************/
 
 #user_login, #user_firstname, #user_lastname, #user_mail {
@@ -1343,7 +1365,7 @@ input#content_comments {
 }
 
 /**********************************************************/
-/* 20. TABS */
+/* 21. TABS */
 /**********************************************************/
 
 #content .tabs ul {
@@ -1390,7 +1412,7 @@ input#content_comments {
 }
 
 /**********************************************************/
-/* 21. TABLES */
+/* 22. TABLES */
 /**********************************************************/
 
 table.list thead th, table.list tbody td, table.list tbody tr:hover td { border: solid 1px #d7d7d7; }
@@ -1432,7 +1454,7 @@ tr.priority-lowest a { color: #559; }
 tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #d2eafa; }
 
 /**********************************************************/
-/* 22. OBJECTS */
+/* 23. OBJECTS */
 /**********************************************************/
 
 div.issue,
@@ -1450,7 +1472,7 @@ table.progress td { padding: 0px; }
 div.details { padding: 20px !important; }
 
 /**********************************************************/
-/* 23. RESPONSIVE */
+/* 24. RESPONSIVE */
 /**********************************************************/
 
 @media screen and (max-width: 1239px) {
@@ -1577,7 +1599,7 @@ div.details { padding: 20px !important; }
 }
 
 /**********************************************************/
-/* 24. SELECT2 */
+/* 25. SELECT2 */
 /**********************************************************/
 
 .theme-Circlepro .select2-container--default .select2-selection--single {
@@ -1620,7 +1642,7 @@ div.details { padding: 20px !important; }
 }
 
 /**********************************************************/
-/* 25. PRINTING */
+/* 26. PRINTING */
 /**********************************************************/
 
 @media print {
