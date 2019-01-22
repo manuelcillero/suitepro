@@ -95,7 +95,14 @@ body.wiki, .wiki p, .wiki li {
 	font-size: 16px;
 	vertical-align: top;
 }
-.wiki table td p, .wiki table th p {
+.wiki table th {
+	color: #fff;
+	background-color: #556372;
+}
+.wiki table ul, .wiki table ol {
+	margin: 0;
+}
+.wiki table p, .wiki table li {
 	font-size: 16px;
 	line-height: 1.42857em;
 	margin: 0;
