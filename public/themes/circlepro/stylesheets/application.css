@@ -695,6 +695,10 @@ div.wiki ul.toc li {
 	min-width: auto;
 	padding-top: 1em;
 }
+#preview span.cke_widget_drag_handler_container {
+	display: none;
+}
+
 
 /**********************************************************/
 /* 11. DOCUMENTS */
