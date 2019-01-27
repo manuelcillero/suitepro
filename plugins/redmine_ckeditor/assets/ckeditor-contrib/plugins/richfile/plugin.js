@@ -6,8 +6,21 @@
 	{
 	    init: function(editor) {
 
+			function addQueryString( url, params ) {
+				var queryString = [];
+		
+				if ( !params )
+					return url;
+				else {
+					for ( var i in params )
+						queryString.push( i + '=' + encodeURIComponent( params[ i ] ) );
+				}
+
+				return url + ( ( url.indexOf( '?' ) != -1 ) ? '&' : '?' ) + queryString.join( '&' );
+			}
+
 			// register a callback that actually inserts a selected image
-	    editor._.insertImagefn = CKEDITOR.tools.addFunction(function(url, id, name){
+	    	editor._.insertImagefn = CKEDITOR.tools.addFunction(function(url, id, name){
 				this.insertHtml('<img src="' + url + '" alt="" data-rich-file-id="' + id + '" />');
 			}, editor);
 
