@@ -34,6 +34,17 @@ mi sitio web personal en https://manuel.cillero.es.
   * http://github.com/a-ono/redmine_ckeditor
   * Con la librería highlight.js 9.13.1 (https://highlightjs.org) actualizada y
     descargada sólo para los lenguajes requeridos (ver `config/ckeditor.yml`)
+  * Con una versión ampliada del componente `ckeditor-contrib\plugins\redmine` para gestionar mejor las macros y los enlaces a páginas del wiki
+  * Y actualizado con la vesión 4.11.2 de CKEditor (https://ckeditor.com/ckeditor-4/) y las versiones recomendadas de los componentes añadidos, incluyendo los siguientes cambios:
+```
+redmine_ckeditor/
+   |
+   +-- assets/ckeditor/styles.js  (commit #856ca32d)
+         |
+         +-- /ckeditor-contrib/plugins/youtube/lang/es.js  (commit #02f57502)
+                                          |
+                                          +-- /plugins.js  (commit     "    )
+```
 
 ### Redmine Q&A plugin
 
