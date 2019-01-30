@@ -15,9 +15,8 @@ personalizarlo.
 
 ## A propósito del tema
 
-Se trata de una adaptación, admitida por la licencia de **RedmineUp** en su tema
-**Circle** (https://www.redmineup.com/pages/es/themes/circle), a los estilos de
-mi sitio web personal en https://manuel.cillero.es.
+Se trata de una adaptación, permitida por la licencia de **RedmineUp**, del tema
+**Circle** (https://www.redmineup.com/pages/es/themes/circle), para ajustarse al diseño de mi sitio web personal en https://manuel.cillero.es.
 
 ## *Plugins* activos
 
@@ -32,18 +31,50 @@ mi sitio web personal en https://manuel.cillero.es.
   * ckeditor 1.1.5
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
-  * Con la librería highlight.js 9.13.1 (https://highlightjs.org) actualizada y
-    descargada sólo para los lenguajes requeridos (ver `config/ckeditor.yml`)
-  * Con una versión ampliada del componente `ckeditor-contrib\plugins\redmine` para gestionar mejor las macros y los enlaces a páginas del wiki
-  * Y actualizado con la vesión 4.11.2 de CKEditor (https://ckeditor.com/ckeditor-4/) y las versiones recomendadas de los componentes añadidos, incluyendo los siguientes cambios:
+  * Actualizado con la librería highlight.js 9.13.1 (https://highlightjs.org) sólo para los lenguajes requeridos (ver `config/ckeditor.yml`)
+  * Y actualizado con la vesión 4.11.2 de CKEditor (https://ckeditor.com/ckeditor-4/) y sus componentes añadidos. Incluye una versión ampliada de `ckeditor-contrib\plugins\redmine` para gestionar mejor las macros y los enlaces a páginas del wiki. Otros archivos modificados son:
 ```
-redmine_ckeditor/
+redmine_ckeditor
    |
-   +-- assets/ckeditor/styles.js  (commit #856ca32d)
-         |
-         +-- /ckeditor-contrib/plugins/youtube/lang/es.js  (commit #02f57502)
-                                          |
-                                          +-- /plugins.js  (commit     "    )
+   +-- /assets/ckeditor/styles.js  (commit #856ca32d)
+          |
+          +-- /ckeditor-contrib/plugins/redmine/*
+          |
+          +-- /ckeditor-contrib/plugins/youtube/lang/es.js  (commit #02f57502)
+                                           |
+                                           +-- /plugins.js  (commit     "    )
+```
+
+### Redmine Glossary Plugin
+
+  * glossary 0.9.2
+  * https://www.r-labs.org/projects/rp-glossary/wiki/UsageEn
+  * https://github.com/torutk/redmine_glossary
+  * Adaptado con modificaciones en los siguientes archivos:
+```
+redmine_glossary
+   |
+   +-- /app/controllers/glossary_controller.rb
+   |   |
+   |   +-- /helpers/glossary_helper.rb
+   |   |       |
+   |   |       +-- /glossary_styles_helper.rb
+   |   |
+   |   +-- /views/glossary/_index_in_category.html.erb
+   |         |        |
+   |         |        +-- /_show_all_in_category.html.erb
+   |         |        |
+   |         |        +-- /_show_one.html.erb
+   |         |        |
+   |         |        +-- /_sidebar.html.erb
+   |         |        |
+   |         |        +-- /index.html.erb
+   |         |
+   |         +-- /glossary_styles/_form.html.erb
+   |                         |
+   |                         +-- /_search.html.erb
+   |
+   +-- /config/locales/es.yml
 ```
 
 ### Redmine Q&A plugin
@@ -52,23 +83,21 @@ redmine_ckeditor/
   * https://www.redmine.org/plugins/redmine_questions
   * http://www.redminecrm.com/projects/questions
 
-## Archivos del *core* modificados
+## Otros archivos del *core* modificados
 ```
-suitepro/
+suitepro
    |
-   +-- app/
-   |    |
-   |    +-- controllers/wiki_controller.rb
-   |    |
-   |    +-- helpers/search_helper.rb
-   |    |
-   |    +-- views/account/login.html.erb
+   +-- /app/controllers/wiki_controller.rb
+   |   |
+   |   +-- /helpers/search_helper.rb
+   |   |
+   |   +-- /views/account/login.html.erb
    |         |
    |         +-- /layouts/base.html.erb
    |
-   +-- config/locales/en.yml
-   |             |
-   |             +-- /es.yml
+   +-- /config/locales/en.yml
+   |              |
+   |              +-- /es.yml
    |
-   +-- README.md  (este mismo archivo, para documentación añadida)
+   +-- /README.md  (este mismo archivo, para documentación añadida)
 ```
