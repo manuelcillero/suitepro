@@ -20,7 +20,7 @@ module WikiPatches
                             content << "<li>"
                             content << link_to(h(page.pretty_title), {:controller => 'wiki', :action => 'show', :project_id => page.project, :id => page.title, :version => nil},
                                                :title => (options[:timestamp] && page.updated_on ? l(:label_updated_time, distance_of_time_in_words(Time.now, page.updated_on)) : nil))
-                            content << "&nbsp;&nbsp;&nbsp;&nbsp;<span class='private_wiki_flag' style='display:inline-block;''>" + l(:private_flag) + " </span>"
+                            content << '&nbsp;&nbsp;&nbsp;&nbsp;<span class="private_wiki_flag" style="display:inline-block;" title="' + l(:private_title) + '">' + l(:private_flag) + '</span>'
                             content << "\n" + render_page_hierarchy(pages, page.id, options) if pages[page.id]
                             content << "</li>\n"
                         end
