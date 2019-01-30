@@ -28,5 +28,10 @@ CKEDITOR.plugins.setLang( 'redmine', 'en', {
 	include_page: 'Page',
 	include: 'Include a wiki page.',
 	include_project: 'project',
-	include_from_project: 'Include a page of a specific project wiki.'
+	include_from_project: 'Include a page of a specific project wiki.',
+	glossary_name: 'name',
+	glossary_project: 'project',
+	glossary_term_by_id: 'Term of glossary by id',
+	glossary_term_by_name: 'Term of glossary by name',
+	glossary_term_by_name_in_project: 'Term by name of project\'s glossary'
 });

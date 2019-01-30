@@ -210,6 +210,21 @@
 						id: 5,
 						title: '{{include(' + lang.include_project + ':' + lang.include_page + ')}}',
 						description: lang.include_from_project
+					},
+					{
+						id: 6,
+						title: '{{termno(#)}}',
+						description: lang.glossary_term_by_id
+					},
+					{
+						id: 7,
+						title: '{{term(' + lang.glossary_name + ')}}',
+						description: lang.glossary_term_by_name
+					},
+					{
+						id: 8,
+						title: '{{term(' + lang.glossary_name + ',' + lang.glossary_project + ')}}',
+						description: lang.glossary_term_by_name_in_proyect
 					}
 				];
 
