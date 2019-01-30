@@ -9,7 +9,7 @@ es:
   label:
     id: No.
     name: Término
-    name_en: Inglés
+    name_en: En inglés
     category: Categoría
     datatype: "Tipo de dato en código"
     codename: "Abreviatura en código"

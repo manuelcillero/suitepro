@@ -1502,10 +1502,10 @@ table.term_items tr th {
 #glossary_style_project_scope {
 	margin-left: 1em;
 }
-.edit_glossary_style #grouping {
+form[class$="glossary_style"] #grouping {
 	margin-top: 4px;
 }
-.edit_glossary_style #grouping label {
+form[class$="glossary_style"] #grouping label {
 	display: block;
 	text-transform: capitalize;
 }
