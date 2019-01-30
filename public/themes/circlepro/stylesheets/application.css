@@ -27,9 +27,10 @@
  *	21. TABS
  *	22. TABLES
  *	23. OBJECTS
- *	24. RESPONSIVE
- *	25. SELECT2
- *	26. PRINTING
+ *  24. GLOSSARY
+ *	25. RESPONSIVE
+ *	26. SELECT2
+ *	27. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
@@ -1475,8 +1476,58 @@ table.progress td { padding: 0px; }
 
 div.details { padding: 20px !important; }
 
+
 /**********************************************************/
-/* 24. RESPONSIVE */
+/* 24. GLOSSARY */
+/**********************************************************/
+
+#glossary_search_params {
+	margin: .5em 0 1.5em;
+}
+#glossary_search_params th {
+	text-align: left;
+	padding-right: 1em;
+}
+
+table.term_items {
+	border-spacing: 0;
+	margin-bottom: 1em;
+}
+table.term_items tr th {
+	text-align: left;
+	padding-right: 1em;
+	padding-left: 0;
+}
+
+#glossary_style_project_scope {
+	margin-left: 1em;
+}
+.edit_glossary_style #grouping {
+	margin-top: 4px;
+}
+.edit_glossary_style #grouping label {
+	display: block;
+	text-transform: capitalize;
+}
+#show_desc {
+	line-height: 3em;
+}
+#glossary_import_csv,
+#glossary_term_categories {
+	line-height: 2em;
+	font-size: 92%;
+}
+#glossary_index td {
+	padding: 0 1px;
+	text-align: center;
+	line-height: 1.2em;
+}
+#glossary_index td:hover {
+	background-color: #efefef;
+}
+
+/**********************************************************/
+/* 25. RESPONSIVE */
 /**********************************************************/
 
 @media screen and (max-width: 1239px) {
@@ -1603,7 +1654,7 @@ div.details { padding: 20px !important; }
 }
 
 /**********************************************************/
-/* 25. SELECT2 */
+/* 26. SELECT2 */
 /**********************************************************/
 
 .theme-Circlepro .select2-container--default .select2-selection--single {
@@ -1646,7 +1697,7 @@ div.details { padding: 20px !important; }
 }
 
 /**********************************************************/
-/* 26. PRINTING */
+/* 27. PRINTING */
 /**********************************************************/
 
 @media print {
