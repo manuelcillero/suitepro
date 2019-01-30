@@ -22,7 +22,7 @@ module GlossaryStylesHelper
 
   def search_index_table(ary, sepcnt, proj, search_index_type = nil)
     return ""	if (!ary.is_a?(Array) or sepcnt <= 0)
-    str = '<table><tr>'
+    str = '<table id="glossary_index"><tr>'
     cnt = 0
     for ch in ary
       str += '</tr><tr>'	if ((cnt != 0) and (cnt % sepcnt) == 0 )

@@ -6,9 +6,9 @@
 <div id="glossary_search" class="hide-when-print">
 <fieldset id="filters" class="collapsible <%= (glossary_searching?) ? "" : "collapsed" %>">
     	<legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
-    	<div style="<%= (glossary_searching?) ? "" : "display: none;" %>">
+    	<div style="<%= (glossary_searching?) ? '' : 'display: none;' %>">
 
-<table>
+<table id="glossary_search_params">
 
 <tr><th><%=h l(:label_search) %></th>
 <td>

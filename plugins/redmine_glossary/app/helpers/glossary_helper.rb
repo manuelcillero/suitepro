@@ -34,9 +34,8 @@ module GlossaryHelper
 
   def collect_visible_params(prmary)
     ary = []
-    prmary {|prm|
-      ary << prm	if param_visible?(prm)
-    }
+    prmary.collect{|prm| ary << prm if param_visible?(prm)}
+    ary
   end
   
   def default_show_params; Term.default_show_params; end
@@ -45,7 +44,8 @@ module GlossaryHelper
 
 
   def params_select(form, name, prms)
-    options = prms.collect{|prm| [label_param(prm), prm]}
+    vprms = collect_visible_params(prms)
+    options = vprms.collect{|prm| [label_param(prm), prm]}
     form.select(name, options, :include_blank=>true)
   end
 

@@ -6,9 +6,6 @@
   form = form_for @glossary_style, :url => urlopts do |f| %>
 
   
-<label> <%= f.check_box "show_desc" %> <%= l(:label_glossary_style_show_desc) %> </label>
-<br />
-
 <%=h l(:label_project) %>
 <%=
     options = []
@@ -36,6 +33,11 @@
   <%= cnt+1 %> : <%= params_select(f, "sort_item_#{cnt}", default_sort_params) %><br />
 <% end %>
 </fieldset>
+
+
+<label id="show_desc"> <%= f.check_box "show_desc" %> <%= l(:label_glossary_style_show_desc) %> </label>
+
+<br />
 
 <%= submit_tag l(:label_view) %>
 <%= submit_tag l(:button_clear), :name => 'clear' %>

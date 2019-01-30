@@ -355,9 +355,10 @@ class GlossaryController < ApplicationController
     if (terms and params[:latest_days] and !params[:latest_days].empty?)
       limitsec = Time.now.to_i - params[:latest_days].to_i * 60 * 60 * 24
       limittm = Time.at(limitsec)
-      terms.delete_if {|prm|
-        (prm.datetime < limittm)
-      }
+#     terms.delete_if {|prm| (prm.datetime < limittm)}
+      recent_terms = []
+      terms.collect{|prm| recent_terms << prm if prm.datetime >= limittm}
+      recent_terms
     else
       terms
     end

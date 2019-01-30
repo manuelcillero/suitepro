@@ -15,16 +15,16 @@
   <%= link_to_if_authorized(l(:label_move_all_terms), {:controller => 'glossary', :action => 'move_all', :project_id => @project}, :class => 'icon icon-move') %>
   <br />
 <%   end %>
-  <%= link_to(l(:label_glossary_import_csv), {:controller => 'glossary', :action => 'import_csv', :project_id => @project}) %>
+  <%= link_to(l(:label_glossary_import_csv), {:controller => 'glossary', :action => 'import_csv', :project_id => @project}, :id => 'glossary_import_csv') %>
   <br />
 <% end %>
 
 
 <% if User.current.allowed_to?(:manage_term_categories, @project, :global => true) %>
   <h3><%= l(:label_term_category) %></h3>
-  <%= link_to l(:label_term_category_new), {:controller => 'glossary', :action => 'add_term_category', :project_id => @project}, :class => 'icon icon-add' %>
+  <%= link_to(l(:label_term_category_new), {:controller => 'glossary', :action => 'add_term_category', :project_id => @project}, :class => 'icon icon-add') %>
   <br />
-  <%= link_to l(:label_manage_term_category), { :controller => 'term_categories', :action => 'index', :project_id => @project } %>
+  <%= link_to(l(:label_manage_term_category), { :controller => 'term_categories', :action => 'index', :project_id => @project }, :id => 'glossary_term_categories') %>
   <br />
 <% end %>
 

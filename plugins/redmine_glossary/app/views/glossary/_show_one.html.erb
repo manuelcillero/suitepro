@@ -1,12 +1,16 @@
 
 <% term = show_one %>
+<% if !@show_params.empty? %>
 <table class="term_items">
 <% for prm in @show_params %>
 <tr><th><%=h label_param(prm) %>:</th><td><%= term.value(prm) %></td></tr>
 <% end %>
 </table>
+<% end %>
 <% unless (term.description.empty?) %>
+<% if !@show_params.empty? %>
 <strong><%=l(:field_description)%></strong>:
+<% end %>
 <div class="wiki">
 <%= textilizable term, :description, :attachments => term.attachments %>
 </div>
