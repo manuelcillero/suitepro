@@ -32,7 +32,7 @@ Se trata de una adaptación, permitida por la licencia de **RedmineUp**, del tem
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
   * Actualizado con la librería highlight.js 9.13.1 (https://highlightjs.org) sólo para los lenguajes requeridos (ver `config/ckeditor.yml`)
-  * Y actualizado con la vesión 4.11.2 de CKEditor (https://ckeditor.com/ckeditor-4/) y sus componentes añadidos. Incluye una versión ampliada de `ckeditor-contrib\plugins\redmine` para gestionar mejor las macros y los enlaces a páginas del wiki. Otros archivos modificados son:
+  * Y actualizado con la vesión 4.11.2 de CKEditor (https://ckeditor.com/ckeditor-4/) incluyendo los componentes añadidos y una versión ampliada de `ckeditor-contrib\plugins\redmine` para gestionar mejor macros, enlaces a páginas y otros marcadores. Otros archivos modificados son:
 ```
 redmine_ckeditor
    |
@@ -75,6 +75,30 @@ redmine_glossary
    |                         +-- /_search.html.erb
    |
    +-- /config/locales/es.yml
+```
+
+### Redmine Private Wiki Plugin
+
+  * private_wiki 0.2.0
+  * http://www.redmine.org/plugins/redmine_private_wiki
+  * https://github.com/BlueXML/redmine_private_wiki
+  * Con los siguientes archivos modificados para corregir un problema de visualización (ver https://github.com/BlueXML/redmine_private_wiki/issues/2):
+```
+redmine_private_wiki
+   |
+   +-- /app/views/private_wiki_management_views/_body_bottom.html.erb
+   |         |
+   |         +-- /wiki/date_index.html.erb
+   |
+   +-- /assets/stylesheets/private_wiki.css
+   |
+   +-- /config/locales/en.yml
+   |              |
+   |              +-- /es.yml
+   |              |
+   |              +-- /fr.yml
+   |
+   +-- /lib/wiki_patches/application_helper_patch.rb
 ```
 
 ### Redmine Q&A plugin
