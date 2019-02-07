@@ -107,6 +107,22 @@ redmine_private_wiki
   * https://www.redmine.org/plugins/redmine_questions
   * http://www.redminecrm.com/projects/questions
 
+### Redmine Wiki Lists Plugin
+
+  * wiki_lists 0.0.9
+  * http://www.r-labs.org/projects/wiki_lists/wiki/Wiki_Lists_en
+  * https://github.com/tkusukawa/redmine_wiki_lists
+  * Con los siguientes archivos añadidos para simplificar la cabecera de las listas de peticiones y mostrar un enlace al diagrama de Gantt si es una consulta personalizada:
+```
+redmine_wiki_lists
+   |
+   +-- /app/views/issues/_list.html.erb
+   |
+   +-- /config/locales/en.yml
+                  |
+                  +-- /es.yml
+```
+
 ## Otros archivos del *core* modificados
 ```
 suitepro
