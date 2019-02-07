@@ -691,6 +691,12 @@ div.wiki ul.toc li {
 	line-height: 1em;
 	margin-top: .3em;
 }
+div.wiki .query-totals,
+div.wiki .query-issue-links {
+	font-size: 16px;
+	text-align: right;
+	margin: -1em 0 1.25em;
+}
 #preview fieldset {
 	width: auto;
 	min-width: auto;

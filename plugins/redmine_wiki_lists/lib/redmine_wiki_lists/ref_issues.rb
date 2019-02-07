@@ -206,7 +206,7 @@ TEXT
             else
               disp = context_menu.to_s # >= redmine 3.4.0
             end
-            disp << render(partial: 'issues/list', locals: {issues: @issues, query: @query})
+            disp << render(partial: 'issues/embedded_list', locals: {issues: @issues, query: @query})
           end
         end
 

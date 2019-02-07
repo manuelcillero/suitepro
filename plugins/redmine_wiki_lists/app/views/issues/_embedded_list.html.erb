@@ -47,8 +47,14 @@
   <% end -%>
   </tbody>
 </table>
-<% if query.id %>
-<%= l(:label_view) %> <%= link_to(l(:label_gantt_chart), project_gantt_path({:query_id => query.id})) %> (<%= link_to(query.name, project_issues_path({:query_id => query.id})) %>).
-<% end %>
 </div>
+
+<% if query.options.any? %>
+<%= render_query_totals(@query) %>
+<% end -%>
+
+<% if query.id %>
+<p class="query-issue-links"><%= l(:label_view) %> <%= link_to(l(:label_gantt_chart), project_gantt_path({:query_id => query.id})) %> (<%= link_to(query.name, project_issues_path({:query_id => query.id})) %>)</p>
+<% end %>
+
 <% end -%>
