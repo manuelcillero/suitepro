@@ -213,16 +213,31 @@
 					},
 					{
 						id: 6,
+						title: '{{ref_issues([-0,]-i=id)}}',
+						description: lang.issues_list_by_id
+					},
+					{
+						id: 7,
+						title: '{{ref_issues([-0,]-q=name)}}',
+						description: lang.issues_list_by_name
+					},
+					{
+						id: 8,
+						title: '{{ref_issues([-0,][-c,]-f:<attr> <op> <[val[|val...]]>)}}',
+						description: lang.issues_list_by_attributes
+					},
+					{
+						id: 9,
 						title: '{{termno(#)}}',
 						description: lang.glossary_term_by_id
 					},
 					{
-						id: 7,
+						id: 10,
 						title: '{{term(' + lang.glossary_name + ')}}',
 						description: lang.glossary_term_by_name
 					},
 					{
-						id: 8,
+						id: 11,
 						title: '{{term(' + lang.glossary_name + ',' + lang.glossary_project + ')}}',
 						description: lang.glossary_term_by_name_in_proyect
 					}
