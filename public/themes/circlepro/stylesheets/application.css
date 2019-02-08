@@ -591,6 +591,7 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar div.wiki p,
 #sidebar div.wiki li {
 	font-size: 16px;
+	text-align: left;
 }
 #sidebar div.wiki ul,
 #sidebar div.wiki ol {
