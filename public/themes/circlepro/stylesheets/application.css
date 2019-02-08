@@ -588,6 +588,15 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar div#admin-menu {
 	margin-top: 10px;
 }
+#sidebar div.wiki p,
+#sidebar div.wiki li {
+	font-size: 16px;
+}
+#sidebar div.wiki ul,
+#sidebar div.wiki ol {
+	margin-top: 0;
+	padding-left: 20px;
+}
 #sidebar p {
 	margin-top: 5px;
 }
