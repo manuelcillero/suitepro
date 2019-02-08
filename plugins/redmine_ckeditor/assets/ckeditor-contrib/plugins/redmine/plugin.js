@@ -203,41 +203,46 @@
 					},
 					{
 						id: 4,
+						title: '{{child_pages(' + lang.include_page + '[,depth=2])}}',
+						description: lang.child_from_given_page
+					},
+					{
+						id: 5,
 						title: '{{include(' + lang.include_page + ')}}',
 						description: lang.include
 					},
 					{
-						id: 5,
+						id: 6,
 						title: '{{include(' + lang.include_project + ':' + lang.include_page + ')}}',
 						description: lang.include_from_project
 					},
 					{
-						id: 6,
+						id: 7,
 						title: '{{ref_issues([-0,]-i=id)}}',
 						description: lang.issues_list_by_id
 					},
 					{
-						id: 7,
+						id: 8,
 						title: '{{ref_issues([-0,]-q=name)}}',
 						description: lang.issues_list_by_name
 					},
 					{
-						id: 8,
+						id: 9,
 						title: '{{ref_issues([-0,][-c,]-f:<attr> <op> <[val[|val...]]>)}}',
 						description: lang.issues_list_by_attributes
 					},
 					{
-						id: 9,
+						id: 10,
 						title: '{{termno(#)}}',
 						description: lang.glossary_term_by_id
 					},
 					{
-						id: 10,
+						id: 11,
 						title: '{{term(' + lang.glossary_name + ')}}',
 						description: lang.glossary_term_by_name
 					},
 					{
-						id: 11,
+						id: 12,
 						title: '{{term(' + lang.glossary_name + ',' + lang.glossary_project + ')}}',
 						description: lang.glossary_term_by_name_in_proyect
 					}

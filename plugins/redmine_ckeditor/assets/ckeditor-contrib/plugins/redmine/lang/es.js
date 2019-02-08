@@ -24,7 +24,8 @@ CKEDITOR.plugins.setLang( 'redmine', 'es', {
 	// Autocomplete Macros.
 	toc: 'Tabla de contenidos.',
 	child_pages: 'Lista de páginas hijas.',
-	child_pages_depth: 'Lista de páginas hijas con 2 niveles.',
+	child_pages_depth: 'Páginas hijas con 2 niveles.',
+	child_from_given_page: 'Páginas hijas de una página dada.',
 	include_page: 'Página',
 	include: 'Incluye una página del wiki.',
 	include_project: 'proyecto',

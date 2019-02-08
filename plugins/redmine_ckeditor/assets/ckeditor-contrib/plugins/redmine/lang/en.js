@@ -25,6 +25,7 @@ CKEDITOR.plugins.setLang( 'redmine', 'en', {
 	toc: 'Table of contents.',
 	child_pages: 'List of child pages.',
 	child_pages_depth: 'List of child pages with 2 levels.',
+	child_from_given_page: 'List child pages from given page.',
 	include_page: 'Page',
 	include: 'Include a wiki page.',
 	include_project: 'project',
