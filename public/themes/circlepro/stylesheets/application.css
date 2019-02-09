@@ -1627,40 +1627,48 @@ form[class$="glossary_style"] #grouping label {
 	body .flyout-menu div.wiki {
 		padding-left: 0;
 	}
-	body .flyout-menu div.wiki ul,
-	body .flyout-menu div.wiki ol {
-		list-style-type: none;
-	}
 	body .flyout-menu div.wiki p,
 	body .flyout-menu div.wiki li {
 		font-size: 14px;
-		padding-left: 8px;
-	}
-	body .flyout-menu div.wiki p {
+		padding: 0 8px;
 		margin: 8px 0;
-		padding-right: 8px;
 	}
-	body .flyout-menu .private_wiki_flag {
-		display: none !important;
-	}
-	body .flyout-menu p + ul.pages-hierarchy {
-		margin-top: -6px;
-	}
-	body .flyout-menu ul.pages-hierarchy,
-	body .flyout-menu div.wiki ul.pages-hierarchy li,
-	body .flyout-menu ul.pages-hierarchy + p {
+	body .flyout-menu div.wiki li {
 		margin: 0;
 	}
-	body .flyout-menu ul.pages-hierarchy ul,
-	body .flyout-menu div.wiki ul.pages-hierarchy li {
+	body .flyout-menu div.wiki li ol,
+	body .flyout-menu div.wiki ul li li {
+		padding-left: 20px;
+	}
+	body .flyout-menu div.wiki li ol li {
+		padding-left: 0 !important;
+	}
+	body .flyout-menu div.wiki ul li a {
+		border-top: 0;
 		padding-left: 0;
+	}
+	body .flyout-menu div.wiki ul li li a {
+		line-height: 28px;
+		height: 28px;
+	}
+	body .flyout-menu div.wiki > ul > li {
 		border-top: 1px solid rgb(255, 255, 255, .1);
 	}
-	body .flyout-menu div.wiki ul.pages-hierarchy li:first-child {
+	body .flyout-menu div.wiki > ul > li:first-child {
 		border-top: 0;
 	}
-	body .flyout-menu div.wiki ul.pages-hierarchy ul li {
-		padding-left: 20px;
+	body .flyout-menu div.wiki ul.pages-hierarchy ul {
+		padding-left: 0;
+	}
+	body .flyout-menu div.wiki p + ul.pages-hierarchy {
+		margin-top: -8px;
+	}
+	body .flyout-menu div.wiki ul.pages-hierarchy + p {
+		margin: 0;
+	}
+
+	body .flyout-menu .private_wiki_flag {
+		display: none !important;
 	}
 	
 	div#content {
