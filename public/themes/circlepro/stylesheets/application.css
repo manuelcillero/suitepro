@@ -4,33 +4,33 @@
 /*
  * CirclePro Theme:
  *
- *	 1. GENERAL
- *	 2. FONT ICONS
- *	 3. HEADER
- *	 4. TOP-MENU
- *	 5. SOCIAL-MENU
- *	 6. MAIN-MENU
- *	 7. SIDEBAR
- *	 8. FOOTER
- +   9. NEWS
- *	10. WIKI
+ *   1. GENERAL
+ *   2. FONT ICONS
+ *   3. HEADER
+ *   4. TOP-MENU
+ *   5. SOCIAL-MENU
+ *   6. MAIN-MENU
+ *   7. SIDEBAR
+ *   8. FOOTER
+ *   9. NEWS
+ *  10. WIKI
  *  11. DOCUMENTS
- *	12. FLASH MESSAGES
- *	13. LOGIN FORM
- *	14. TAGS
- *	15. CONTEXT-MENU
- *	16. TIP
- *	17. jQuery UI
- *	18. BUTTONS
- *	19. FORMS COMMON
- *	20. FORMS SPECIFIC
- *	21. TABS
- *	22. TABLES
- *	23. OBJECTS
+ *  12. FLASH MESSAGES
+ *  13. LOGIN FORM
+ *  14. TAGS
+ *  15. CONTEXT-MENU
+ *  16. TIP
+ *  17. jQuery UI
+ *  18. BUTTONS
+ *  19. FORMS COMMON
+ *  20. FORMS SPECIFIC
+ *  21. TABS
+ *  22. TABLES
+ *  23. OBJECTS
  *  24. GLOSSARY
- *	25. RESPONSIVE
- *	26. SELECT2
- *	27. PRINTING
+ *  25. RESPONSIVE
+ *  26. SELECT2
+ *  27. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
@@ -588,6 +588,9 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar div#admin-menu {
 	margin-top: 10px;
 }
+#sidebar div.wiki {
+	margin-top: 0;
+}
 #sidebar div.wiki p,
 #sidebar div.wiki li {
 	font-size: 16px;
@@ -597,6 +600,15 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar div.wiki ol {
 	margin-top: 0;
 	padding-left: 20px;
+}
+#sidebar div.wiki ul.pages-hierarchy {
+	padding-left: 0;
+}
+#sidebar div.wiki ul.pages-hierarchy ul {
+	padding-left: 20px;
+}
+#sidebar .private_wiki_flag {
+    display: none !important;
 }
 #sidebar p {
 	margin-top: 5px;
@@ -700,6 +712,13 @@ div.wiki ul.toc a {
 div.wiki ul.toc li {
 	line-height: 1em;
 	margin-top: .3em;
+}
+div.wiki ul.pages-hierarchy {
+	list-style-type: none;
+	padding-left: 0;
+}
+div.wiki ul.pages-hierarchy ul {
+	padding-left: 40px;
 }
 div.wiki .query-totals,
 div.wiki .query-issue-links {
@@ -1605,6 +1624,45 @@ form[class$="glossary_style"] #grouping label {
 		display: none;
 	}
 
+	body .flyout-menu div.wiki {
+		padding-left: 0;
+	}
+	body .flyout-menu div.wiki ul,
+	body .flyout-menu div.wiki ol {
+		list-style-type: none;
+	}
+	body .flyout-menu div.wiki p,
+	body .flyout-menu div.wiki li {
+		font-size: 14px;
+		padding-left: 8px;
+	}
+	body .flyout-menu div.wiki p {
+		margin: 8px 0;
+		padding-right: 8px;
+	}
+	body .flyout-menu .private_wiki_flag {
+		display: none !important;
+	}
+	body .flyout-menu p + ul.pages-hierarchy {
+		margin-top: -6px;
+	}
+	body .flyout-menu ul.pages-hierarchy,
+	body .flyout-menu div.wiki ul.pages-hierarchy li,
+	body .flyout-menu ul.pages-hierarchy + p {
+		margin: 0;
+	}
+	body .flyout-menu ul.pages-hierarchy ul,
+	body .flyout-menu div.wiki ul.pages-hierarchy li {
+		padding-left: 0;
+		border-top: 1px solid rgb(255, 255, 255, .1);
+	}
+	body .flyout-menu div.wiki ul.pages-hierarchy li:first-child {
+		border-top: 0;
+	}
+	body .flyout-menu div.wiki ul.pages-hierarchy ul li {
+		padding-left: 20px;
+	}
+	
 	div#content {
 		padding-left: 3.333333%;
 		padding-right: 3.333333%;

@@ -116,7 +116,7 @@ redmine_private_wiki
 ```
 redmine_wiki_lists
    |
-   +-- /app/views/issues/_list.html.erb
+   +-- /app/views/issues/_embedded_list.html.erb
    |
    +-- /config/locales/en.yml
                   |

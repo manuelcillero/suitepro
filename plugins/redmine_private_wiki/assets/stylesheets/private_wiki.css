@@ -6,6 +6,9 @@
     border-radius: 2px;
     cursor: default;
 }
+.private_wiki_flag {
+    margin-left: .44em;
+}
 
 .icon-setprivate{
     background-image: url(../images/hide.png);
