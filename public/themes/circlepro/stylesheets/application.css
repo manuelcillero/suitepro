@@ -1635,6 +1635,7 @@ form[class$="glossary_style"] #grouping label {
 	}
 	body .flyout-menu div.wiki li {
 		margin: 0;
+		padding-right: 0;
 	}
 	body .flyout-menu div.wiki li ol,
 	body .flyout-menu div.wiki ul li li {
@@ -1645,7 +1646,9 @@ form[class$="glossary_style"] #grouping label {
 	}
 	body .flyout-menu div.wiki ul li a {
 		border-top: 0;
-		padding-left: 0;
+		padding: 0 8px;
+		margin-left: -8px;
+		outline: 0;
 	}
 	body .flyout-menu div.wiki ul li li a {
 		line-height: 28px;
