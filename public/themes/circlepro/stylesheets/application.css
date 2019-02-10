@@ -602,6 +602,7 @@ ul.social-menu .social-link-mail:hover a {
 	padding-left: 20px;
 }
 #sidebar div.wiki ul.pages-hierarchy {
+	list-style-type: none;
 	padding-left: 0;
 }
 #sidebar div.wiki ul.pages-hierarchy ul {
@@ -712,13 +713,6 @@ div.wiki ul.toc a {
 div.wiki ul.toc li {
 	line-height: 1em;
 	margin-top: .3em;
-}
-div.wiki ul.pages-hierarchy {
-	list-style-type: none;
-	padding-left: 0;
-}
-div.wiki ul.pages-hierarchy ul {
-	padding-left: 40px;
 }
 div.wiki .query-totals,
 div.wiki .query-issue-links {
@@ -1492,6 +1486,8 @@ tr.even.priority-lowest, table.list tbody tr.even.priority-lowest:hover { color:
 tr.even.priority-lowest { background: #f2faff; }
 tr.priority-lowest a { color: #559; }
 tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #d2eafa; }
+
+table td ul, table th ul { padding-left: 20px; }
 
 /**********************************************************/
 /* 23. OBJECTS */
