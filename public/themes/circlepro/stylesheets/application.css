@@ -971,7 +971,7 @@ div#content > div.contextual:first-child select,
 div.flash + div.contextual select {
 	margin: 3px 0;
 	height: 27px;
-	line-height: 27px;
+	line-height: 1em;
 }
 div#content > div.contextual:first-child .icon,
 div.flash + div.contextual .icon {
@@ -986,6 +986,7 @@ div#content #context-menu ul {
 }
 div#content #context-menu li a {
 	color: #333;
+	line-height: 1.12em;
 }
 div#content #context-menu li:hover {
 	background: #f2f4f5;
