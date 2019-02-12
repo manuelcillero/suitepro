@@ -734,17 +734,30 @@ div.wiki .query-issue-links {
 /* 11. DOCUMENTS */
 /**********************************************************/
 
+body.controller-documents.action-index #content > h3 {
+	color: #eee;
+	background-color: #556372;
+	padding: 4px 8px 6px;
+	margin: 28px 0 0;
+	font-size: 28px;
+}
 body.controller-documents.action-index #content > h4 {
-	background: #f2f2f2 url(../../../images/document.png) no-repeat 6px 9px;
-	padding: 6px 28px 8px;
-	margin: 36px 15% 0 0;
+	background: #182330 url(../images/document.png) no-repeat 10px 10px;
+	padding: 6px 8px 8px 34px;
+	margin: 28px 0 0;
 	border: 0;
-	border-radius: 0 15px 15px 0;
+	font-size: 24px;
+}
+body.controller-documents.action-index #content > h4 a {
+	color: #ffbf00;
+}
+body.controller-documents.action-index #content > h4 a:hover {	
+	text-decoration: underline;
 }
 body.controller-documents.action-index #content > h4 + p {
-	margin-top: 2px;
+	margin-top: 0;
 	padding-left: 8px;
-	color: #999;
+	color: #777;
 }
 body.controller-documents.action-index #content > h4 + p em {
 	font-style: normal;
