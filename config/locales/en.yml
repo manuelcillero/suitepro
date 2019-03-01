@@ -1242,6 +1242,7 @@ en:
 
   link_my_blog: My Blog
 
-  label_legal: Legal notice and terms of use
+  label_legal: Legal notice
+  label_legal_terms: Terms of use
   label_legal_privacy: Privacy policy
   label_legal_cookies: Cookies policy

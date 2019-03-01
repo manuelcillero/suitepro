@@ -1290,6 +1290,7 @@ es:
 
   link_my_blog: Mi blog personal
 
-  label_legal: Aviso legal y términos de uso
+  label_legal: Aviso legal
+  label_legal_terms: Condiciones de uso
   label_legal_privacy: Política de privacidad
   label_legal_cookies: Uso de cookies
