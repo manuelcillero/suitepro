@@ -237,7 +237,6 @@ div.wiki .external {
 	text-decoration: underline;
 }
 
-
 /**********************************************************/
 /* 2. FONT ICONS */
 /**********************************************************/
@@ -675,7 +674,6 @@ ul.social-menu .social-link-mail:hover a {
 	text-decoration: underline;
 }
 
-
 /**********************************************************/
 /* 9. NEWS */
 /**********************************************************/
@@ -695,7 +693,6 @@ body.controller-news #content > p > em {
 .news > p > a:first-child {
 	font-weight: normal;
 }
-
 
 /**********************************************************/
 /* 10. WIKI */
@@ -728,7 +725,6 @@ div.wiki .query-issue-links {
 #preview span.cke_widget_drag_handler_container {
 	display: none;
 }
-
 
 /**********************************************************/
 /* 11. DOCUMENTS */
@@ -1130,16 +1126,14 @@ div.modal {
 	left: 10px;
 }
 .ui-datepicker th {
-	/*font-size: 13px;*/
 	color: #aaa;
 	font-weight: 500;
 }
 .ui-datepicker .ui-state-default {
-  /*font-size: 13px;*/
-  font-weight: 500;
-  color: #333;
-  border: 1px solid #fff;
-  background: #fff;
+	font-weight: 500;
+	color: #333;
+	border: 1px solid #fff;
+	background: #fff;
 }
 .ui-datepicker .ui-state-default:hover {
 	background: #f6f6f6;
@@ -1520,7 +1514,6 @@ table.cal div.issue { line-height: 1.2em; }
 table.progress td { padding: 0px; }
 
 div.details { padding: 20px !important; }
-
 
 /**********************************************************/
 /* 24. GLOSSARY */
