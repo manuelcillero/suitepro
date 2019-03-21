@@ -1826,6 +1826,7 @@ form[class$="glossary_style"] #grouping label {
 		padding: 0;
 	}
 
+	div.wiki ul.toc,
 	.private_wiki_flag {
 		display: none !important;
 	}
