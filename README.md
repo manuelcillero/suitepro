@@ -103,7 +103,7 @@ redmine_private_wiki
 
 ### Redmine Q&A plugin
 
-  * questions 0.0.7
+  * questions 1.0.0
   * https://www.redmine.org/plugins/redmine_questions
   * http://www.redminecrm.com/projects/questions
 

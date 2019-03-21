@@ -1,16 +1,16 @@
 <%
-  scope = Message.scoped({})
-  scope = scope.where("#{Message.table_name}.parent_id IS NULL")
-  scope = scope.where(["#{Board.table_name}.project_id = ?", @project.id]) if @project
-  scope = scope.where(["#{Message.table_name}.board_id = ?", @board.id]) if @board
-  scope = scope.where(:sticky => true)
-  @sticky_topics = scope.visible.includes(:board).order("#{Message.table_name}.cached_votes_up DESC").limit(10)
+  # scope = Message.scoped({})
+  # scope = scope.where("#{Message.table_name}.parent_id IS NULL")
+  # scope = scope.where(["#{Board.table_name}.project_id = ?", @project.id]) if @project
+  # scope = scope.where(["#{Message.table_name}.board_id = ?", @board.id]) if @board
+  # scope = scope.where(:featured => true)
+  # @featured_topics = scope.visible.includes(:board).order("#{Message.table_name}.cached_votes_up DESC").limit(10)
 %>
 <h3><%= l(:label_questions_most_voted) %></h3>
 <ul class="related-topics">
-  <% @sticky_topics.each do |topic| %>
+  <% @featured_questions.each do |question| %>
   <li class="related-topic">
-    <%= link_to h(topic.subject), { :controller => 'messages', :action => 'show', :board_id => topic.board, :id => topic } %>
+    <%= link_to h(question.subject), { :controller => 'questions', :action => 'show', :project_id => question.project, :id => question } %>
   </li>
-  <% end unless @sticky_topics.blank? %>
+  <% end unless @featured_topics.blank? %>
 </ul>

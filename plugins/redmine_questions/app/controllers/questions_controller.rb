@@ -1,76 +1,146 @@
+# This file is a part of Redmine Q&A (redmine_questions) plugin,
+# Q&A plugin for Redmine
+#
+# Copyright (C) 2011-2018 RedmineUP
+# http://www.redmineup.com/
+#
+# redmine_questions is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# redmine_questions is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with redmine_questions.  If not, see <http://www.gnu.org/licenses/>.
+
 class QuestionsController < ApplicationController
   unloadable
 
-  before_filter :find_optional_project, :only => [:autocomplete_for_topic, :topics]
-  before_filter :find_optional_board, :only => [:autocomplete_for_topic, :topics]
-  before_filter :find_topic, :authorize, :only => :vote
-  before_filter :find_topics, :only => [:topics, :autocomplete_for_topic]
+  before_action :find_question, :only => [:edit, :show, :update, :destroy]
+  before_action :find_optional_project, :only => [:index, :update_form, :new, :create, :autocomplete_for_subject]
+  before_action :find_section, :only => [:new, :create, :update, :edit]
+  before_action :find_questions, :only => [:autocomplete_for_subject, :index] #:autocomplete_for_subject
 
   helper :questions
-  if Redmine::VERSION.to_s > '2.1'
-    helper :boards
-  end
+  helper :watchers
+  helper :attachments
+
   include QuestionsHelper
 
   def index
-    @boards = Board.visible.includes(:last_message => :author).includes(:messages).order(:project_id)
-    # show the board if there is only one
-    if @boards.size == 1
-      @board = @boards.first
-      redirect_to project_board_url(@board, :project_id => @board.project)
+    @question_item = Question.new
+  end
+
+  def new
+    @question_item = Question.new
+    @question_item.section ||= @section
+  end
+
+  def show
+    @answers = @question_item.answers.by_accepted.by_votes.by_date
+    if @answers
+      @limit = Setting.issues_export_limit.to_i
+      @answer_count = @answers.count
+      @answer_pages = Paginator.new @answer_count, @limit, (params[:page] || 1)
+      @offset ||= @answer_pages.offset
+    end
+    @answer = QuestionsAnswer.new
+    @answer.question = @question_item
+    @question_item.view request.remote_addr, User.current
+  end
+
+  def update
+    @question_item.safe_attributes = params[:question]
+    @question_item.save_attachments(params[:attachments])
+    if @question_item.save
+      flash[:notice] = l(:label_question_successful_update)
+      respond_to do |format|
+        format.html {redirect_to :action => :show, :id => @question_item}
+      end
     else
-      render "boards/index"
+      respond_to do |format|
+        format.html { render :edit}
+      end
     end
   end
 
-  def topics
+  def update_form
+    @question_item = Question.new
+    @question_item.safe_attributes = params[:question]
   end
 
-  def vote
-    User.current.voted_for?(@topic) ? @topic.dislike(User.current.becomes(Principal)) : @topic.like(User.current.becomes(Principal))
+  def create
+    @question_item = Question.new
+    @question_item.section = @section
+    @question_item.safe_attributes = params[:question]
+    @question_item.author = User.current
+    @question_item.save_attachments(params[:attachments])
+
     respond_to do |format|
-      format.html { redirect_to_referer_or {render :text => (watching ? 'Vote added.' : 'Vote removed.'), :layout => true}}
+      if @question_item.save
+        format.html { redirect_to :action => :show, :id => @question_item}
+      else
+        format.html { render :action => 'new' }
+      end
     end
   end
 
-  def autocomplete_for_topic
+  def autocomplete_for_subject
     render :layout => false
   end
 
-  def convert_issue
-    issue = Issue.visible.find(params[:issue_id])
-    board = Board.visible.find(params[:board_id])
-    message = Message.new
-    message.author = issue.author
-    message.created_on = issue.created_on
-    message.board = board
-    message.subject = issue.subject
-    message.content = issue.description.blank? ? issue.subject : issue.description
-    message.watchers = issue.watchers
-    message.add_watcher(issue.author)
-    message.attachments = issue.attachments
-    issue.journals.select{|j| !j.notes.blank?}.each do |journal|
-      reply = Message.new
-      reply.author = journal.user
-      reply.created_on = journal.created_on
-      reply.subject = "Re: #{message.subject}"
-      reply.content = journal.notes
-      reply.board = board
-      message.children << reply
-    end
-    if message.save
-      issue.destroy if params[:destroy]
-      redirect_to board_message_path(board, message)
-    else
-      redirect_back_or_default({:controller => 'issues', :action => 'show', :id => issue})
-    end
+  # def convert_issue_to_question
+  #   issue = Issue.visible.find(params[:issue_id])
+  #   question = Question.from_issue(issue)
+  #   if question.save
+  #     issue.destroy if params[:destroy]
+  #     redirect_to _question_path(question)
+  #   else
+  #     redirect_back_or_default({:controller => 'issues', :action => 'show', :id => issue})
+  #   end
+  # end
 
+  # def convert_to_issue
+  #   issue = @question_item.to_issue
+  #   if issue.save
+  #     redirect_to issue_path(issue)
+  #   else
+  #     redirect_back_or_default question_path(@question_item)
+  #   end
+  # end
+
+  def destroy
+    back_id = @question_item.section
+    if @question_item.destroy
+      flash[:notice] = l(:notice_successful_delete)
+    else
+      flash[:error] = l(:notice_unsuccessful_save)
+    end
+    respond_to do |format|
+      format.html { redirect_back_or_default questions_path(:section_id => back_id) }
+      format.api  { render_api_ok }
+    end
   end
 
-private
+  def preview
+    if params[:id].present? && query = Question.find_by_id(params[:question_id])
+      @previewed = query
+    end
+    @text = (params[:question] ? params[:question][:content] : nil)
+    render :partial => 'common/preview'
+  end
+  private
 
-  def find_topics
+  def find_questions
     seach = params[:q] || params[:topic_search]
+    @section = QuestionsSection.find(params[:section_id]) if params[:section_id]
+
+    scope = Question.visible
+    scope = scope.where(:section_id => @section) if @section
 
     columns = ["subject", "content"]
     tokens = seach.to_s.scan(%r{((\s|^)"[\s\w]+"(\s|$)|\S+)}).collect{|m| m.first.gsub(%r{(^\s*"\s*|\s*"\s*$)}, '')}.uniq.select {|w| w.length > 1 }
@@ -79,39 +149,49 @@ private
     sql = (['(' + token_clauses.join(' OR ') + ')'] * tokens.size).join(' AND ')
     find_options = [sql, * (tokens.collect {|w| "%#{w.downcase}%"} * token_clauses.size).sort]
 
-    scope = Message.joins(:board).where({})
-    scope = scope.where("#{Message.table_name}.parent_id IS NULL")
-    scope = scope.where(["#{Board.table_name}.project_id = ?", @project.id]) if @project
-    scope = scope.where(["#{Message.table_name}.board_id = ?", @board.id]) if @board
+    scope = scope.in_project(@project)
     scope = scope.where(find_options) unless tokens.blank?
-    scope = scope.visible.includes(:board).order("#{Message.table_name}.updated_on DESC")
+    @sort_order = params[:sort_order]
+    case @sort_order
+    when 'popular'
+      scope = scope.by_views.by_update
+    when 'newest'
+      scope = scope.by_date
+    when 'active'
+      scope = scope.by_update
+    when 'unanswered'
+      scope = scope.questions.where(:answers_count => 0)
+    else
+      scope = scope.by_votes.by_views.by_update
+    end
 
-    @topic_count = scope.count
     @limit =  per_page_option
-    @topic_pages = Paginator.new(self, @topic_count, @limit, params[:page])
-    @offset = @topic_pages.current.offset
+    @offset = params[:page].to_i*@limit
     scope = scope.limit(@limit).offset(@offset)
     scope = scope.tagged_with(params[:tag]) unless params[:tag].blank?
-    @topics = scope
+
+    @topic_count = scope.count
+    @topic_pages = Paginator.new @topic_count, @limit, params[:page]
+
+    @question_items = scope
   end
 
-  def find_topic
-    @topic = Message.visible.find(params[:id]) unless params[:id].blank?
-    @board = @topic.board
-    @project = @board.project
+  def find_section
+    @section = QuestionsSection.find_by_id(params[:section_id] || (params[:question] && params[:question][:section_id]))
+    @section ||= @project.questions_sections.first
   rescue ActiveRecord::RecordNotFound
     render_404
   end
 
-  def find_optional_board
-    @board = Board.visible.find(params[:board_id]) unless params[:board_id].blank?
-    @project = @board.project if @board
-    allowed = User.current.allowed_to?({:controller => params[:controller], :action => params[:action]}, @project, :global => true)
-    allowed ? true : deny_access
+  def find_question
+    if Redmine::VERSION.to_s =~ /^2.6/
+      @question_item = Question.visible.find(params[:id], readonly: false)
+    else
+      @question_item = Question.visible.find(params[:id])
+    end
+    return deny_access unless @question_item.visible?
+    @project = @question_item.project
   rescue ActiveRecord::RecordNotFound
     render_404
   end
-
-
-
 end

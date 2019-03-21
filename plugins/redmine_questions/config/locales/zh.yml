@@ -2,11 +2,10 @@
 # Simplified Chinese strings go here for Rails i18n
 # Author: Salivaxiu@163.com
 # Based on file: en.yml
-
 zh:
   label_questions: '帮助与支持'
   label_questions_search: '搜索特定的问题或回答或帖子...'
-  label_questions_new: 新问题
+  label_questions_new: 新问答
   label_questions_message: 消息
   label_questions_added_time: "在 %{value} 之前增加"
   label_questions_related_messages: 相关的消息
@@ -16,7 +15,7 @@ zh:
   label_questions_answers: '回答 %{count} 次'
   label_questions_tags: 标签
   label_questions_tagged_by: '%{count} 个主题包含标签 %{tag}'
-  label_questions_notice_message: 通知消息
+  label_questions_sidebar_message: 侧边栏信息
   label_questions_notice: 通知
   label_questions_most_voted: 大多数投票
 

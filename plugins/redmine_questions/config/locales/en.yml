@@ -6,13 +6,13 @@ en:
   label_questions_new: New question
   label_questions_message: Message
   label_questions_added_time: "Added %{value} ago"
-  label_questions_related_messages: Related messages
+  label_questions_related_questions: Related questions
   label_questions_latest_messages: Latest messages
   label_questions_views: '%{count} views'
   label_questions_votes: '%{count} votes'
   label_questions_answers: '%{count} answers'
   label_questions_tags: Tags
-  label_questions_tagged_by: '%{count} topic(s) tagged by %{tag}'
+  label_questions_tagged_by: '%{count} item(s) tagged by %{tag}'
   label_questions_sidebar_message: Sidebar message
   label_questions_notice: Notice
   label_questions_most_voted: Most voted
@@ -24,9 +24,31 @@ en:
 
   field_questions_tags: Tags
 
-  permission_view_questions: View Help & Support
-  permission_edit_messages_tags: Edit tags
-  permission_edit_vote_messages: Vote messages
+  label_questions_add_comment: Add comment
+  label_question_comment_successful_added: Comment successful added
+  label_question_successful_update: Question successful updated
+  label_answer_successful_update: Answer successful updated
+  label_answer_successful_added: Answer successful added
+  lebel_questions_new_comment: New comment
+
+  button_questions_to_issue: Convert to issue
+  button_questions_issue_to_question: Convert to question
+  label_questions_actions: Actions
+  label_questions_accept: Accept
+
+  label_questions_section_type_questions: Questions
+  label_questions_section_type_solutions: Solutions
+  label_questions_section_type_ideas: Ideas
+
+  label_questions_section: Section
+  label_questions_sections_plural: Sections
+  label_questions_section_new: New section
+  label_questions_section_type: Section type
+  label_questions_topic: Topic
+  label_questions_featured: Featured
+  label_questions_locked: Locked
+
+  project_module_questions: Questions
 
   i18n:
     transliterate:
@@ -106,3 +128,45 @@ en:
         "Э": "E"
         "Ю": "YU"
         "Я": "YA"
+  label_questions_comment: Comment
+  label_questions_your_answer: Your answer
+  label_questions_answer_plural: Answers
+  label_questions_x_votes:
+        one:   "vote"
+        other: "votes"
+  label_questions_wasthishelpful: Was this helpful?
+
+  label_question_plural: Questions
+  label_questions_related_solutions: Related solutions
+  label_questions_section_edit: Edit section
+  label_soluition_plural: Solutions
+  label_questions_add_tag: '+ add tag'
+  label_questions_vote_added: Vote added
+  label_questions_vote_removed: Vote removed
+  label_questions_vote_own: Vote own questions
+  label_questions_show_popular: Show popular articles in section
+  label_questions_most_popular: Most popular
+  label_questions_status_plural: Idea statuses
+  label_questions_status_closed: Closed
+  label_questions_status_new: New status
+  label_questions_newest: Newest
+  label_questions_active: Active
+  label_questions_voted: Voted
+  label_questions_unanswered: Unanswered
+
+  permission_view_questions: View questions
+  permission_create_tags: Create new tags
+  permission_edit_vote_messages: Vote questions
+  permission_add_answers: Add answers
+  permission_delete_answers: Delete answers
+  permission_edit_question_comments: Edit comments
+  permission_edit_own_question_comments: Edit own comments
+  permission_comment_question: Add comments  
+  permission_add_questions: Add questions
+  permission_edit_questions: Edit questions
+  permission_edit_own_questions: Edit own questions
+  permission_delete_questions: Delete questions
+  permission_vote_questions: Vote questions
+  permission_accept_answers: Accept answers
+  permission_manage_sections: Manage sections
+  permission_create_tags: Create new tags

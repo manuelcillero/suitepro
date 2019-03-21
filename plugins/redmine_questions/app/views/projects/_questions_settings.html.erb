@@ -1,0 +1,38 @@
+<h3><%= l(:label_questions_sections_plural) %></h3>
+
+<table class="list questions_sections">
+  <thead>
+    <tr>
+    <th><%= l(:field_name) %></th>
+    <th><%=l(:field_type)%></th>
+    <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% QuestionsSection.for_project(@project).sorted.each do |section| %>
+      <tr class="<%= cycle 'odd', 'even' %>">
+        <td class="name">
+          <%= h(section.name) %>
+        </td>
+        <td>
+          <%= section.l_type %>
+        </td>
+        <td class="buttons">
+          <% if User.current.allowed_to?(:manage_sections, @project) %>
+            <%= reorder_handle(section, :url => project_questions_section_path(@project, section), :param => 'questions_section') if respond_to?(:reorder_handle) %>
+            <%= link_to l(:button_edit), {:controller => 'questions_sections', :action => 'edit', :project_id => @project, :id => section}, :class => 'icon icon-edit' %>
+            <%= delete_link :controller => 'questions_sections', :action => 'destroy', :project_id => @project, :id => section %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if User.current.allowed_to?(:manage_sections, @project) %>
+  <%= link_to image_tag('add.png', :style => 'vertical-align: middle;')+l(:label_questions_section_new), :controller => 'questions_sections', :action => 'new', :project_id => @project %>
+<% end %>
+
+<%= javascript_tag do %>
+  $(function() { $("table.questions_sections tbody").positionedItems(); });
+<% end if respond_to?(:reorder_handle) %>

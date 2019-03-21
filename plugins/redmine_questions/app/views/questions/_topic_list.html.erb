@@ -1,8 +1,8 @@
 <% if @topics && @topics.any? %>
   <% unless params[:tag].blank? %>
-  <div class="title-bar">
-    <h4><%= l(:label_questions_tagged_by, :count => @topics.size, :tag => params[:tag]) %></h4>
-  </div>
+    <div class="title-bar">
+      <h4><%= l(:label_questions_tagged_by, :count => @topics.size, :tag => params[:tag]) %></h4>
+    </div>
   <% end %>
   <div id="topics_container">
     <% @topics.each do |topic| %>
@@ -26,5 +26,5 @@
     <p class="pagination"><%= pagination_links_full @topic_pages, @topic_count %></p>
   <% end %>
 <% else %>
-<p class="nodata"><%= l(:label_no_data) %></p>
+  <p class="nodata"><%= l(:label_no_data) %></p>
 <% end %>

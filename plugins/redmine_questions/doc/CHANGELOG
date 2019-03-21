@@ -1,13 +1,19 @@
 == Redmine Q&A plugin changelog
 
 Redmine Q&A plugin
-Copyright (C) 2011-2016 Kirill Bezrukov
-http://www.redminecrm.com/
+Copyright (C) 2011-2018 RedmineUP
+https://www.redmineup.com/
 
-== 2016-01-18 v0.0.7
+== 2018-08-31 v1.0.0
 
+* Separate models for questions, answers and comments 
+* Voting for questions and answers 
+* Comments for questions and asnwers 
+* Section types: Question, Idea, Solution
+* Different main page styles 
+* Answered question status
+* Idea statutes
 * Chinese translation (zhoutt)
-* Redmine 3+ support
 
 == 2014-02-04 v0.0.6
 

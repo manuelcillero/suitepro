@@ -4,7 +4,7 @@ es:
   label_questions_new: Nueva pregunta
   label_questions_message: Mensaje
   label_questions_added_time: "Agregado hace %{value}"
-  label_questions_related_messages: Mensajes relacionados
+  label_questions_related_questions: Mensajes relacionados
   label_questions_latest_messages: Últimos mensajes
   label_questions_views: '%{count} vistas'
   label_questions_votes: '%{count} votos'
