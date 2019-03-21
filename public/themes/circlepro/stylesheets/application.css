@@ -1820,12 +1820,13 @@ form[class$="glossary_style"] #grouping label {
 		margin: 0;
 		background: #fff url(../images/logo.png) no-repeat 0 -100px;
 	}
-	
-	#quick-search {
-		display: none;
-	}
+
 	div#content {
 		width: 100%;
 		padding: 0;
+	}
+
+	.private_wiki_flag {
+		display: none !important;
 	}
 }
