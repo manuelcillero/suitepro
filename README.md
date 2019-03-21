@@ -106,6 +106,12 @@ redmine_private_wiki
   * questions 1.0.0
   * https://www.redmine.org/plugins/redmine_questions
   * http://www.redminecrm.com/projects/questions
+  * Con el siguiente archivo actualizado para incluir traducciones pendientes:
+```
+redmine_questions
+   |
+   +-- /config/locales/es.yml
+```
 
 ### Redmine Wiki Lists Plugin
 
