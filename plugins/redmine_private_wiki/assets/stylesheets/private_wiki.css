@@ -8,6 +8,8 @@
 }
 .private_wiki_flag {
     margin-left: .44em;
+    background: rgb(255, 50, 0, 0.5);
+    line-height: 1em;
 }
 
 .icon-setprivate{
