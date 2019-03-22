@@ -64,7 +64,7 @@ if (window.jQuery) {
 
 		// External links
 		$("a").filter(function() {
-			return this.hostname && this.hostname !== location.hostname;
+			return this.hostname && this.hostname !== location.hostname && this.hostname !== 'manuel.cillero.es';
 		}).addClass("external").attr("target", "_blank");
 
 	});
