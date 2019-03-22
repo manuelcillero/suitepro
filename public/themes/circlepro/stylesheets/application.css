@@ -232,8 +232,16 @@ div.wiki .external {
 	font-size: .92em;
 	text-align: justify;
 }
+.cc-window a {
+	color: #aaa;
+	font-weight: bold;
+}
+.cc-window a:hover {
+	color: #fff;
+}
 .cc-window .cc-link {
 	padding: 0;
+	font-weight: normal;
 	text-decoration: underline;
 }
 
