@@ -227,6 +227,7 @@ div.wiki .external {
 }
 .cc-window .cc-btn {
 	font-weight: normal;
+	text-decoration: none;
 }
 .cc-window .cc-message {
 	font-size: .92em;
@@ -243,6 +244,11 @@ div.wiki .external {
 	padding: 0;
 	font-weight: normal;
 	text-decoration: underline;
+}
+.cc-window a.cc-dismiss:hover {
+	color: #000;
+	opacity: 0.9;
+	transition: all 0.3s ease-in;
 }
 
 /**********************************************************/
