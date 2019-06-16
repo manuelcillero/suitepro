@@ -887,6 +887,11 @@ body.action-login #content {
 	box-shadow: rgb(255, 255, 255) 0px 0px 0px 2px inset;
 	border-radius: 3px;
 }
+div.login-additionals {
+	color: #fff;
+	text-align: justify;
+	width: 440px;
+}
 @media screen and (max-width: 899px) {
 	body.action-login #project-jump {
 		display: none;

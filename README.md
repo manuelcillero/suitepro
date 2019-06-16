@@ -20,6 +20,18 @@ Se trata de una adaptación, permitida por la licencia de **RedmineUp**, del tem
 
 ## *Plugins* activos
 
+### Redmine Additionals plugin
+
+  * additionals 2.0.20
+  * https://alphanodes.com/redmine-additionals
+  * https://github.com/alphanodes/additionals.git
+  * Con el siguiente archivo modificado para facilitar la versión de desarrollo:
+```
+additionals
+   |
+   +-- /Gemfile
+```
+
 ### Redmine Checklists plugin (Light version)
 
   * checklists 3.1.10
