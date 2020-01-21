@@ -40,8 +40,11 @@ h3, .wiki h3 { font-size: 22px; }
 h4, .wiki h4 { font-size: 20px; }
 h5, .wiki h5 { font-size: 19px; }
 h6, .wiki h6 { font-size: 18px; }
-h1, h2, h3 {
+h1, h2 {
 	color: #b40b51;
+}
+h3 {
+	color: #c73e77;
 }
 h4, .wiki h4 {
 	color: #585b5a;

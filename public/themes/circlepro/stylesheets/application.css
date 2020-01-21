@@ -59,7 +59,7 @@ body {
 
 #wrapper3,
 #main {
-	background: #ebeae9 url(../images/bg_main.png) repeat-x 0 bottom;
+	background: #e1e1e1 url(../images/bg_main.png) repeat-x center bottom -1px;
 }
 #wrapper3 {
 	padding-bottom: 30px;
