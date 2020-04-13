@@ -20,11 +20,11 @@ CKEDITOR.stylesSet.add( 'default', [
 
 	{ name: 'Normal',           element: 'p',    attributes: { 'class': '' } },
 
-	{ name: 'A !',              element: 'p',    attributes: { 'class': 'note-cyan' } },
-	{ name: 'B !',              element: 'p',    attributes: { 'class': 'note-green' } },
-	{ name: 'C !',              element: 'p',    attributes: { 'class': 'note-yellow' } },
-	{ name: 'D !',              element: 'p',    attributes: { 'class': 'note-orange' } },
-	{ name: 'E !',              element: 'p',    attributes: { 'class': 'note-red' } },
+	{ name: 'Recuadro A',       element: 'p',    attributes: { 'class': 'note-cyan' } },
+	{ name: 'Recuadro B',       element: 'p',    attributes: { 'class': 'note-green' } },
+	{ name: 'Recuadro C',       element: 'p',    attributes: { 'class': 'note-yellow' } },
+	{ name: 'Recuadro D',       element: 'p',    attributes: { 'class': 'note-orange' } },
+	{ name: 'Recuadro E',       element: 'p',    attributes: { 'class': 'note-red' } },
 
 	{ name: 'Contenedor tabla', element: 'div',  attributes: { 'class': 'autoscroll' } },
 
@@ -32,18 +32,18 @@ CKEDITOR.stylesSet.add( 'default', [
 	// so they are not needed here by default. You may enable them to avoid
 	// placing the "Format" combo in the toolbar, maintaining the same features.
 	/*
-	{ name: 'Paragraph',		element: 'p' },
-	{ name: 'Heading 1',		element: 'h1' },
-	{ name: 'Heading 2',		element: 'h2' },
-	{ name: 'Heading 3',		element: 'h3' },
-	{ name: 'Heading 4',		element: 'h4' },
-	{ name: 'Heading 5',		element: 'h5' },
-	{ name: 'Heading 6',		element: 'h6' },
+	{ name: 'Paragraph',        element: 'p' },
+	{ name: 'Heading 1',        element: 'h1' },
+	{ name: 'Heading 2',        element: 'h2' },
+	{ name: 'Heading 3',        element: 'h3' },
+	{ name: 'Heading 4',        element: 'h4' },
+	{ name: 'Heading 5',        element: 'h5' },
+	{ name: 'Heading 6',        element: 'h6' },
 	{ name: 'Preformatted Text',element: 'pre' },
-	{ name: 'Address',			element: 'address' },
+	{ name: 'Address',          element: 'address' },
 
-	{ name: 'Italic Title',		element: 'h2', styles: { 'font-style': 'italic' } },
-	{ name: 'Subtitle',			element: 'h3', styles: { 'color': '#aaa', 'font-style': 'italic' } },
+	{ name: 'Italic Title',     element: 'h2', styles: { 'font-style': 'italic' } },
+	{ name: 'Subtitle',         element: 'h3', styles: { 'color': '#aaa', 'font-style': 'italic' } },
 	{
 		name: 'Special Container',
 		element: 'div',
@@ -56,6 +56,12 @@ CKEDITOR.stylesSet.add( 'default', [
 
 	/* Inline styles */
 
+	{ name: 'Marcado A',        element: 'span', attributes: { 'class': 'note-cyan' } },
+	{ name: 'Marcado B',        element: 'span', attributes: { 'class': 'note-green' } },
+	{ name: 'Marcado C',        element: 'span', attributes: { 'class': 'note-yellow' } },
+	{ name: 'Marcado D',        element: 'span', attributes: { 'class': 'note-orange' } },
+	{ name: 'Marcado E',        element: 'span', attributes: { 'class': 'note-red' } },
+
 	{ name: '[code]',           element: 'code' },
 	{ name: '"sample"',         element: 'samp' },
 	{ name: 'Variable',         element: 'var' },
@@ -65,32 +71,32 @@ CKEDITOR.stylesSet.add( 'default', [
 	// some of them in the Styles drop-down list, removing them from the toolbar.
 	// (This requires the "stylescombo" plugin.)
 	/*
-	{ name: 'Strong',			element: 'strong', overrides: 'b' },
-	{ name: 'Emphasis',			element: 'em'	, overrides: 'i' },
-	{ name: 'Underline',		element: 'u' },
-	{ name: 'Strikethrough',	element: 'strike' },
-	{ name: 'Subscript',		element: 'sub' },
-	{ name: 'Superscript',		element: 'sup' },
+	{ name: 'Strong',           element: 'strong', overrides: 'b' },
+	{ name: 'Emphasis',         element: 'em',     overrides: 'i' },
+	{ name: 'Underline',        element: 'u' },
+	{ name: 'Strikethrough',    element: 'strike' },
+	{ name: 'Subscript',        element: 'sub' },
+	{ name: 'Superscript',      element: 'sup' },
 
-	{ name: 'Marker',			element: 'span', attributes: { 'class': 'marker' } },
+	{ name: 'Marker',           element: 'span', attributes: { 'class': 'marker' } },
 
-	{ name: 'Big',				element: 'big' },
-	{ name: 'Small',			element: 'small' },
-	{ name: 'Typewriter',		element: 'tt' },
+	{ name: 'Big',              element: 'big' },
+	{ name: 'Small',            element: 'small' },
+	{ name: 'Typewriter',       element: 'tt' },
 
-	{ name: 'Computer Code',	element: 'code' },
-	{ name: 'Keyboard Phrase',	element: 'kbd' },
-	{ name: 'Sample Text',		element: 'samp' },
-	{ name: 'Variable',			element: 'var' },
+	{ name: 'Computer Code',    element: 'code' },
+	{ name: 'Keyboard Phrase',  element: 'kbd' },
+	{ name: 'Sample Text',      element: 'samp' },
+	{ name: 'Variable',         element: 'var' },
 
-	{ name: 'Deleted Text',		element: 'del' },
-	{ name: 'Inserted Text',	element: 'ins' },
+	{ name: 'Deleted Text',     element: 'del' },
+	{ name: 'Inserted Text',    element: 'ins' },
 
-	{ name: 'Cited Work',		element: 'cite' },
-	{ name: 'Inline Quotation',	element: 'q' },
+	{ name: 'Cited Work',       element: 'cite' },
+	{ name: 'Inline Quotation', element: 'q' },
 
-	{ name: 'Language: RTL',	element: 'span', attributes: { 'dir': 'rtl' } },
-	{ name: 'Language: LTR',	element: 'span', attributes: { 'dir': 'ltr' } }, */
+	{ name: 'Language: RTL',    element: 'span', attributes: { 'dir': 'rtl' } },
+	{ name: 'Language: LTR',    element: 'span', attributes: { 'dir': 'ltr' } }, */
 
 	/* Object styles */
 	/*

@@ -175,6 +175,10 @@ div.youtube-embed-wrapper .responsive-view {
 .note-yellow {
 	background-color: BlanchedAlmond;
 }
+span[class^="note-"] {
+	margin: 0;
+	padding: 2px 4px;
+}
 
 /*
  * Editor styles.
