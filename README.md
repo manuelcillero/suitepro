@@ -143,7 +143,7 @@ redmine_wiki_lists
 
 ## Otros archivos del *core* modificados
 ```
-suitepro
+suitepro
    |
    +-- /app/controllers/wiki_controller.rb
    |   |
@@ -151,7 +151,11 @@ suitepro
    |   |
    |   +-- /views/account/login.html.erb
    |         |
+   |         +-- /issues/_changesets.html.erb
+   |         |
    |         +-- /layouts/base.html.erb
+   |         |
+   |         +-- /repositories/_changeset.html.erb
    |
    +-- /config/locales/en.yml
    |              |

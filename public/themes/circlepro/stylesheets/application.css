@@ -27,10 +27,11 @@
  *  21. TABS
  *  22. TABLES
  *  23. OBJECTS
- *  24. GLOSSARY
- *  25. RESPONSIVE
- *  26. SELECT2
- *  27. PRINTING
+ *  24. REPOSITORIES
+ *  25. GLOSSARY
+ *  26. RESPONSIVE
+ *  27. SELECT2
+ *  28. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
@@ -1364,9 +1365,9 @@ only screen and (min-device-pixel-ratio: 2) {
 }
 
 @-moz-document url-prefix() {
-  select {
-     padding: 4px 0px 4px 5px;
-  }
+	select {
+		padding: 0 18px 0 5px;
+	}
 }
 
 select::-ms-expand {
@@ -1535,7 +1536,32 @@ table.progress td { padding: 0px; }
 div.details { padding: 20px !important; }
 
 /**********************************************************/
-/* 24. GLOSSARY */
+/* 24. REPOSITORIES */
+/**********************************************************/
+
+div.changeset-comments,
+tr.changeset > td.comments {
+	font-family: monospace, Courier, Consolas, Menlo, "Liberation Mono";
+	unicode-bidi: embed;
+	white-space: pre;
+	font-size: 14px;
+	line-height: 1.2em;
+	overflow-y: auto;
+}
+tr.changeset > td.comments {
+	padding-top: .7em;
+}
+body.controller-repositories.action-revision div.changeset-comments {
+	padding: 0 20px 20px;
+	margin-top: -30px;
+}
+body.controller-issues.action-show div.changeset-comments {
+	font-size: 12px;
+	padding-bottom: 10px;
+}
+
+/**********************************************************/
+/* 25. GLOSSARY */
 /**********************************************************/
 
 #glossary_search_params {
@@ -1584,7 +1610,7 @@ form[class$="glossary_style"] #grouping label {
 }
 
 /**********************************************************/
-/* 25. RESPONSIVE */
+/* 26. RESPONSIVE */
 /**********************************************************/
 
 @media screen and (max-width: 1239px) {
@@ -1760,7 +1786,7 @@ form[class$="glossary_style"] #grouping label {
 }
 
 /**********************************************************/
-/* 26. SELECT2 */
+/* 27. SELECT2 */
 /**********************************************************/
 
 .theme-Circlepro .select2-container--default .select2-selection--single {
@@ -1803,7 +1829,7 @@ form[class$="glossary_style"] #grouping label {
 }
 
 /**********************************************************/
-/* 27. PRINTING */
+/* 28. PRINTING */
 /**********************************************************/
 
 @media print {
