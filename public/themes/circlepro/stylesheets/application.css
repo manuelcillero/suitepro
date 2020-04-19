@@ -1553,7 +1553,7 @@ tr.changeset > td.comments {
 }
 body.controller-repositories.action-revision div.changeset-comments {
 	padding: 0 20px 20px;
-	margin-top: -30px;
+	margin-top: -10px;
 }
 body.controller-issues.action-show div.changeset-comments {
 	font-size: 12px;
