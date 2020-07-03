@@ -156,6 +156,10 @@ suitepro
    |         +-- /layouts/base.html.erb
    |         |
    |         +-- /repositories/_changeset.html.erb
+   |         |
+   |         +-- /welcome/index.html.erb
+   |         |
+   |         +-- /wiki/show.html.erb
    |
    +-- /config/locales/en.yml
    |              |

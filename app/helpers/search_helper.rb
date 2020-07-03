@@ -18,11 +18,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module SearchHelper
+  include ActionView::Helpers::SanitizeHelper
+
   def highlight_tokens(text, tokens)
     return text unless text && tokens && !tokens.empty?
     re_tokens = tokens.collect {|t| Regexp.escape(t)}
     regexp = Regexp.new "(#{re_tokens.join('|')})", Regexp::IGNORECASE
     result = ''
+    text = strip_tags(text)
     text.split(regexp).each_with_index do |words, i|
       if result.length > 1200
         # maximum length of the preview reached
@@ -63,7 +66,7 @@ module SearchHelper
                        :all_words => params[:all_words], :scope => params[:scope], t => 1)
     end
     ('<ul>'.html_safe +
-        links.map {|link| content_tag('li', link)}.join(' ').html_safe + 
+        links.map {|link| content_tag('li', link)}.join(' ').html_safe +
         '</ul>'.html_safe) unless links.empty?
   end
 end

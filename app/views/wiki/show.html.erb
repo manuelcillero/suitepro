@@ -31,7 +31,7 @@
     <%= "#{l(:label_version)} #{@content.version}/#{@page.content.version}" %>
     <%= '('.html_safe + link_to(l(:label_diff), :controller => 'wiki', :action => 'diff',
                       :id => @page.title, :project_id => @page.project,
-                      :version => @content.version) + ')'.html_safe if @content.previous %> - 
+                      :version => @content.version) + ')'.html_safe if @content.previous %> -
     <%= link_to((l(:label_next) + " \xc2\xbb"), :action => 'show',
                 :id => @page.title, :project_id => @page.project,
                 :version => @content.next.version) + " - " if @content.next %>
@@ -46,12 +46,13 @@
 
 <%= render(:partial => "wiki/content", :locals => {:content => @content}) %>
 
-<fieldset class="collapsible collapsed hide-when-print">
+<% if @page.attachments.length > 0 || (@editable && authorize_for('wiki', 'add_attachment')) %>
+<fieldset class="collapsible collapsed<% if @page.attachments.length == 0 %> hide-when-print<% end %>">
   <legend onclick="toggleFieldset(this);"><%= l(:label_attachment_plural) %> (<%= @page.attachments.length %>)</legend>
   <div style="display: none;">
 
   <%= link_to_attachments @page, :thumbnails => true %>
-  
+
   <% if @editable && authorize_for('wiki', 'add_attachment') %>
   <div id="wiki_add_attachment">
     <%= form_tag({:controller => 'wiki', :action => 'add_attachment',
@@ -66,6 +67,7 @@
   <% end %>
 </div>
 </fieldset>
+<% end %>
 
 <% other_formats_links do |f| %>
   <%= f.link_to 'PDF', :url => {:id => @page.title, :version => params[:version]} %>
