@@ -32,7 +32,7 @@
 class WikiController < ApplicationController
   default_search_scope :wiki_pages
   before_action :find_wiki, :authorize
-  before_action :find_existing_or_new_page, :only => [:show, :edit, :update]
+  before_action :find_existing_or_new_page, :only => [:show, :edit]
   before_action :find_existing_page, :only => [:rename, :protect, :history, :diff, :annotate, :add_attachment, :destroy, :destroy_version]
   before_action :find_attachments, :only => [:preview]
   accept_api_auth :index, :show, :update, :destroy
@@ -41,8 +41,6 @@ class WikiController < ApplicationController
   include AttachmentsHelper
   helper :watchers
   include Redmine::Export::PDF
-
-  include ActionView::Helpers::SanitizeHelper
 
   # List of pages, sorted alphabetically and by parent (hierarchy)
   def index
@@ -109,7 +107,7 @@ class WikiController < ApplicationController
         send_data(export, :type => 'text/html', :filename => filename_for_content_disposition("#{@page.title}.html"))
         return
       elsif params[:format] == 'txt'
-        send_data(strip_tags(@content.text), :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
+        send_data(@content.text, :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
         return
       end
     end
@@ -152,6 +150,8 @@ class WikiController < ApplicationController
 
   # Creates a new page or updates an existing one
   def update
+    @page = @wiki.find_or_new_page(params[:id])
+
     return render_403 unless editable?
     was_new_page = @page.new_record?
     @page.safe_attributes = params[:wiki_page]

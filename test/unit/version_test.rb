@@ -21,6 +21,10 @@ class VersionTest < ActiveSupport::TestCase
   fixtures :projects, :users, :issues, :issue_statuses, :trackers,
            :enumerations, :versions, :projects_trackers
 
+  def setup
+    User.current = nil
+  end
+
   def test_create
     v = Version.new(:project => Project.find(1), :name => '1.1',
                     :effective_date => '2011-03-25')
@@ -275,6 +279,21 @@ class VersionTest < ActiveSupport::TestCase
     value = CustomValue.create!(:custom_field => field, :customized => Issue.first, :value => version.id)
 
     assert_equal false, version.deletable?
+  end
+
+  def test_deletable_should_return_false_when_referenced_by_an_attachment
+    version = Version.generate!
+    Attachment.generate!(:container => version, :filename => 'test.txt')
+
+    assert_equal false, version.deletable?
+  end
+
+  def test_like_scope
+    version = Version.create!(:project => Project.find(1), :name => 'Version for like scope test')
+
+    assert_includes Version.like('VERSION FOR LIKE SCOPE TEST'), version
+    assert_includes Version.like('version for like scope test'), version
+    assert_includes Version.like('like scope'), version
   end
 
   private
