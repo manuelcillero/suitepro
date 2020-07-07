@@ -89,7 +89,7 @@ h2 {
 	line-height: 1em;
 }
 div#content h1 {
-	color: #b40b51;	
+	color: #b40b51;
 }
 .wiki h2 {
 	color: #b40b51;
@@ -184,7 +184,11 @@ p.breadcrumb, p.buttons, p.author, p.other-formats {
     -webkit-column-break-inside: avoid; /* Chrome, Safari */
     page-break-inside: avoid;           /* Theoretically FF 20+ */
     break-inside: avoid-column;         /* IE 11 */
-    display: table;                     /* Actually FF 20+ */
+	display: table;                     /* Actually FF 20+ */
+}
+#projects-index ul.projects li.root {
+	padding: 15px 0 0;
+	border: 0;
 }
 #projects-index ul.projects div.root a.project {
 	font-size: 34px;
@@ -363,7 +367,7 @@ div.wiki .external {
 	#quick-search .drdn-trigger {
 		font-size: 1.85em !important;
 		line-height: 1.85em !important;
-	}	
+	}
 }
 
 /**********************************************************/
@@ -762,7 +766,7 @@ body.controller-documents.action-index #content > h4 {
 body.controller-documents.action-index #content > h4 a {
 	color: #ffbf00;
 }
-body.controller-documents.action-index #content > h4 a:hover {	
+body.controller-documents.action-index #content > h4 a:hover {
 	text-decoration: underline;
 }
 body.controller-documents.action-index #content > h4 + p {
@@ -846,7 +850,7 @@ body.action-login #content {
 	text-transform: uppercase;
 }
 #login-form label {
-	letter-spacing: 0; 
+	letter-spacing: 0;
 	font-size: 15pt;
 	color: #fff;
 	line-height: 1.65em;
@@ -918,7 +922,7 @@ div.login-additionals {
 	}
 	#login-form h2 {
 		font-size: 1.65em;
-	}	
+	}
 	#login-form a.lost_password {
 		font-size: .78em;
 	}
@@ -1619,6 +1623,13 @@ form[class$="glossary_style"] #grouping label {
 	}
 }
 @media screen and (max-width: 899px) {
+	body .flyout-menu {
+		z-index: 10000;
+	}
+	body .mobile-toggle-button {
+		border: 0;
+	}
+
 	#top-menu {
 		display: block !important;
 		position: fixed;
@@ -1629,11 +1640,36 @@ form[class$="glossary_style"] #grouping label {
 	#wrapper-top-menu ul:last-child {
 		display: none;
 	}
+
+	#wrapper-header {
+		height: 64px;
+	}
 	body #header {
 		margin-top: 31px;
+		height: 90px;
 	}
+	body #header #main-menu {
+		display: block;
+	}
+	body #main {
+		padding-top: 86px;
+	}
+
+	#main-menu ul {
+		padding-left: 5px;
+	}
+	#main-menu li {
+		padding: 6px 0;
+	}
+	#main-menu li a {
+		padding: 4px 6px;
+	}
+
 	div#content > div.contextual:first-child {
 		margin-top: 18px;
+	}
+	div#content > div.contextual a.icon {
+    	padding-left: 25px !important;
 	}
 }
 @media all and (max-width: 899px) {
@@ -1720,7 +1756,7 @@ form[class$="glossary_style"] #grouping label {
 	body .flyout-menu .private_wiki_flag {
 		display: none !important;
 	}
-	
+
 	div#content {
 		padding-left: 3.333333%;
 		padding-right: 3.333333%;
@@ -1794,34 +1830,34 @@ form[class$="glossary_style"] #grouping label {
 	border: 1px solid #e0e2e3;
 	border-radius: 3px;
 	height: 26px;
-	outline: none;  
+	outline: none;
 }
 .theme-Circlepro .select2-container--default .select2-selection--multiple {
 	border: 1px solid #e0e2e3;
 	border-radius: 3px;
-	outline: none;  
+	outline: none;
 }
 .theme-Circlepro .select2-container--default.select2-container--open .select2-selection,
 .theme-Circlepro .select2-container--default .select2-selection:focus,
 .theme-Circlepro .select2-container--default.select2-container--focus .select2-selection--single,
 .theme-Circlepro .select2-container--default.select2-container--focus .select2-selection--multiple {
-	border-color: #2996cc;	
+	border-color: #2996cc;
 }
 .theme-Circlepro .select2-container--default .select2-selection--single .select2-selection__rendered {
-	padding-left: 24px;  
+	padding-left: 24px;
 	line-height: 25px;
 	font-size: 12px;
-	outline: none;  
+	outline: none;
 }
 .theme-Circlepro .select2-container--default .select2-selection--multiple .select2-selection__rendered {
 	font-size: 12px;
 }
 .theme-Circlepro .select2-container--default .select2-selection--single .select2-selection__arrow {
 	height: 25px;
-	outline: none;  
+	outline: none;
 }
 .theme-Circlepro .select2-container--default .select2-selection--single .select2-selection__arrow b {
-	border-color: #afafaf transparent transparent transparent;	
+	border-color: #afafaf transparent transparent transparent;
 }
 .theme-Circlepro .select2-dropdown {
 	border: 1px solid #2996cc;
