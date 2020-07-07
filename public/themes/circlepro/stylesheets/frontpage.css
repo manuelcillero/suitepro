@@ -28,6 +28,7 @@ body.controller-welcome #header {
 	}
 	body.controller-welcome #wrapper-header {
 		background: url(../images/logo.png) no-repeat 12px 0;
+		height: 88px;
 	}
 	body.controller-welcome #header {
 		height: 88px;
@@ -2389,7 +2390,7 @@ button:disabled,
 		-moz-background-size: cover;
 		-o-background-size: cover;
 		background-size: cover;
-		}	
+		}
 }
 #fp:before {
 	background: rgba(0, 0, 0, 0);
