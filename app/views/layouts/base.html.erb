@@ -63,6 +63,7 @@
 
 <div id="wrapper2">
 <div id="wrapper3">
+
 <div id="top-menu">
     <div id="wrapper-top-menu">
     <ul class="social-menu">
@@ -129,9 +130,10 @@
     </div>
     </div>
 </div>
-</div>
 
-<a href="#" id="scrollup" class="hide-when-print"><%=l(:label_sort_higher)%></a><%= javascript_tag "$('#scrollup').click(function(){$('html,body').animate({scrollTop:0},600);return false;});" %>
+</div> <!-- #wrapper3 -->
+
+<a href="#" id="scrollup" class="hide-when-print" style="display: none;"><%=l(:label_sort_higher)%></a><%= javascript_tag "$('#scrollup').click(function(){$('html,body').animate({scrollTop:0},600);return false;});" %>
 
 <div id="ajax-indicator" style="display:none;"><span><%= l(:label_loading) %></span></div>
 <div id="ajax-modal" style="display:none;"></div>
@@ -147,18 +149,20 @@
         <li class="social-link-mail"><a href="https://manuel.cillero.es/contacto/#suitepro" title="Mail" class="icon-mail"><span>Mail</span></a></li>
     </ul>
     <div class="bgl"><div class="bgr">
+        <%= Time.current.year %> &copy; SuitePro (powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)
         <div id="legal">
         <span class="legal-legal"><a href="/projects/suitepro/wiki/Legal"><%= l(:label_legal) %></a></span>
         <span class="legal-terms"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Condiciones_de_uso"><%= l(:label_legal_terms) %></a></span>
         <span class="legal-privacy"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_privacidad"><%= l(:label_legal_privacy) %></a></span>
         <span class="legal-cookies"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_cookies"><%= l(:label_legal_cookies) %></a></span>
         </div>
-        <%= Time.current.year %> &copy; SuitePro (powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)
     </div></div>
-    </div>
 </div>
 </div>
-</div>
+
+</div> <!-- #wrapper2 -->
+
+</div> <!-- #wrapper -->
 <%= call_hook :view_layouts_base_body_bottom %>
 
 <script>
