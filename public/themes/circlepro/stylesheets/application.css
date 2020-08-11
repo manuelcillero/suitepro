@@ -1558,6 +1558,10 @@ tr.changeset > td.comments {
 tr.changeset > td.comments {
 	padding-top: .7em;
 }
+body.controller-repositories.action-show tr.entry > td.comments {
+	font-family: monospace, Courier, Consolas, Menlo, "Liberation Mono";
+	font-size: 14px;
+}
 body.controller-repositories.action-revision div.changeset-comments {
 	padding: 0 20px 20px;
 	margin-top: -10px;
