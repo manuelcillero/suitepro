@@ -1494,6 +1494,8 @@ table.list tbody tr:hover { background-color: #dfeff7; }
 table.list tr.issue a { color: #666; }
 table.list tr.issue a:hover { text-decoration: underline; }
 
+table.list td.category { text-align: left; }
+
 tr.odd.priority-highest, table.list tbody tr.odd.priority-highest:hover { color: #900; font-weight: bold; }
 tr.odd.priority-highest { background: #ffe2e2; }
 tr.even.priority-highest, table.list tbody tr.even.priority-highest:hover { color: #900; font-weight: bold; }
