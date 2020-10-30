@@ -171,6 +171,10 @@ p.breadcrumb, p.buttons, p.author, p.other-formats {
 	font-size: 13px !important;
 }
 
+abbr[title] {
+	text-decoration: none;
+}
+
 /*
  * Avoid break inside each project block when use columns in the project's page.
  * See https://stackoverflow.com/q/7785374
@@ -1914,11 +1918,89 @@ form[class$="glossary_style"] #grouping label {
 
 	div#content {
 		width: 100%;
+		min-height: auto !important;
 		padding: 0;
 	}
+	div.wiki a[href]:after {
+		content: " <" attr(href) ">";
+		color: #f70a0a;
+		font-weight: 300;
+		font-size: 90%;
+		text-transform: initial;
+		word-break: break-all;
+	}
+	#projects-index a[href]:after,
+	body.controller-projects.action-show a[href]:after,
+	table.list a[href]:after,
+	#issue-changesets a[href]:after,
+	div.wiki p.query-totals a[href]:after,
+	a.hide-link-when-print:after {
+		content: "" !important;
+	}
+	abbr {
+		border-bottom: 0;
+	}
+	div.wiki .external {
+		padding-right: 0;
+		background-image: none;
+	}
+	.hljs {
+		white-space: pre-line;
+	}
+	body.controller-issues.action-show div.changeset-comments {
+		font-size: 10px;
+	}
+	table.list.glossary th,
+	table.list.glossary td {
+		text-align: left;
+	}
 
+	#fp {
+		height: 600px;
+	}
+	#fp-banner {
+		width: 100%;
+		height: 50vh !important;
+		background: #ccc;
+	}
+	#fp-banner p {
+		width: 90% !important;
+	}
+	body.action-login #content {
+		background: #aaa;
+	}
+
+	#footer {
+		display: block;
+		background: #fff;
+		border: 0;
+		border-top: 1px solid#ccc;
+	}
+	#wrapper-footer {
+		width: 100%;
+		max-width: 100%;
+	}
+	#footer div.bgl {
+		margin-left: 0;
+		color: #000;
+	}
+	#footer a, #footer a:visited {
+		color: #ccc;
+	}
+
+	#login-form a.lost_password,
+	#filters, #options,
+	a.icon, a.wiki-anchor,
+	body.controller-welcome.action-index #content section#one,
+	body.controller-welcome.action-index #content section#two,
+	body.controller-welcome.action-index #content section#three,
+	#fp-login, #fp-cta, #fp-banner ul, #fp-banner a.more,
+	body.controller-gantts #query_form + table + table,
 	div.wiki ul.toc,
-	.private_wiki_flag {
+	div.wiki p.query-issue-links,
+	.private_wiki_flag,
+	#legal, .powered,
+	#footer ul.social-menu {
 		display: none !important;
 	}
 }

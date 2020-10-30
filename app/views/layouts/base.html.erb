@@ -149,7 +149,7 @@
         <li class="social-link-mail"><a href="https://manuel.cillero.es/contacto/#suitepro" title="Mail" class="icon-mail"><span>Mail</span></a></li>
     </ul>
     <div class="bgl"><div class="bgr">
-        <%= Time.current.year %> &copy; SuitePro (powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)
+        <span class="copyright"><%= Time.current.year %> &copy; SuitePro <span class="powered">(powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)</span></span>
         <div id="legal">
         <span class="legal-legal"><a href="/projects/suitepro/wiki/Legal"><%= l(:label_legal) %></a></span>
         <span class="legal-terms"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Condiciones_de_uso"><%= l(:label_legal_terms) %></a></span>
