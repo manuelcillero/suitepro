@@ -20,7 +20,9 @@
 # along with redmine_checklists.  If not, see <http://www.gnu.org/licenses/>.
 
 require File.expand_path('../../test_helper', __FILE__)
-class CommonIssueTest < RedmineChecklists::IntegrationTest
+include RedmineChecklists::TestHelper
+
+class IssueTest < ActiveSupport::TestCase
   fixtures :projects,
            :users,
            :roles,
@@ -44,19 +46,40 @@ class CommonIssueTest < RedmineChecklists::IntegrationTest
            :journals,
            :journal_details,
            :queries
-  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
 
+  RedmineChecklists::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_checklists).directory + '/test/fixtures/', [:checklists])
   def setup
     RedmineChecklists::TestCase.prepare
     Setting.default_language = 'en'
-    @project_1   = Project.find(1)
-    @issue_1     = Issue.find(1)
-    @checklist_1 = Checklist.find(1)
+    @project = Project.find(1)
+    @issue = Issue.create(:project => @project, :tracker_id => 1, :author_id => 1,
+                          :status_id => 1, :priority => IssuePriority.first,
+                          :subject => 'TestIssue')
+    @checklist_1 = Checklist.create(:subject => 'TEST1', :position => 1, :issue => @issue)
+    @checklist_2 = Checklist.create(:subject => 'TEST2', :position => 2, :issue => @issue, :is_done => true)
+    @issue.reload
   end
 
-  def test_global_search_with_checklist
-    log_user('admin', 'admin')
-    compatible_request :get, '/search?q=First'
-    assert_response :success
+  def test_issue_shouldnt_close_when_it_has_unfinished_checklists
+    with_checklists_settings('block_issue_closing' => '1') do
+      @issue.status_id = 5
+      assert !@issue.valid?
+    end
+  end
+
+  def test_validation_should_be_ignored_if_setting_disabled
+    with_checklists_settings('block_issue_closing' => '0') do
+      @issue.status_id = 5
+      assert @issue.valid?
+    end
+  end
+
+  def test_issue_should_close_when_all_checklists_finished
+    with_checklists_settings('block_issue_closing' => '1') do
+      @checklist_1.update_attributes(:is_done => true)
+      assert @issue.valid?
+    end
+  ensure
+    @checklist_1.update_attributes(:is_done => false)
   end
 end
