@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -58,6 +58,7 @@ class QuestionsSectionsController < ApplicationController
 
   def update
     @section.safe_attributes = params[:questions_section]
+    @section.insert_at(@section.position) if @section.position_changed?
     if @section.save
       respond_to do |format|
         format.html do

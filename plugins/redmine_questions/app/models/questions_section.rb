@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -27,7 +27,12 @@ class QuestionsSection < ActiveRecord::Base
   attr_protected :id if ActiveRecord::VERSION::MAJOR <= 4
   safe_attributes 'name', 'project', 'position', 'description', 'section_type'
 
-  scope :with_questions_count, lambda { select("#{QuestionsSection.table_name}.*, count(#{QuestionsSection.table_name}.id) as questions_count").joins(:questions).order("project_id ASC").group("#{QuestionsSection.table_name}.id, #{QuestionsSection.table_name}.name, #{QuestionsSection.table_name}.project_id, #{QuestionsSection.table_name}.section_type") }
+  scope :with_questions_count, lambda {
+    select("#{QuestionsSection.table_name}.*, count(#{QuestionsSection.table_name}.id) as questions_count").
+    joins(:questions).
+    order("project_id ASC").
+    group(QuestionsSection.column_names.map { |column| "#{QuestionsSection.table_name}.#{column}" }.join(', '))
+  }
   scope :for_project, lambda { |project| where(:project_id => project) unless project.blank? }
   scope :visible, lambda {|*args|
     joins(:project).

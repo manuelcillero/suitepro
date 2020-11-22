@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -97,6 +97,7 @@ class QuestionsAnswer < ActiveRecord::Base
   end
 
   def editable_by?(user)
+    (author == user && user.allowed_to?(:edit_own_answers, project)) ||
     user.allowed_to?(:edit_questions, project)
   end
 
@@ -107,7 +108,7 @@ class QuestionsAnswer < ActiveRecord::Base
   def votable_by?(user)
     user.allowed_to?(:vote_questions, project)
   end
- 
+
   private
   def check_accepted
     question.answers.update_all(:accepted => false) if question &&
@@ -121,6 +122,6 @@ class QuestionsAnswer < ActiveRecord::Base
   end
 
   def send_notification
-    Mailer.question_answer_added(self).deliver if Setting.notified_events.include?('question_answer_added')
+    Mailer.question_answer_added(User.current, self).deliver if Setting.notified_events.include?('question_answer_added')
   end
 end

@@ -400,3 +400,5 @@ div.question.votable .question-container .contextual {margin-top: 0px;}
 .icon-tag { background-image:  url(../images/tag_blue.png); }
 .icon-question { background-image:  url(../../../images/help.png); }
 .icon-solution { background-image:  url(../images/book_open.png); }
+.icon-accept { background-image:  url(../images/accept.png); }
+.icon-discard { background-image:  url(../images/discard.png); }

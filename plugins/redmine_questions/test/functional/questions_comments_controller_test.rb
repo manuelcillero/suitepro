@@ -3,7 +3,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class QuestionsCommentsControllerTest < ActionController::TestCase
-  fixtures :users, 
-           :projects, 
+  fixtures :users,
+           :projects,
            :roles,
            :members,
            :member_roles,
@@ -38,7 +38,7 @@ class QuestionsCommentsControllerTest < ActionController::TestCase
            :issue_categories,
            :enabled_modules,
            :workflows,
-           :questions, 
+           :questions,
            :questions_answers,
            :questions_sections
 

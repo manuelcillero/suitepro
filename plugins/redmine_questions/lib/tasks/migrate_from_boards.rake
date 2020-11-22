@@ -38,13 +38,13 @@ END_DESC
             next
           end
 
-          question_attrs = topic.attributes.slice('subject', 'content', 'author_id', 'locked').merge('project_id' => project.try(:id))
+          question_attrs = topic.attributes.slice('subject', 'content', 'author_id', 'locked')
           migrated_question = section.questions.create(question_attrs)
           migrated_question.attachments = topic.attachments.map { |attachment| attachment.copy }
 
           topic.children.each do |reply|
             if section.section_type == 'questions'
-              answer_attrs = reply.slice('subject', 'content', 'author_id', 'locked').merge('project_id' => project.try(:id))
+              answer_attrs = reply.slice('subject', 'content', 'author_id', 'locked')
               migrated_answer = migrated_question.answers.create(answer_attrs)
               migrated_answer.attachments = reply.attachments.map { |attachment| attachment.copy }
             else

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -28,5 +28,3 @@ require_dependency 'redmine_questions/patches/auto_completes_controller_patch'
 require_dependency 'redmine_questions/patches/comment_patch'
 
 require_dependency 'acts_as_attachable_questions/init'
-
-require 'redmine_questions/patches/compatibility/application_controller_patch' if Rails::VERSION::MAJOR < 4

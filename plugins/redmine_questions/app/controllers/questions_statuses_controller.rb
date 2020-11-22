@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -39,12 +39,13 @@ class QuestionsStatusesController < ApplicationController
   end
 
   def create
-    @questions_status = QuestionsStatus.new(params[:questions_status])
+    @questions_status = QuestionsStatus.new
+    @questions_status.safe_attributes = params[:questions_status]
     if request.post? && @questions_status.save
       flash[:notice] = l(:notice_successful_create)
-      redirect_to :action => "plugin", :id => "redmine_questions", :controller => "settings", :tab => 'questions_statuses'
+      redirect_to action: 'plugin', id: 'redmine_questions', controller: 'settings', tab: 'questions_statuses'
     else
-      render :action => 'new'
+      render action: 'new'
     end
   end
 
@@ -54,17 +55,18 @@ class QuestionsStatusesController < ApplicationController
 
   def update
     @questions_status = QuestionsStatus.find(params[:id])
-    if @questions_status.update_attributes(params[:questions_status])
+    @questions_status.safe_attributes = params[:questions_status]
+    if @questions_status.save
       respond_to do |format|
         format.html {
           flash[:notice] = l(:notice_successful_update)
-          redirect_to :action => 'plugin', :id => 'redmine_questions', :controller => 'settings', :tab => 'questions_statuses'
+          redirect_to action: 'plugin', id: 'redmine_questions', controller: 'settings', tab: 'questions_statuses'
         }
         format.js { head 200 }
       end
     else
       respond_to do |format|
-        format.html { render :action => 'edit' }
+        format.html { render action: 'edit' }
         format.js { head 422 }
       end
     end
@@ -72,11 +74,9 @@ class QuestionsStatusesController < ApplicationController
 
   def destroy
     QuestionsStatus.find(params[:id]).destroy
-    redirect_to :action =>"plugin", :id => "redmine_questions", :controller => "settings", :tab => 'questions_statuses'
+    redirect_to action: 'plugin', id: 'redmine_questions', controller: 'settings', tab: 'questions_statuses'
   rescue
     flash[:error] = l(:error_products_unable_delete_questions_status)
-    redirect_to :action =>"plugin", :id => "redmine_questions", :controller => "settings", :tab => 'questions_statuses'
+    redirect_to action: 'plugin', id: 'redmine_questions', controller: 'settings', tab: 'questions_statuses'
   end
-
-
 end

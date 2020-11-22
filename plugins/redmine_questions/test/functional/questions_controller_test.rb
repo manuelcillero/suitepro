@@ -3,7 +3,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class QuestionsControllerTest < ActionController::TestCase
-  fixtures :users, 
-           :projects, 
+  fixtures :users,
+           :projects,
            :roles,
            :members,
            :member_roles,
@@ -40,14 +40,13 @@ class QuestionsControllerTest < ActionController::TestCase
            :attachments,
            :workflows,
            :time_entries,
-           :questions, 
-           :questions_answers, 
+           :questions,
+           :questions_answers,
            :questions_sections
 
   fixtures :email_addresses if ActiveRecord::VERSION::MAJOR >= 4
 
-  RedmineQuestions::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_questions).directory + '/test/fixtures/', 
-      [:tags, :taggings, :comments])
+  RedmineQuestions::TestCase.create_fixtures(Redmine::Plugin.find(:redmine_questions).directory + '/test/fixtures/', [:tags, :taggings, :comments])
 
   def setup
     RedmineQuestions::TestCase.prepare
@@ -75,6 +74,34 @@ class QuestionsControllerTest < ActionController::TestCase
     assert_response :success
     assert_select 'h2', {:text => section.name}
     assert_select 'p.breadcrumb'
+  end
+
+  def test_get_new
+    @request.session[:user_id] = 1
+    compatible_request :get, :new, project_id: @project
+
+    assert_select 'input#question_subject'
+    assert_select 'select#question_section_id'
+    assert_select 'input[type=?]', 'submit'
+  end
+
+  def test_get_edit
+    @request.session[:user_id] = 1
+    compatible_request :get, :edit, id: 1
+
+    assert_select 'input#question_subject'
+    assert_select 'select#question_section_id'
+    assert_select 'input[type=?]', 'submit'
+  end
+
+  def test_post_create_failed
+    @request.session[:user_id] = 1
+    compatible_request :post, :create, :project_id => @project,
+      :question => {
+
+        :content => "Body of text"
+    }
+    assert_response :success
   end
 
   def test_post_create
@@ -118,7 +145,7 @@ class QuestionsControllerTest < ActionController::TestCase
     assert_select 'div#reply'
     assert_select 'a.icon-del'
     assert_select 'a.add-comment-link'
-    assert_select 'span.items', {:text => "(1-1/1)"}
+    assert_select 'span.items', {:text => "(1-2/2)"}
     @dev_role.permissions << :add_answers
     @dev_role.save
     @request.session[:user_id] = 3
@@ -164,20 +191,17 @@ class QuestionsControllerTest < ActionController::TestCase
     end
     assert_redirected_to questions_path(:section_id => question.section)
     assert_nil Question.find_by_id(question.id)
-  end 
+  end
 
   def test_preview_new_question
     @request.session[:user_id] = 1
     question = questions(:question_001)
-    compatible_xhr_request :post, :preview,  
+    compatible_xhr_request :post, :preview,
       :question => {
         :content => "Previewed question",
       }
     assert_response :success
-    assert_select 'fieldset' do
-      assert_select 'legend', :text => 'Preview'
-      assert_select 'p', :text => 'Previewed question'
-    end
+    assert_select 'p', :text => 'Previewed question'
   end
 
   def test_update_question

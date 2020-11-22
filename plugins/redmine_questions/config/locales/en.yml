@@ -170,3 +170,5 @@ en:
   permission_accept_answers: Accept answers
   permission_manage_sections: Manage sections
   permission_create_tags: Create new tags
+  label_questions_discard: Discard
+  permission_edit_own_answers: Edit own answers

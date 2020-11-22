@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -70,6 +70,7 @@ module Redmine
         end
 
         def save_attachments(attachments, author = User.current)
+          attachments = attachments.to_unsafe_hash if attachments.respond_to?(:to_unsafe_hash)
           attachments = attachments.values if attachments.is_a?(Hash)
           if attachments.is_a?(Array)
             attachments.each do |attachment|

@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -34,9 +34,11 @@ class QuestionsAnswersController < ApplicationController
   end
 
   def edit
+    (render_403; return false) unless @answer.editable_by?(User.current)
   end
 
   def update
+    (render_403; return false) unless @answer.editable_by?(User.current) || User.current.allowed_to?(:accept_answers, @project)
     @answer.safe_attributes = params[:answer]
     @answer.save_attachments(params[:attachments])
     if @answer.save
@@ -87,7 +89,7 @@ class QuestionsAnswersController < ApplicationController
   private
 
   def redirect_to_question
-    redirect_to question_path(@answer.question, :anchor => "question_item_#{@answer.id}") 
+    redirect_to question_path(@answer.question, :anchor => "questions_answer_#{@answer.id}")
   end
 
   def find_answer

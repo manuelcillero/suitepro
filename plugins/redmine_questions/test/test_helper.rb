@@ -3,7 +3,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ class RedmineQuestions::TestCase
   end
 
   def self.prepare
-    Role.where(:id => [1, 3]).each do |r|
+    Role.where(:id => 1).each do |r|
       # user_2
       r.permissions << :view_questions
       r.permissions << :global_view_questions
@@ -100,11 +100,6 @@ class RedmineQuestions::TestCase
     # user_3 only developer (role #2) for project #1
     Role.where(:id => 2).each do |r|
       r.permissions << :view_questions
-      r.save
-    end
-
-    Role.where(:id => 1).each do |r|
-      r.permissions << :accept_answers
       r.save
     end
 

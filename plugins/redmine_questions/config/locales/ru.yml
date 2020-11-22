@@ -95,3 +95,5 @@ ru:
   permission_accept_answers: Принимать ответы
   permission_manage_sections: Управлять секциями
   permission_create_tags: Создавать новые тэги
+  label_questions_discard: Не принимать
+  permission_edit_own_answers: Редактировать свои ответы

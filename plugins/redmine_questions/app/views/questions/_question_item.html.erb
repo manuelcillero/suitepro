@@ -1,6 +1,6 @@
 <div class="question<%= " votable" if question_item.allow_voting? %> div-table" id="question_<%= question_item.id %>">
   <a href="#<%= question_item.id %>" class="wiki-anchor"></a>
-  <% if question_item.allow_voting? && User.current.allowed_to?(:vote_questions, @project) %>
+  <% if question_item.allow_voting? %>
     <div class="vote">
       <%= render :partial => 'questions_votes/question_item_vote', :locals => {:question_item => question_item} %>
     </div>

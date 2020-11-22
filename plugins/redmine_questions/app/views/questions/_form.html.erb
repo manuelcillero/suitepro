@@ -6,7 +6,7 @@
     <%= f.text_field :subject, :id => "question_subject", :size => 120%>
   </p>
   <p><label><%= l(:label_questions_section) %></label><br />
-    <%= f.select :section_id, options_from_collection_for_select(QuestionsSection.where(:project_id => @project),:id, :name, f.object.section_id), :style => "width: 80%;", :required => true %>
+    <%= f.select :section_id, options_from_collection_for_select(QuestionsSection.where(:project_id => @project).sorted, :id, :name, f.object.section_id), :style => "width: 80%;", :required => true %>
     <%= javascript_tag do %>
       $('#question_section_id').change(function() {
         $.ajax({

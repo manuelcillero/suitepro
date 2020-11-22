@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class QuestionsStatus < ActiveRecord::Base
   attr_protected :id if ActiveRecord::VERSION::MAJOR <= 4
   safe_attributes 'name', 'is_closed', 'position', 'color'
 
-  validates :name, :presence => true, :uniqueness => true
+  validates :name, presence: true, uniqueness: true
 
   scope :sorted, lambda { order(:position) }
 

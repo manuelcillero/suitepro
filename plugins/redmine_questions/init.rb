@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with redmine_questions.  If not, see <http://www.gnu.org/licenses/>.
 
-requires_redmine_crm version_or_higher: '0.0.38'
+requires_redmine_crm version_or_higher: '0.0.41'
 
 require 'redmine_questions'
 
-QA_VERSION_NUMBER = '1.0.0'
+QA_VERSION_NUMBER = '1.0.2'
 QA_VERSION_TYPE = "Light version"
 
 Redmine::Plugin.register :redmine_questions do
@@ -47,6 +47,7 @@ Redmine::Plugin.register :redmine_questions do
     permission :add_questions, { questions: [:create, :new, :preview, :update_form] }
     permission :edit_questions, { questions: [:edit, :update, :preview, :update_form], questions_answers: [:edit, :update, :preview] }, require: :loggedin
     permission :edit_own_questions, {questions: [:edit, :update, :preview, :update_form]}, require: :loggedin
+    permission :edit_own_answers, {questions_answers: [:edit, :update, :preview]}, require: :loggedin
     permission :add_answers, { questions_answers: [:create, :show, :new, :edit, :update, :preview] }
     permission :view_questions, { questions: [:index, :show, :autocomplete_for_subject], questions_sections: [:index] }, read: true
     permission :delete_questions, { questions: [:destroy] }, require: :loggedin

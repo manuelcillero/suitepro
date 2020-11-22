@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -54,6 +54,7 @@ class QuestionsController < ApplicationController
   end
 
   def update
+    (render_403; return false) unless @question_item.editable_by?(User.current)
     @question_item.safe_attributes = params[:question]
     @question_item.save_attachments(params[:attachments])
     if @question_item.save
@@ -133,6 +134,7 @@ class QuestionsController < ApplicationController
     @text = (params[:question] ? params[:question][:content] : nil)
     render :partial => 'common/preview'
   end
+
   private
 
   def find_questions
@@ -142,10 +144,10 @@ class QuestionsController < ApplicationController
     scope = Question.visible
     scope = scope.where(:section_id => @section) if @section
 
-    columns = ["subject", "content"]
-    tokens = seach.to_s.scan(%r{((\s|^)"[\s\w]+"(\s|$)|\S+)}).collect{|m| m.first.gsub(%r{(^\s*"\s*|\s*"\s*$)}, '')}.uniq.select {|w| w.length > 1 }
+    columns = ['subject', 'content']
+    tokens = seach.to_s.scan(%r{((\s|^)"[\s\w]+"(\s|$)|\S+)}).collect { |m| m.first.gsub(%r{(^\s*"\s*|\s*"\s*$)}, '') }.uniq.select { |w| w.length > 1 }
     tokens = [] << tokens unless tokens.is_a?(Array)
-    token_clauses = columns.collect {|column| "(LOWER(#{column}) LIKE ?)"}
+    token_clauses = columns.collect { |column| "(LOWER(#{column}) LIKE ?)" }
     sql = (['(' + token_clauses.join(' OR ') + ')'] * tokens.size).join(' AND ')
     find_options = [sql, * (tokens.collect {|w| "%#{w.downcase}%"} * token_clauses.size).sort]
 
@@ -166,9 +168,9 @@ class QuestionsController < ApplicationController
     end
 
     @limit =  per_page_option
-    @offset = params[:page].to_i*@limit
+    @offset = params[:page].to_i * @limit
     scope = scope.limit(@limit).offset(@offset)
-    scope = scope.tagged_with(params[:tag]) unless params[:tag].blank?
+    scope = scope.tagged_with(params[:tag]) if params[:tag].present?
 
     @topic_count = scope.count
     @topic_pages = Paginator.new @topic_count, @limit, params[:page]
@@ -178,7 +180,7 @@ class QuestionsController < ApplicationController
 
   def find_section
     @section = QuestionsSection.find_by_id(params[:section_id] || (params[:question] && params[:question][:section_id]))
-    @section ||= @project.questions_sections.first
+    @section ||= @project.questions_sections.first if @project
   rescue ActiveRecord::RecordNotFound
     render_404
   end

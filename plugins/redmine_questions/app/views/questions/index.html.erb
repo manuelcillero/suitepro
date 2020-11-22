@@ -19,7 +19,7 @@
   <div class="filters">
     <%= form_tag({:controller => "questions", :action => "index"}, :method => :get,  :id => "query_form") do %>
       <%= text_field_tag(:topic_search, params[:topic_search], :autocomplete => "off", :class => "questions-search", :placeholder => l(:label_questions_search) ) %>
-      <%= javascript_tag "observeSearchfield('topic_search', 'topics_list', '#{ escape_javascript(autocomplete_for_subject_questions_path(:project_id => @project, :section_id => @section)) }')" %>
+      <%= javascript_tag "observeSearchfield('topic_search', 'topics_list', '#{ escape_javascript(autocomplete_for_subject_questions_path(:project_id => @project, :section_id => @section, :sort_order => @sort_order)) }')" %>
     <% end %>
   </div>
 </div>

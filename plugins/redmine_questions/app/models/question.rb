@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -54,22 +54,22 @@ class Question < ActiveRecord::Base
                               :author_key => :author_id,
                               :timestamp => "#{table_name}.created_on",
                               :scope => joins({:section => :project}, :author)
-    acts_as_searchable :columns => ["#{table_name}.subject", 
-                                    "#{table_name}.content", 
+    acts_as_searchable :columns => ["#{table_name}.subject",
+                                    "#{table_name}.content",
                                     "#{QuestionsAnswer.table_name}.content"],
-                       :scope => joins({:section => :project}, :answers), 
-                       :project_key => "#{QuestionsSection.table_name}.project_id"     
+                       :scope => joins({:section => :project}, :answers),
+                       :project_key => "#{QuestionsSection.table_name}.project_id"
   else
     acts_as_activity_provider :type => 'questions',
                               :permission => :view_questions,
                               :author_key => :author_id,
                               :timestamp => "#{table_name}.created_on",
                               :find_options => { :include => [{:section => :project}, :author] }
-    acts_as_searchable :columns => ["#{table_name}.subject", 
-                                    "#{table_name}.content", 
+    acts_as_searchable :columns => ["#{table_name}.subject",
+                                    "#{table_name}.content",
                                     "#{QuestionsAnswer.table_name}.content"],
                        :include => [{:section => :project}, :answers],
-                       :project_key => "#{QuestionsSection.table_name}.project_id"                           
+                       :project_key => "#{QuestionsSection.table_name}.project_id"
   end
 
   scope :solutions, lambda { joins(:section).where(:questions_sections => {:section_type => QuestionsSection::SECTION_TYPE_SOLUTIONS}) }
@@ -114,7 +114,7 @@ class Question < ActiveRecord::Base
     allowed_to_view_condition += projects_allowed_to_view_questions.empty? ? ' OR (0=1) ' : " OR (#{table_name}.project_id IN (#{projects_allowed_to_view_questions.join(',')}))"
 
     user.admin? ? '(1=1)' : allowed_to_view_condition
-  end                  
+  end
 
   def self.related(question, limit)
     tokens = question.subject.strip.scan(%r{((\s|^)"[\s\w]+"(\s|$)|\S+)}).
@@ -127,7 +127,7 @@ class Question < ActiveRecord::Base
   end
 
   def commentable?(user = User.current)
-    return false if locked? 
+    return false if locked?
     user.allowed_to?(:comment_question, project)
   end
 
@@ -285,6 +285,6 @@ class Question < ActiveRecord::Base
   end
 
   def send_notification
-    Mailer.question_question_added(self).deliver if Setting.notified_events.include?('question_added')
+    Mailer.question_question_added(User.current, self).deliver if Setting.notified_events.include?('question_added')
   end
 end

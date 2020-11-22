@@ -3,7 +3,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ class QuestionsAnswersControllerTest < ActionController::TestCase
     assert_redirected_to :controller => 'questions',
                          :action => 'show',
                          :id => question,
-                         :anchor => "question_item_#{QuestionsAnswer.order(:id).last.id}"
+                         :anchor => "questions_answer_#{QuestionsAnswer.order(:id).last.id}"
     assert_equal old_answer_count + 1, question.answers.count
     assert_equal 'Answer for the first question', question.answers.last.content
   end
@@ -92,11 +92,7 @@ class QuestionsAnswersControllerTest < ActionController::TestCase
         :content => "Previewed answer",
       }
     assert_response :success
-    assert_select 'fieldset' do
-      assert_select 'legend', :text => 'Preview'
-      assert_select 'p', :text => 'Previewed answer'
-    end
-
+    assert_select 'p', :text => 'Previewed answer'
   end
   
   def test_preview_edited_answer
@@ -107,11 +103,7 @@ class QuestionsAnswersControllerTest < ActionController::TestCase
         :content => "Previewed answer 1",
       }
     assert_response :success
-    assert_select 'fieldset' do
-      assert_select 'legend', :text => 'Preview'
-      assert_select 'p', :text => 'Previewed answer 1'
-    end
-
+    assert_select 'p', :text => 'Previewed answer 1'
   end
 
   def test_destroy
@@ -121,7 +113,7 @@ class QuestionsAnswersControllerTest < ActionController::TestCase
     assert_difference 'QuestionsAnswer.count', -1 do
       compatible_request :post, :destroy, :id => answer.id
     end
-    assert_redirected_to question_path(answer.question, :anchor => "question_item_#{answer.id}") 
+    assert_redirected_to question_path(answer.question, :anchor => "questions_answer_#{answer.id}") 
     assert_nil QuestionsAnswer.find_by_id(answer.id)
   end  
 
@@ -144,6 +136,6 @@ class QuestionsAnswersControllerTest < ActionController::TestCase
       }
     # assert_response :success
     answer.reload
-    assert !answer.accepted, "Mark as officail answer did set for answer after update for user without permission"
+    assert !answer.accepted, "Mark as official answer did set for answer after update for user without permission"
   end
 end

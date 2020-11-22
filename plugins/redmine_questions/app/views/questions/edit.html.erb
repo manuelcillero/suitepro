@@ -8,7 +8,8 @@
   <%= render :partial => 'form', :locals => {:f => f} %>
   </div>
   <%= submit_tag l(:button_save) %>
-  <%= preview_link({:controller => 'questions', :action => 'preview', :question_id => @question_item}, 'question_form') %>
+  <%= preview_link({:controller => 'questions', :action => 'preview', :question_id => @question_item}, 'question_form') if Redmine::VERSION.to_s <= '3.4.5' %>
+  | <%= link_to l(:button_cancel), question_path(@question_item) %>
 
 <% end %>
 <div id="preview" class="wiki"></div>

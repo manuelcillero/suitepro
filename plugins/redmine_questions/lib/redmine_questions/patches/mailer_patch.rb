@@ -1,7 +1,7 @@
 # This file is a part of Redmine Q&A (redmine_questions) plugin,
 # Q&A plugin for Redmine
 #
-# Copyright (C) 2011-2018 RedmineUP
+# Copyright (C) 2011-2020 RedmineUP
 # http://www.redmineup.com/
 #
 # redmine_questions is free software: you can redistribute it and/or modify
@@ -20,8 +20,15 @@
 module RedmineQuestions
   module Patches
     module MailerPatch
+
+      module ClassMethods
+        def deliver_question_comment_added(comment)
+          question_comment_added(User.current, comment).deliver_later
+        end
+      end
+
       module InstanceMethods
-        def question_comment_added(comment)
+        def question_comment_added(_user = User.current, comment)
           question = comment.commented.is_a?(Question) ? comment.commented : comment.commented.question
           @question_url = url_for(:controller => 'questions', :action => 'show', :id => question.id)
           project_identifier = question.project.try(:identifier)
@@ -36,7 +43,7 @@ module RedmineQuestions
                :subject => "[#{project_prefix}] RE: #{question.subject}"
         end
 
-        def question_question_added(question)
+        def question_question_added(_user = Current.user, question)
           @question_url = url_for(:controller => 'questions', :action => 'show', :id => question.id)
           project_identifier = question.project.try(:identifier)
           redmine_headers 'Project' => project_identifier, 'Question-Id' => question.id
@@ -51,9 +58,9 @@ module RedmineQuestions
                :subject => "[#{project_prefix}] #{question.subject}"
         end
 
-        def question_answer_added(answer)
+        def question_answer_added(_user = Current.user, answer)
           question = answer.question
-          @question_url = url_for(:controller => 'questions', :action => 'show', :id => question.id)
+          @question_url = url_for(controller: 'questions', action: 'show', id: question.id)
           project_identifier = question.project.try(:identifier)
           redmine_headers 'Project' => project_identifier, 'Question-Id' => question.id
           message_id question
@@ -66,13 +73,14 @@ module RedmineQuestions
           @answer = answer
           @question = question
           project_prefix = [project_identifier, question.section_name, "q&a#{question.id}"].compact.join(' - ')
-          mail :to => recipients,
-               :cc => cc,
-               :subject => "[#{project_prefix}] - answ##{answer.id} - RE: #{question.subject}"
+          mail to: recipients,
+               cc: cc,
+               subject: "[#{project_prefix}] - answ##{answer.id} - RE: #{question.subject}"
         end
       end
 
       def self.included(receiver)
+        receiver.send :extend, ClassMethods
         receiver.send :include, InstanceMethods
         receiver.class_eval do
           unloadable
