@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,6 +39,12 @@ class IssueImportTest < ActiveSupport::TestCase
   def setup
     User.current = nil
     set_language_if_valid 'en'
+  end
+
+  def test_authorized
+    assert  IssueImport.authorized?(User.find(1)) # admins
+    assert  IssueImport.authorized?(User.find(2)) # has import_issues permission
+    assert !IssueImport.authorized?(User.find(3)) # does not have permission
   end
 
   def test_create_versions_should_create_missing_versions
@@ -138,6 +146,16 @@ class IssueImportTest < ActiveSupport::TestCase
     assert_equal child2, grandchild.parent
   end
 
+  def test_backward_and_forward_reference_with_unique_id
+    import = generate_import_with_mapping('import_subtasks_with_unique_id.csv')
+    import.settings['mapping'] = {'project_id' => '1', 'unique_id' => '0', 'tracker' => '1', 'subject' => '2', 'parent_issue_id' => '3'}
+    import.save!
+
+    root, child1, grandchild, child2 = new_records(Issue, 4) { import.run }
+    assert_equal root, child1.parent
+    assert_equal child2, grandchild.parent
+  end
+
   def test_assignee_should_be_set
     import = generate_import_with_mapping
     import.mapping.merge!('assigned_to' => '11')
@@ -155,6 +173,35 @@ class IssueImportTest < ActiveSupport::TestCase
 
     issues = new_records(Issue, 3) { import.run }
     assert_equal '3', issues.first.custom_field_value(field)
+  end
+
+  def test_list_custom_field_should_be_set
+    field = CustomField.find(1)
+    field.tracker_ids = Tracker.all.ids
+    field.save!
+    import = generate_import_with_mapping
+    import.mapping.merge!("cf_1" => '8')
+    import.save!
+
+    issues = new_records(Issue, 3) { import.run }
+    assert_equal 'PostgreSQL', issues[0].custom_field_value(1)
+    assert_equal 'MySQL', issues[1].custom_field_value(1)
+    assert_equal '', issues.third.custom_field_value(1)
+  end
+
+  def test_multiple_list_custom_field_should_be_set
+    field = CustomField.find(1)
+    field.tracker_ids = Tracker.all.ids
+    field.multiple = true
+    field.save!
+    import = generate_import_with_mapping
+    import.mapping.merge!("cf_1" => '15')
+    import.save!
+
+    issues = new_records(Issue, 3) { import.run }
+    assert_equal ['Oracle', 'PostgreSQL'], issues[0].custom_field_value(1).sort
+    assert_equal ['MySQL'], issues[1].custom_field_value(1)
+    assert_equal [''], issues.third.custom_field_value(1)
   end
 
   def test_is_private_should_be_set_based_on_user_locale
@@ -178,6 +225,15 @@ class IssueImportTest < ActiveSupport::TestCase
     assert_equal Date.parse('2015-07-10'), issue.start_date
     assert_equal Date.parse('2015-08-12'), issue.due_date
     assert_equal '2015-07-14', issue.custom_field_value(field)
+
+    # Tests using other date formats
+    import = generate_import_with_mapping('import_dates_ja.csv')
+    import.settings.merge!('date_format' => Import::DATE_FORMATS[3])
+    import.mapping.merge!('tracker' => 'value:1', 'subject' => '0', 'start_date' => '1')
+    import.save!
+
+    issue = new_record(Issue) { import.run }
+    assert_equal Date.parse('2019-05-28'), issue.start_date
   end
 
   def test_date_format_should_default_to_user_language
@@ -209,5 +265,33 @@ class IssueImportTest < ActiveSupport::TestCase
 
     issues = new_records(Issue, 3) { import.run }
     assert [nil, 3, system_version.id], issues.map(&:fixed_version_id)
+  end
+
+  def test_set_default_settings_with_project_id
+    import = Import.new
+    import.set_default_settings(:project_id => 3)
+
+    assert_equal 3, import.mapping['project_id']
+  end
+
+  def test_set_default_settings_with_project_identifier
+    import = Import.new
+    import.set_default_settings(:project_id => 'ecookbook')
+
+    assert_equal 1, import.mapping['project_id']
+  end
+
+  def test_set_default_settings_without_project_id
+    import = Import.new
+    import.set_default_settings
+
+    assert_empty import.mapping
+  end
+
+  def test_set_default_settings_with_invalid_project_should_not_fail
+    import = Import.new
+    import.set_default_settings(:project_id => 'abc')
+
+    assert_empty import.mapping
   end
 end

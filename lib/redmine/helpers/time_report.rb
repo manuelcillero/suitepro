@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,7 +58,7 @@ module Redmine
             end
             @hours << h
           end
-          
+
           @hours.each do |row|
             case @columns
             when 'year'
@@ -69,13 +71,13 @@ module Redmine
               row['day'] = "#{row['spent_on']}"
             end
           end
-          
+
           min = @hours.collect {|row| row['spent_on']}.min
           @from = min ? min.to_date : User.current.today
 
           max = @hours.collect {|row| row['spent_on']}.max
           @to = max ? max.to_date : User.current.today
-          
+
           @total_hours = @hours.inject(0) {|s,k| s = s + k['hours'].to_f}
 
           @periods = []
@@ -129,13 +131,13 @@ module Redmine
                                }
 
         # Add time entry custom fields
-        custom_fields = TimeEntryCustomField.all
+        custom_fields = TimeEntryCustomField.visible
         # Add project custom fields
-        custom_fields += ProjectCustomField.all
+        custom_fields += ProjectCustomField.visible
         # Add issue custom fields
-        custom_fields += (@project.nil? ? IssueCustomField.for_all : @project.all_issue_custom_fields)
+        custom_fields += @project.nil? ? IssueCustomField.visible.for_all : @project.all_issue_custom_fields.visible
         # Add time entry activity custom fields
-        custom_fields += TimeEntryActivityCustomField.all
+        custom_fields += TimeEntryActivityCustomField.visible
 
         # Add list and boolean custom fields as available criteria
         custom_fields.select {|cf| %w(list bool).include?(cf.field_format) && !cf.multiple?}.each do |cf|

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,7 +35,9 @@ class RepositoryTest < ActiveSupport::TestCase
            :members,
            :member_roles,
            :roles,
-           :enumerations
+           :enumerations,
+           :user_preferences,
+           :watchers
 
   include Redmine::I18n
 
@@ -56,13 +60,12 @@ class RepositoryTest < ActiveSupport::TestCase
 
   def test_blank_log_encoding_error_message_fr
     set_language_if_valid 'fr'
-    str = "Encodage des messages de commit doit \xc3\xaatre renseign\xc3\xa9(e)".force_encoding('UTF-8')
     repo = Repository::Bazaar.new(
                         :project      => Project.find(3),
                         :url          => "/test"
                       )
     assert !repo.save
-    assert_include str, repo.errors.full_messages
+    assert_include 'Encodage des messages de commit doit être renseigné(e)', repo.errors.full_messages
   end
 
   def test_create
@@ -222,7 +225,7 @@ class RepositoryTest < ActiveSupport::TestCase
 
   def test_should_not_create_with_disabled_scm
     # disable Subversion
-    with_settings :enabled_scm => ['Darcs', 'Git'] do
+    with_settings :enabled_scm => ['Mercurial', 'Git'] do
       repository = Repository::Subversion.new(
                       :project => Project.find(3), :url => "svn://localhost")
       assert !repository.save
@@ -263,14 +266,15 @@ class RepositoryTest < ActiveSupport::TestCase
     assert_equal User.find_by_login('dlopper'), journal.user
     assert_equal 'Applied in changeset r2.', journal.notes
 
-    # 2 email notifications
-    assert_equal 2, ActionMailer::Base.deliveries.size
-    mail = ActionMailer::Base.deliveries.first
-    assert_not_nil mail
-    assert mail.subject.starts_with?(
-        "[#{fixed_issue.project.name} - #{fixed_issue.tracker.name} ##{fixed_issue.id}]")
-    assert_mail_body_match(
-        "Status changed from #{old_status} to #{fixed_issue.status}", mail)
+    # 5 email notifications, 2 for #1, 3 for #2
+    assert_equal 5, ActionMailer::Base.deliveries.size
+    ActionMailer::Base.deliveries.first(2).each do |mail|
+      assert_not_nil mail
+      assert mail.subject.starts_with?(
+          "[#{fixed_issue.project.name} - #{fixed_issue.tracker.name} ##{fixed_issue.id}]")
+      assert_mail_body_match(
+          "Status changed from #{old_status} to #{fixed_issue.status}", mail)
+    end
 
     # ignoring commits referencing an issue of another project
     assert_equal [], Issue.find(4).changesets
@@ -278,22 +282,22 @@ class RepositoryTest < ActiveSupport::TestCase
 
   def test_for_changeset_comments_strip
     repository = Repository::Mercurial.create(
-                    :project => Project.find( 4 ),
+                    :project => Project.find(4),
                     :url => '/foo/bar/baz' )
-    comment = <<-COMMENT
-    This is a loooooooooooooooooooooooooooong comment                                                   
-                                                                                                       
-                                                                                            
-    COMMENT
+    long_whitespace = "                                                "
+    expected_comment = "This is a loooooooooooooooooooooooooooong comment"
+    comment = +"#{expected_comment}#{long_whitespace}\n"
+    3.times {comment << "#{long_whitespace}\n"}
     changeset = Changeset.new(
       :comments => comment, :commit_date => Time.now,
       :revision => 0, :scmid => 'f39b7922fb3c',
       :committer => 'foo <foo@example.com>',
-      :committed_on => Time.now, :repository => repository )
-    assert( changeset.save )
-    assert_not_equal( comment, changeset.comments )
-    assert_equal( 'This is a loooooooooooooooooooooooooooong comment',
-                  changeset.comments )
+      :committed_on => Time.now, :repository => repository)
+    assert(changeset.save)
+    assert_not_equal comment, changeset.comments
+    assert_equal     expected_comment, changeset.comments
+    assert_equal     expected_comment, changeset.short_comments
+    assert_equal     "", changeset.long_comments
   end
 
   def test_for_urls_strip_cvs
@@ -305,7 +309,7 @@ class RepositoryTest < ActiveSupport::TestCase
     assert repository.save
     repository.reload
     assert_equal ':pserver:login:password@host:/path/to/the/repository',
-                  repository.url
+                 repository.url
     assert_equal 'foo', repository.root_url
   end
 

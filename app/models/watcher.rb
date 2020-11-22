@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +24,6 @@ class Watcher < ActiveRecord::Base
   validates_presence_of :user
   validates_uniqueness_of :user_id, :scope => [:watchable_type, :watchable_id]
   validate :validate_user
-  attr_protected :id
 
   # Returns true if at least one object among objects is watched by user
   def self.any_watched?(objects, user)
@@ -56,8 +57,6 @@ class Watcher < ActiveRecord::Base
     errors.add :user_id, :invalid unless user.nil? || user.active?
   end
 
-  private
-
   def self.prune_single_user(user, options={})
     return unless user.is_a?(User)
     pruned = 0
@@ -78,4 +77,5 @@ class Watcher < ActiveRecord::Base
     end
     pruned
   end
+  private_class_method :prune_single_user
 end

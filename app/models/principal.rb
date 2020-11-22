@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,7 +58,8 @@ class Principal < ActiveRecord::Base
         active
       else
         # self and members of visible projects
-        active.where("#{table_name}.id = ? OR #{table_name}.id IN (SELECT user_id FROM #{Member.table_name} WHERE project_id IN (?))",
+        active.where(
+          "#{table_name}.id = ? OR #{table_name}.id IN (SELECT user_id FROM #{Member.table_name} WHERE project_id IN (?))",
           user.id, user.visible_project_ids
         )
       end
@@ -69,15 +72,20 @@ class Principal < ActiveRecord::Base
       where({})
     else
       pattern = "%#{q}%"
-      sql = %w(login firstname lastname).map {|column| "LOWER(#{table_name}.#{column}) LIKE LOWER(:p)"}.join(" OR ")
+      sql = +"LOWER(#{table_name}.login) LIKE LOWER(:p)"
       sql << " OR #{table_name}.id IN (SELECT user_id FROM #{EmailAddress.table_name} WHERE LOWER(address) LIKE LOWER(:p))"
       params = {:p => pattern}
-      if q =~ /^(.+)\s+(.+)$/
-        a, b = "#{$1}%", "#{$2}%"
-        sql << " OR (LOWER(#{table_name}.firstname) LIKE LOWER(:a) AND LOWER(#{table_name}.lastname) LIKE LOWER(:b))"
-        sql << " OR (LOWER(#{table_name}.firstname) LIKE LOWER(:b) AND LOWER(#{table_name}.lastname) LIKE LOWER(:a))"
-        params.merge!(:a => a, :b => b)
+
+      tokens = q.split(/\s+/).reject(&:blank?).map { |token| "%#{token}%" }
+      if tokens.present?
+        sql << ' OR ('
+        sql << tokens.map.with_index do |token, index|
+          params.merge!(:"token_#{index}" => token)
+          "(LOWER(#{table_name}.firstname) LIKE LOWER(:token_#{index}) OR LOWER(#{table_name}.lastname) LIKE LOWER(:token_#{index}))"
+        end.join(' AND ')
+        sql << ')'
       end
+
       where(sql, params)
     end
   }
@@ -89,7 +97,9 @@ class Principal < ActiveRecord::Base
       where("1=0")
     else
       ids = projects.map(&:id)
-      active.where("#{Principal.table_name}.id IN (SELECT DISTINCT user_id FROM #{Member.table_name} WHERE project_id IN (?))", ids)
+      # include active and locked users
+      where(:status => [STATUS_LOCKED, STATUS_ACTIVE]).
+      where("#{Principal.table_name}.id IN (SELECT DISTINCT user_id FROM #{Member.table_name} WHERE project_id IN (?))", ids)
     end
   }
   # Principals that are not members of projects
@@ -125,7 +135,7 @@ class Principal < ActiveRecord::Base
   end
 
   def visible?(user=User.current)
-    Principal.visible(user).where(:id => id).first == self
+    Principal.visible(user).find_by(:id => id) == self
   end
 
   # Returns true if the principal is a member of project
@@ -167,13 +177,14 @@ class Principal < ActiveRecord::Base
     principal ||= principals.detect {|a| keyword.casecmp(a.login.to_s) == 0}
     principal ||= principals.detect {|a| keyword.casecmp(a.mail.to_s) == 0}
 
-    if principal.nil? && keyword.match(/ /)
+    if principal.nil? && / /.match?(keyword)
       firstname, lastname = *(keyword.split) # "First Last Throwaway"
-      principal ||= principals.detect {|a|
-                                 a.is_a?(User) &&
-                                   firstname.casecmp(a.firstname.to_s) == 0 &&
-                                   lastname.casecmp(a.lastname.to_s) == 0
-                               }
+      principal ||=
+        principals.detect {|a|
+          a.is_a?(User) &&
+            firstname.casecmp(a.firstname.to_s) == 0 &&
+              lastname.casecmp(a.lastname.to_s) == 0
+        }
     end
     if principal.nil?
       principal ||= principals.detect {|a| keyword.casecmp(a.name) == 0}

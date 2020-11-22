@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -54,6 +56,20 @@ class GroupsControllerTest < Redmine::ControllerTest
     assert_response :success
   end
 
+  def test_show_should_display_custom_fields
+    GroupCustomField.generate!(name: 'field_visible', visible: true)
+    Group.find(10).update(custom_field_values: {GroupCustomField.last.id => 'value_visible'})
+    GroupCustomField.generate!(name: 'field_invisible', visible: false)
+    Group.find(10).update(custom_field_values: {GroupCustomField.last.id => 'value_invisible'})
+    get :show, :params => {:id => 10}
+    assert_response :success
+
+    assert_select 'li', :text => /field_visible/
+    assert_select 'li', :text => /value_visible/
+    assert_select 'li', :text => /field_invisible/, :count => 0
+    assert_select 'li', :text => /value_invisible/, :count => 0
+  end
+
   def test_show_invalid_should_return_404
     get :show, :params => {
         :id => 99
@@ -86,7 +102,7 @@ class GroupsControllerTest < Redmine::ControllerTest
       post :create, :params => {
           :group => {
             :name => 'New group'
-          },  
+          },
           :continue => 'Create and continue'
         }
     end

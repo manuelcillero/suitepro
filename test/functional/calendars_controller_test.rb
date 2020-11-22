@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,13 +32,38 @@ class CalendarsControllerTest < Redmine::ControllerTest
            :issue_relations,
            :issue_categories,
            :enumerations,
-           :queries
+           :queries,
+           :users, :email_addresses
 
   def test_show
-    get :show, :params => {
-        :project_id => 1
-      }
+    # Ensure that an issue to which a user is assigned is in the current
+    # month's calendar in order to test Gravatar
+    travel_to issues(:issues_002).start_date
+
+    with_settings :gravatar_enabled => '1' do
+      get :show, :params => {
+          :project_id => 1
+        }
+    end
     assert_response :success
+
+    # query form
+    assert_select 'form#query_form' do
+      assert_select 'div#query_form_with_buttons.hide-when-print' do
+        assert_select 'div#query_form_content' do
+          assert_select 'fieldset#filters.collapsible'
+        end
+        assert_select 'p.contextual'
+        assert_select 'p.buttons'
+      end
+    end
+
+    # Assert context menu on issues
+    assert_select 'form[data-cm-url=?]', '/issues/context_menu'
+    assert_select 'div.issue.hascontextmenu.tooltip' do
+      assert_select 'input[name=?][type=?]', 'ids[]', 'checkbox'
+      assert_select 'img[class="gravatar"]'
+    end
   end
 
   def test_show_should_run_custom_queries
@@ -109,8 +136,24 @@ class CalendarsControllerTest < Redmine::ControllerTest
     get :show, :params => {
         :query_id => 6
       }
-      
+
     assert_response :success
     assert_select 'h2', :text => 'Open issues grouped by tracker'
+  end
+
+  def test_show_calendar_day_css_classes
+    get :show, :params => {
+        :month => '12',
+        :year => '2016'
+      }
+    assert_response :success
+
+    assert_select 'tr:nth-child(2)' do
+      assert_select 'td.week-number', :text => '49'
+      # non working days should have "nwday" CSS class
+      assert_select 'td.nwday', 2
+      assert_select 'td.nwday', :text => '4'
+      assert_select 'td.nwday', :text => '10'
+    end
   end
 end

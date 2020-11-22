@@ -1,7 +1,7 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,14 +18,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module SearchHelper
-  include ActionView::Helpers::SanitizeHelper
-
   def highlight_tokens(text, tokens)
     return text unless text && tokens && !tokens.empty?
     re_tokens = tokens.collect {|t| Regexp.escape(t)}
     regexp = Regexp.new "(#{re_tokens.join('|')})", Regexp::IGNORECASE
-    result = ''
-    text = strip_tags(text)
+    result = +''
     text.split(regexp).each_with_index do |words, i|
       if result.length > 1200
         # maximum length of the preview reached
@@ -58,7 +55,7 @@ module SearchHelper
   def render_results_by_type(results_by_type)
     links = []
     # Sorts types by results count
-    results_by_type.keys.sort {|a, b| results_by_type[b] <=> results_by_type[a]}.each do |t|
+    results_by_type.keys.sort_by {|k| results_by_type[k]}.reverse_each do |t|
       c = results_by_type[t]
       next if c == 0
       text = "#{type_label(t)} (#{c})"

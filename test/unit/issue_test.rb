@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,6 +35,7 @@ class IssueTest < ActiveSupport::TestCase
   include Redmine::I18n
 
   def setup
+    User.current = nil
     set_language_if_valid 'en'
   end
 
@@ -540,6 +543,23 @@ class IssueTest < ActiveSupport::TestCase
     assert_equal false, issue.deletable?(user)
   end
 
+  def test_issue_should_editable_by_author
+    Role.all.each do |r|
+      r.remove_permission! :edit_issues
+      r.add_permission! :edit_own_issues
+    end
+
+    issue = Issue.find(1)
+    user = User.find_by_login('jsmith')
+
+    # author
+    assert_equal user, issue.author
+    assert_equal true, issue.attributes_editable?(user)
+
+    # not author
+    assert_equal false, issue.attributes_editable?(User.find_by_login('dlopper'))
+  end
+
   def test_errors_full_messages_should_include_custom_fields_errors
     field = IssueCustomField.find_by_name('Database')
 
@@ -666,7 +686,12 @@ class IssueTest < ActiveSupport::TestCase
     issue.expects(:project_id=).in_sequence(seq)
     issue.expects(:tracker_id=).in_sequence(seq)
     issue.expects(:subject=).in_sequence(seq)
-    issue.attributes = {:tracker_id => 2, :project_id => 1, :subject => 'Test'}
+    assert_raise Exception do
+      issue.attributes = {:subject => 'Test'}
+    end
+    assert_nothing_raised do
+      issue.attributes = {:tracker_id => 2, :project_id => 1, :subject => 'Test'}
+    end
   end
 
   def test_assigning_tracker_and_custom_fields_should_assign_custom_fields
@@ -1001,16 +1026,18 @@ class IssueTest < ActiveSupport::TestCase
 
     issue = Issue.new(:project_id => 1, :tracker_id => 1, :status_id => 1)
 
-    issue.send :safe_attributes=, {'start_date' => '2012-07-12',
-                                   'due_date' => '2012-07-14'},
-                                   user
+    issue.send(:safe_attributes=,
+               {'start_date' => '2012-07-12',
+                'due_date' => '2012-07-14'},
+               user)
     assert_equal Date.parse('2012-07-12'), issue.start_date
     assert_nil issue.due_date
 
-    issue.send :safe_attributes=, {'start_date' => '2012-07-15',
-                                    'due_date' => '2012-07-16',
-                                    'status_id' => 2},
-                                  user
+    issue.send(:safe_attributes=,
+               {'start_date' => '2012-07-15',
+                'due_date' => '2012-07-16',
+                'status_id' => 2},
+               user)
     assert_equal Date.parse('2012-07-12'), issue.start_date
     assert_equal Date.parse('2012-07-16'), issue.due_date
   end
@@ -1045,7 +1072,7 @@ class IssueTest < ActiveSupport::TestCase
                  issue.required_attribute_names(user).sort
     assert !issue.save, "Issue was saved"
     assert_equal ["Category cannot be blank", "Due date cannot be blank", "Foo cannot be blank"],
-                  issue.errors.full_messages.sort
+                 issue.errors.full_messages.sort
 
     issue.tracker_id = 2
     assert_equal [cf.id.to_s, "start_date"], issue.required_attribute_names(user).sort
@@ -1103,7 +1130,7 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   def test_required_custom_field_that_is_not_visible_for_the_user_should_not_be_required
-    CustomField.delete_all
+    CustomField.destroy_all
     field = IssueCustomField.generate!(:is_required => true, :visible => false, :role_ids => [1], :trackers => Tracker.all, :is_for_all => true)
     user = User.generate!
     User.add_to_project(user, Project.find(1), Role.find(2))
@@ -1114,7 +1141,7 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   def test_required_custom_field_that_is_visible_for_the_user_should_be_required
-    CustomField.delete_all
+    CustomField.destroy_all
     field = IssueCustomField.generate!(:is_required => true, :visible => false, :role_ids => [1], :trackers => Tracker.all, :is_for_all => true)
     user = User.generate!
     User.add_to_project(user, Project.find(1), Role.find(1))
@@ -1394,7 +1421,7 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   def test_copy_should_clear_subtasks_target_version_if_locked_or_closed
-    version = Version.new(:project => Project.find(1), :name => '2.1',)
+    version = Version.new(:project => Project.find(1), :name => '2.1')
     version.save!
 
     parent = Issue.generate!
@@ -1477,8 +1504,8 @@ class IssueTest < ActiveSupport::TestCase
     IssueRelation.create!(:issue_from => issue2, :issue_to => issue1,
                           :relation_type => IssueRelation::TYPE_DUPLICATES)
     # And 3 is a dupe of 2
-#    IssueRelation.create!(:issue_from => issue3, :issue_to => issue2,
-#                          :relation_type => IssueRelation::TYPE_DUPLICATES)
+    IssueRelation.create!(:issue_from => issue3, :issue_to => issue2,
+                          :relation_type => IssueRelation::TYPE_DUPLICATES)
     # And 3 is a dupe of 1 (circular duplicates)
     IssueRelation.create!(:issue_from => issue3, :issue_to => issue1,
                           :relation_type => IssueRelation::TYPE_DUPLICATES)
@@ -1492,6 +1519,23 @@ class IssueTest < ActiveSupport::TestCase
     # 2 and 3 should be also closed
     assert issue2.reload.closed?
     assert issue3.reload.closed?
+  end
+
+  def test_should_not_close_duplicate_when_disabled
+    issue = Issue.generate!
+    duplicate = Issue.generate!
+
+    IssueRelation.create!(:issue_from => duplicate, :issue_to => issue,
+                          :relation_type => IssueRelation::TYPE_DUPLICATES)
+    assert issue.reload.duplicates.include?(duplicate)
+
+    with_settings :close_duplicate_issues => '0' do
+      issue.init_journal(User.first, "Closing issue")
+      issue.status = IssueStatus.where(:is_closed => true).first
+      issue.save
+    end
+
+    assert !duplicate.reload.closed?
   end
 
   def test_should_close_duplicates_with_private_notes
@@ -1812,8 +1856,9 @@ class IssueTest < ActiveSupport::TestCase
     parent.reload
     parent.project_id = project.id
     assert !parent.save
-    assert_include "Subtask ##{child.id} could not be moved to the new project: Tracker is not included in the list",
-      parent.errors[:base]
+    assert_include(
+      "Subtask ##{child.id} could not be moved to the new project: Tracker is not included in the list",
+      parent.errors[:base])
   end
 
   def test_copy_to_the_same_project
@@ -1936,10 +1981,16 @@ class IssueTest < ActiveSupport::TestCase
     user = User.find(3)
     user.members.update_all ["mail_notification = ?", false]
     user.update! :mail_notification => 'only_assigned'
-
     issue = Issue.find(2)
+
     issue.assigned_to = nil
     assert_include user.mail, issue.recipients
+    issue.save!
+    assert_include user.mail, issue.recipients
+
+    issue.assigned_to = User.find(2)
+    issue.save!
+    assert !issue.recipients.include?(user.mail)
   end
 
   def test_recipients_should_not_include_users_that_cannot_view_the_issue
@@ -2116,18 +2167,30 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   def test_rescheduling_an_issue_to_a_later_due_date_should_reschedule_following_issue
-    issue1 = Issue.generate!(:start_date => '2012-10-15', :due_date => '2012-10-17')
-    issue2 = Issue.generate!(:start_date => '2012-10-15', :due_date => '2012-10-17')
-    IssueRelation.create!(:issue_from => issue1, :issue_to => issue2,
-                          :relation_type => IssueRelation::TYPE_PRECEDES)
-    assert_equal Date.parse('2012-10-18'), issue2.reload.start_date
+    with_settings :non_working_week_days => [] do
+      issue1 = Issue.generate!(:start_date => '2012-10-15', :due_date => '2012-10-17')
+      issue2 = Issue.generate!(:start_date => '2012-10-15', :due_date => '2012-10-17')
+      IssueRelation.create!(:issue_from => issue1, :issue_to => issue2,
+                            :relation_type => IssueRelation::TYPE_PRECEDES)
+      assert_equal Date.parse('2012-10-18'), issue2.reload.start_date
 
-    issue1.reload
-    issue1.due_date = '2012-10-23'
-    issue1.save!
-    issue2.reload
-    assert_equal Date.parse('2012-10-24'), issue2.start_date
-    assert_equal Date.parse('2012-10-26'), issue2.due_date
+      issue1.reload
+      issue1.due_date = '2012-10-23'
+      issue1.save!
+      issue2.reload
+      assert_equal Date.parse('2012-10-24'), issue2.start_date
+      assert_equal Date.parse('2012-10-26'), issue2.due_date
+    end
+
+    # The delay should honor non-working week days
+    with_settings :non_working_week_days => %w(6 7) do
+      issue1 = Issue.generate!(:start_date => '2014-03-10', :due_date => '2014-03-12')
+      issue2 = Issue.generate!(:start_date => '2014-03-10', :due_date => '2014-03-12')
+      IssueRelation.create!(:issue_from => issue1, :issue_to => issue2,
+                            :relation_type => IssueRelation::TYPE_PRECEDES,
+                            :delay => 8)
+      assert_equal Date.parse('2014-03-25'), issue2.reload.start_date
+    end
   end
 
   def test_rescheduling_an_issue_to_an_earlier_due_date_should_reschedule_following_issue
@@ -2170,7 +2233,6 @@ class IssueTest < ActiveSupport::TestCase
       assert_equal '2012-10-26', due_date_detail.value
     end
   end
-
 
   def test_rescheduling_reschedule_following_issue_earlier_should_consider_other_preceding_issues
     issue1 = Issue.generate!(:start_date => '2012-10-15', :due_date => '2012-10-17')
@@ -2440,7 +2502,7 @@ class IssueTest < ActiveSupport::TestCase
     assert_equal 2, assignable_user_ids.length
 
     assignable_user_ids.each do |user_id|
-      assert_equal 1, assignable_user_ids.select {|i| i == user_id}.length,
+      assert_equal 1, assignable_user_ids.count {|i| i == user_id},
                    "User #{user_id} appears more or less than once"
     end
   end
@@ -2494,7 +2556,7 @@ class IssueTest < ActiveSupport::TestCase
                       :subject => 'test_create', :estimated_hours => '1:30')
     with_settings :notified_events => %w(issue_added) do
       assert issue.save
-      assert_equal 1, ActionMailer::Base.deliveries.size
+      assert_equal 2, ActionMailer::Base.deliveries.size
     end
   end
 
@@ -2506,7 +2568,7 @@ class IssueTest < ActiveSupport::TestCase
                       :subject => 'test_create', :estimated_hours => '1:30')
     with_settings :notified_events => %w(issue_added issue_updated) do
       assert issue.save
-      assert_equal 1, ActionMailer::Base.deliveries.size
+      assert_equal 2, ActionMailer::Base.deliveries.size
     end
   end
 
@@ -2524,15 +2586,17 @@ class IssueTest < ActiveSupport::TestCase
 
   def test_update_should_notify_previous_assignee
     ActionMailer::Base.deliveries.clear
-    user = User.generate!(:mail_notification => 'only_assigned')
-    Issue.where(:id => 2).update_all(:assigned_to_id => user.id)
+    user = User.find(3)
+    user.members.update_all ["mail_notification = ?", false]
+    user.update! :mail_notification => 'only_assigned'
 
     with_settings :notified_events => %w(issue_updated) do
       issue = Issue.find(2)
       issue.init_journal User.find(1)
       issue.assigned_to = nil
       issue.save!
-      assert_include user.mail, ActionMailer::Base.deliveries.last.bcc
+
+      assert_include [user.mail], ActionMailer::Base.deliveries.map(&:bcc)
     end
   end
 
@@ -2545,7 +2609,7 @@ class IssueTest < ActiveSupport::TestCase
     issue.subject = 'Subjet update'
     with_settings :notified_events => %w(issue_updated) do
       assert issue.save
-      assert_equal 1, ActionMailer::Base.deliveries.size
+      assert_equal 2, ActionMailer::Base.deliveries.size
       ActionMailer::Base.deliveries.clear
 
       stale.init_journal(User.find(1))
@@ -2720,45 +2784,63 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   test "#by_tracker" do
-    User.current = User.anonymous
+    User.current = User.find(2)
     groups = Issue.by_tracker(Project.find(1))
-    assert_equal 3, groups.count
+    groups_containing_subprojects = Issue.by_tracker(Project.find(1), true)
     assert_equal 7, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 13, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_version" do
-    User.current = User.anonymous
-    groups = Issue.by_version(Project.find(1))
-    assert_equal 3, groups.count
+    User.current = User.find(2)
+    project = Project.find(1)
+    Issue.generate!(:project_id => project.descendants.visible.first, :fixed_version_id => project.shared_versions.find_by(:sharing => 'tree').id)
+
+    groups = Issue.by_version(project)
+    groups_containing_subprojects = Issue.by_version(project, true)
     assert_equal 3, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 4, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_priority" do
-    User.current = User.anonymous
-    groups = Issue.by_priority(Project.find(1))
-    assert_equal 4, groups.count
+    User.current = User.find(2)
+    project = Project.find(1)
+    groups = Issue.by_priority(project)
+    groups_containing_subprojects = Issue.by_priority(project, true)
     assert_equal 7, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 13, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_category" do
-    User.current = User.anonymous
-    groups = Issue.by_category(Project.find(1))
-    assert_equal 2, groups.count
+    User.current = User.find(2)
+    project = Project.find(1)
+    issue_category = IssueCategory.create(:project => project.descendants.visible.first, :name => 'test category')
+    Issue.generate!(:project_id => project.descendants.visible.first, :category_id => issue_category.id)
+
+    groups = Issue.by_category(project)
+    groups_containing_subprojects = Issue.by_category(project, true)
     assert_equal 3, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 4, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_assigned_to" do
-    User.current = User.anonymous
-    groups = Issue.by_assigned_to(Project.find(1))
-    assert_equal 2, groups.count
+    User.current = User.find(2)
+    project = Project.find(1)
+    Issue.generate!(:project_id => project.descendants.visible.first, :assigned_to => User.current)
+
+    groups = Issue.by_assigned_to(project)
+    groups_containing_subprojects = Issue.by_assigned_to(project, true)
     assert_equal 2, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 3, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_author" do
-    User.current = User.anonymous
-    groups = Issue.by_author(Project.find(1))
-    assert_equal 4, groups.count
+    User.current = User.find(2)
+    project = Project.find(1)
+    groups = Issue.by_author(project)
+    groups_containing_subprojects = Issue.by_author(project, true)
     assert_equal 7, groups.inject(0) {|sum, group| sum + group['total'].to_i}
+    assert_equal 13, groups_containing_subprojects.inject(0) {|sum, group| sum + group['total'].to_i}
   end
 
   test "#by_subproject" do
@@ -2770,7 +2852,7 @@ class IssueTest < ActiveSupport::TestCase
   end
 
   def test_recently_updated_scope
-    #should return the last updated issue
+    # should return the last updated issue
     assert_equal Issue.reorder("updated_on DESC").first, Issue.recently_updated.limit(1).first
   end
 
@@ -3111,14 +3193,14 @@ class IssueTest < ActiveSupport::TestCase
     assert_equal IssueStatus.find(3), issue.status
   end
 
-  def test_assigned_to_was_with_a_group
+  def test_previous_assignee_with_a_group
     group = Group.find(10)
     Member.create!(:project_id => 1, :principal => group, :role_ids => [1])
 
     with_settings :issue_group_assignment => '1' do
       issue = Issue.generate!(:assigned_to => group)
       issue.reload.assigned_to = nil
-      assert_equal group, issue.assigned_to_was
+      assert_equal group, issue.previous_assignee
     end
   end
 
@@ -3145,6 +3227,5 @@ class IssueTest < ActiveSupport::TestCase
     # March 21st and the issue should be marked overdue
     User.current = user_in_asia
     assert issue.overdue?
-
   end
 end

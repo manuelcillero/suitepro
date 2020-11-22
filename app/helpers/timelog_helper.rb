@@ -1,7 +1,7 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,6 +42,12 @@ module TimelogHelper
     collection
   end
 
+  def user_collection_for_select_options(time_entry)
+    collection = time_entry.assignable_users
+    collection << time_entry.user unless time_entry.user.nil? && !collection.include?(time_entry.user)
+    principals_options_for_select(collection, time_entry.user_id.to_s)
+  end
+
   def select_hours(data, criteria, value)
     if value.to_s.empty?
       data.select {|row| row[criteria].blank? }
@@ -58,15 +64,19 @@ module TimelogHelper
     sum
   end
 
-  def format_criteria_value(criteria_options, value)
+  def format_criteria_value(criteria_options, value, html=true)
     if value.blank?
       "[#{l(:label_none)}]"
     elsif k = criteria_options[:klass]
       obj = k.find_by_id(value.to_i)
       if obj.is_a?(Issue)
-        obj.visible? ? "#{obj.tracker} ##{obj.id}: #{obj.subject}" : "##{obj.id}"
+        if obj.visible?
+          html ? link_to_issue(obj) : "#{obj.tracker} ##{obj.id}: #{obj.subject}"
+        else
+          "##{obj.id}"
+        end
       else
-        obj
+        format_object(obj, html)
       end
     elsif cf = criteria_options[:custom_field]
       format_value(value, cf)
@@ -76,9 +86,9 @@ module TimelogHelper
   end
 
   def report_to_csv(report)
-    Redmine::Export::CSV.generate do |csv|
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
       # Column headers
-      headers = report.criteria.collect {|criteria| l(report.available_criteria[criteria][:label]) }
+      headers = report.criteria.collect {|criteria| l_or_humanize(report.available_criteria[criteria][:label]) }
       headers += report.periods
       headers << l(:label_total_time)
       csv << headers
@@ -103,7 +113,7 @@ module TimelogHelper
       hours_for_value = select_hours(hours, criteria[level], value)
       next if hours_for_value.empty?
       row = [''] * level
-      row << format_criteria_value(available_criteria[criteria[level]], value).to_s
+      row << format_criteria_value(available_criteria[criteria[level]], value, false).to_s
       row += [''] * (criteria.length - level - 1)
       total = 0
       periods.each do |period|
@@ -118,4 +128,10 @@ module TimelogHelper
       end
     end
   end
+
+  def cancel_button_tag_for_time_entry(project)
+    fallback_path = project ? project_time_entries_path(project) : time_entries_path
+    cancel_button_tag(fallback_path)
+  end
+
 end

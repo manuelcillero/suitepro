@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,7 +19,7 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class RepositoriesSubversionControllerTest < Redmine::ControllerTest
+class RepositoriesSubversionControllerTest < Redmine::RepositoryControllerTest
   tests RepositoriesController
 
   fixtures :projects, :users, :email_addresses, :roles, :members, :member_roles, :enabled_modules,
@@ -28,6 +30,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
   NUM_REV = 11
 
   def setup
+    super
     Setting.default_language = 'en'
     User.current = nil
 
@@ -64,7 +67,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_select 'table.entries tbody' do
         assert_select 'tr', 1
         assert_select 'tr.dir td.filename a', :text => 'subversion_test'
-        assert_select 'tr.dir td.filename a[href=?]', '/projects/subproject1/repository/show/subversion_test'
+        assert_select 'tr.dir td.filename a[href=?]', "/projects/subproject1/repository/#{@repository.id}/show/subversion_test"
       end
 
       assert_select 'table.changesets tbody' do
@@ -75,7 +78,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_select 'input[name=rev]'
       assert_select 'a', :text => 'Statistics'
       assert_select 'a', :text => 'Atom'
-      assert_select 'a[href=?]', '/projects/subproject1/repository', :text => 'root'
+      assert_select 'a[href=?]', "/projects/subproject1/repository/#{@repository.id}", :text => 'root'
     end
 
     def test_show_non_default
@@ -101,6 +104,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :show, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test'])[:param]
         }
       assert_response :success
@@ -124,6 +128,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :show, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test'])[:param],
           :rev => 4
         }
@@ -146,6 +151,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :changes, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'folder', 'helloworld.rb'])[:param]
         }
       assert_response :success
@@ -173,6 +179,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :changes, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'folder'])[:param]
         }
       assert_response :success
@@ -195,6 +202,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'helloworld.c'])[:param]
         }
       assert_response :success
@@ -211,6 +219,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       with_settings :file_max_size_displayed => 0 do
         get :entry, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['subversion_test', 'helloworld.c'])[:param]
           }
         assert_response :success
@@ -222,10 +231,11 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
     def test_entry_should_display_images
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'folder', 'subfolder', 'rubylogo.gif'])[:param]
         }
       assert_response :success
-      assert_select 'img[src=?]', '/projects/subproject1/repository/raw/subversion_test/folder/subfolder/rubylogo.gif'
+      assert_select 'img[src=?]', "/projects/subproject1/repository/#{@repository.id}/raw/subversion_test/folder/subfolder/rubylogo.gif"
     end
 
     def test_entry_at_given_revision
@@ -235,6 +245,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'helloworld.rb'])[:param],
           :rev => 2
         }
@@ -250,6 +261,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'zzz.c'])[:param]
         }
       assert_select 'p#errorExplanation', :text => /The entry or revision was not found in the repository/
@@ -262,6 +274,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :raw, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'helloworld.c'])[:param]
         }
       assert_response :success
@@ -275,6 +288,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'folder'])[:param]
         }
       assert_response :success
@@ -286,6 +300,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
     def test_revision
       get :revision, :params => {
           :id => 1,
+          :repository_id => 10,
           :rev => 2
         }
       assert_response :success
@@ -293,9 +308,9 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_select 'ul' do
         assert_select 'li' do
           # link to the entry at rev 2
-          assert_select 'a[href=?]', '/projects/ecookbook/repository/revisions/2/entry/test/some/path/in/the/repo', :text => 'repo'
+          assert_select 'a[href=?]', '/projects/ecookbook/repository/10/revisions/2/entry/test/some/path/in/the/repo', :text => 'repo'
           # link to partial diff
-          assert_select 'a[href=?]', '/projects/ecookbook/repository/revisions/2/diff/test/some/path/in/the/repo'
+          assert_select 'a[href=?]', '/projects/ecookbook/repository/10/revisions/2/diff/test/some/path/in/the/repo'
         end
       end
     end
@@ -307,6 +322,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :revision, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => 'something_weird'
         }
       assert_response 404
@@ -316,6 +332,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
     def test_invalid_revision_diff
       get :diff, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => '1',
           :rev_to => 'something_weird'
         }
@@ -331,6 +348,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       ['', ' ', nil].each do |r|
         get :revision, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => r
           }
         assert_response 404
@@ -346,6 +364,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
 
       get :revision, :params => {
           :id => 1,
+          :repository_id => 10,
           :rev => 2
         }
       assert_response :success
@@ -353,9 +372,9 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_select 'ul' do
         assert_select 'li' do
           # link to the entry at rev 2
-          assert_select 'a[href=?]', '/projects/ecookbook/repository/revisions/2/entry/path/in/the/repo', :text => 'repo'
+          assert_select 'a[href=?]', '/projects/ecookbook/repository/10/revisions/2/entry/path/in/the/repo', :text => 'repo'
           # link to partial diff
-          assert_select 'a[href=?]', '/projects/ecookbook/repository/revisions/2/diff/path/in/the/repo'
+          assert_select 'a[href=?]', '/projects/ecookbook/repository/10/revisions/2/diff/path/in/the/repo'
         end
       end
     end
@@ -368,6 +387,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       ['inline', 'sbs'].each do |dt|
         get :diff, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => 3,
             :type => dt
           }
@@ -385,6 +405,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
 
       get :diff, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => 5,
           :format => 'diff'
         }
@@ -401,6 +422,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       ['inline', 'sbs'].each do |dt|
         get :diff, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => 6,
             :rev_to => 2,
             :path => repository_path_hash(['subversion_test', 'folder'])[:param],
@@ -423,6 +445,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :annotate, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['subversion_test', 'helloworld.c'])[:param]
         }
       assert_response :success
@@ -448,6 +471,7 @@ class RepositoriesSubversionControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :annotate, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => 8,
           :path => repository_path_hash(['subversion_test', 'helloworld.c'])[:param]
         }

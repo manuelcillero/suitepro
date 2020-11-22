@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,7 +19,7 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
+class RepositoriesFilesystemControllerTest < Redmine::RepositoryControllerTest
   tests RepositoriesController
 
   fixtures :projects, :users, :email_addresses, :roles, :members, :member_roles,
@@ -27,6 +29,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
   PRJ_ID = 3
 
   def setup
+    super
     @ruby19_non_utf8_pass = Encoding.default_external.to_s != 'UTF-8'
     User.current = nil
     Setting.enabled_scm << 'Filesystem' unless Setting.enabled_scm.include?('Filesystem')
@@ -78,6 +81,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
     def test_show_no_extension
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['test'])[:param]
         }
       assert_response :success
@@ -87,6 +91,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
     def test_entry_download_no_extension
       get :raw, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['test'])[:param]
         }
       assert_response :success
@@ -97,6 +102,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
       with_settings :repositories_encodings => 'UTF-8,EUC-JP' do
         get :entry, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['japanese', 'euc-jp.txt'])[:param]
           }
         assert_response :success
@@ -106,8 +112,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
                "when Encoding.default_external is not UTF-8. " +
                "Current value is '#{Encoding.default_external.to_s}'"
         else
-          str_japanese = "\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e".force_encoding('UTF-8')
-          assert_select 'tr#L3 td.line-code', :text => /#{str_japanese}/
+          assert_select 'tr#L3 td.line-code', :text => /日本語/
         end
       end
     end
@@ -117,6 +122,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
       with_settings :repositories_encodings => enc do
         get :entry, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['japanese', 'utf-16.txt'])[:param]
           }
         assert_response :success
@@ -128,6 +134,7 @@ class RepositoriesFilesystemControllerTest < Redmine::ControllerTest
       with_settings :file_max_size_displayed => 1 do
         get :entry, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['japanese', 'big-file.txt'])[:param]
           }
         assert_response :success

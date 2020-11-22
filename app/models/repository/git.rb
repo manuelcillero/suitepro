@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 # Copyright (C) 2007  Patrick Aljord patcito@ŋmail.com
 #
 # This program is free software; you can redistribute it and/or
@@ -19,7 +21,6 @@
 require 'redmine/scm/adapters/git_adapter'
 
 class Repository::Git < Repository
-  attr_protected :root_url
   validates_presence_of :url
 
   safe_attributes 'report_last_commit'
@@ -46,7 +47,7 @@ class Repository::Git < Repository
     return false if v.nil?
     v.to_s != '0'
   end
- 
+
   def report_last_commit=(arg)
     merge_extra_info "extra_report_last_commit" => arg
   end
@@ -83,14 +84,14 @@ class Repository::Git < Repository
 
   def default_branch
     scm.default_branch
-  rescue Exception => e
+  rescue => e
     logger.error "git: error during get default branch: #{e.message}"
     nil
   end
 
   def find_changeset_by_name(name)
     if name.present?
-      changesets.where(:revision => name.to_s).first ||
+      changesets.find_by(:revision => name.to_s) ||
         changesets.where('scmid LIKE ?', "#{name}%").first
     end
   end

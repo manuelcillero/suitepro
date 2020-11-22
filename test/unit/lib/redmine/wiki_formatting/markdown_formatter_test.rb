@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -58,24 +60,24 @@ class Redmine::WikiFormatting::MarkdownFormatterTest < ActionView::TestCase
     assert_include 'version:"1.0"', @formatter.new(text).to_html
   end
 
-  def test_should_support_syntax_highligth
-    text = <<-STR
-~~~ruby
-def foo
-end
-~~~
-STR
+  def test_should_support_syntax_highlight
+    text = <<~STR
+      ~~~ruby
+      def foo
+      end
+      ~~~
+    STR
     assert_select_in @formatter.new(text).to_html, 'pre code.ruby.syntaxhl' do
-      assert_select 'span.keyword', :text => 'def'
+      assert_select 'span.k', :text => 'def'
     end
   end
 
   def test_should_not_allow_invalid_language_for_code_blocks
-    text = <<-STR
-~~~foo
-test
-~~~
-STR
+    text = <<~STR
+      ~~~foo
+      test
+      ~~~
+    STR
     assert_equal "<pre>test\n</pre>", @formatter.new(text).to_html
   end
 
@@ -90,43 +92,76 @@ STR
   end
 
   def test_markdown_should_not_require_surrounded_empty_line
-    text = <<-STR
-This is a list:
-* One
-* Two
-STR
+    text = <<~STR
+      This is a list:
+      * One
+      * Two
+    STR
     assert_equal "<p>This is a list:</p>\n\n<ul>\n<li>One</li>\n<li>Two</li>\n</ul>", @formatter.new(text).to_html.strip
   end
 
-  STR_WITH_PRE = [
-  # 0
-"# Title
+  def test_footnotes
+    text = <<~STR
+      This is some text[^1].
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sed libero.",
-  # 1
-"## Heading 2
+      [^1]: This is the foot note
+    STR
+    expected = <<~EXPECTED
+      <p>This is some text<sup id="fnref1"><a href="#fn1">1</a></sup>.</p>
+      <div class="footnotes">
+      <hr>
+      <ol>
 
-~~~ruby
-  def foo
+      <li id="fn1">
+      <p>This is the foot note&nbsp;<a href="#fnref1">&#8617;</a></p>
+      </li>
+
+      </ol>
+      </div>
+    EXPECTED
+    assert_equal expected.gsub(%r{[\r\n\t]}, ''), @formatter.new(text).to_html.gsub(%r{[\r\n\t]}, '')
   end
->>>>>>> .merge-right.r17266
-~~~
 
-Morbi facilisis accumsan orci non pharetra.
+  STR_WITH_PRE = [
+    # 0
+    <<~STR.chomp,
+      # Title
 
-```
-Pre Content:
+      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sed libero.
+    STR
+    # 1
+    <<~STR.chomp,
+      ## Heading 2
 
-## Inside pre
+      ~~~ruby
+        def foo
+        end
+      ~~~
 
-<tag> inside pre block
+      Morbi facilisis accumsan orci non pharetra.
 
-Morbi facilisis accumsan orci non pharetra.
-```",
-  # 2
-"### Heading 3
+      ~~~ ruby
+      def foo
+      end
+      ~~~
 
-Nulla nunc nisi, egestas in ornare vel, posuere ac libero."]
+      ```
+      Pre Content:
+
+      ## Inside pre
+
+      <tag> inside pre block
+
+      Morbi facilisis accumsan orci non pharetra.
+      ```
+    STR
+    # 2
+    <<~STR.chomp,
+      ### Heading 3
+
+      Nulla nunc nisi, egestas in ornare vel, posuere ac libero.
+    STR
+  ]
 
   def test_get_section_should_ignore_pre_content
     text = STR_WITH_PRE.join("\n\n")
@@ -143,6 +178,11 @@ Nulla nunc nisi, egestas in ornare vel, posuere ac libero."]
       @formatter.new(text).update_section(3, replacement)
   end
 
+  def test_should_support_underlined_text
+    text = 'This _text_ should be underlined'
+    assert_equal '<p>This <u>text</u> should be underlined</p>', @formatter.new(text).to_html.strip
+  end
+
   private
 
   def assert_section_with_hash(expected, text, index)
@@ -153,6 +193,5 @@ Nulla nunc nisi, egestas in ornare vel, posuere ac libero."]
     assert_equal expected, result.first, "section content did not match"
     assert_equal Digest::MD5.hexdigest(expected), result.last, "section hash did not match"
   end
-
   end
 end

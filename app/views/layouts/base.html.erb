@@ -2,30 +2,27 @@
 <html lang="<%= current_language %>">
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <title><%= html_title %></title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="<%= Redmine::Info.app_name %>" />
 <meta name="keywords" content="issue,bug,tracker" />
 <%= csrf_meta_tag %>
 <%= favicon %>
-<%= stylesheet_link_tag 'jquery/jquery-ui-1.11.0', 'cookieconsent.min', 'application', 'responsive', :media => 'all' %>
+<%= stylesheet_link_tag 'jquery/jquery-ui-1.11.0', 'tribute-3.7.3', 'application', 'responsive', :media => 'all' %>
 <%= stylesheet_link_tag 'rtl', :media => 'all' if l(:direction) == 'rtl' %>
-<% is_welcome = !User.current.logged? && current_page?(:controller => 'welcome', :action => 'index') %>
-<%= stylesheet_link_tag 'frontpage', :media => 'all' if is_welcome %>
-
 <%= javascript_heads %>
-<script src="/themes/circlepro/javascripts/cookieconsent.min.js"></script>
 <%= heads_for_theme %>
 <%= call_hook :view_layouts_base_html_head %>
 <!-- page specific tags -->
 <%= yield :header_tags -%>
 </head>
-<body class="<%= body_css_classes %><%= ' is-preload' if is_welcome %>">
+<body class="<%= body_css_classes %>">
 <%= call_hook :view_layouts_base_body_top %>
 <div id="wrapper">
 
 <div class="flyout-menu js-flyout-menu">
+
 
     <% if User.current.logged? || !Setting.login_required? %>
         <div class="flyout-menu__search">
@@ -63,60 +60,50 @@
 
 <div id="wrapper2">
 <div id="wrapper3">
-
 <div id="top-menu">
-    <div id="wrapper-top-menu">
-    <ul class="social-menu">
-        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="<%= l(:link_my_blog) %>" class="icon-blog"><span><%= l(:link_my_blog) %></span></a></li>
-        <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
-        <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
-        <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
-        <li class="social-link-gitlab"><a href="https://gitlab.com/manuelcillero" title="Gitlab" target="_blank" class="icon-gitlab"><span>Gitlab</span></a></li>
-        <li class="social-link-mail"><a href="https://manuel.cillero.es/contacto/#suitepro" title="Mail" class="icon-mail"><span>Mail</span></a></li>
-    </ul>
     <div id="account">
         <%= render_menu :account_menu -%>
     </div>
     <%= content_tag('div', "#{l(:label_logged_as)} #{link_to_user(User.current, :format => :username)}".html_safe, :id => 'loggedas') if User.current.logged? %>
     <%= render_menu :top_menu if User.current.logged? || !Setting.login_required? -%>
-    </div>
 </div>
 
 <div id="header">
+
     <a href="#" class="mobile-toggle-button js-flyout-menu-toggle-button"></a>
 
-    <div id="wrapper-header">
     <% if User.current.logged? || !Setting.login_required? %>
-    <div id="quick-search" class="hide-when-print">
+    <div id="quick-search">
         <%= form_tag({:controller => 'search', :action => 'index', :id => @project}, :method => :get ) do %>
         <%= hidden_field_tag 'scope', default_search_project_scope, :id => nil %>
         <%= hidden_field_tag(controller.default_search_scope, 1, :id => nil) if controller.default_search_scope %>
         <label for='q'>
           <%= link_to l(:label_search), {:controller => 'search', :action => 'index', :id => @project, :scope => default_search_project_scope}, :accesskey => accesskey(:search) %>:
         </label>
-        <%= text_field_tag 'q', @question, :size => 20, :class => 'small', :accesskey => accesskey(:quick_search) %>
+        <%= text_field_tag 'q', @question, :size => 20, :class => 'small', :accesskey => accesskey(:quick_search),
+                            :data => {
+                                :auto_complete => true,
+                                :issues_url => auto_complete_issues_path(:q => '')
+                            } %>
         <% end %>
         <%= render_project_jump_box %>
     </div>
     <% end %>
+
     <h1><%= page_header_title %></h1>
-    </div>
 
     <% if display_main_menu?(@project) %>
     <div id="main-menu" class="tabs">
-        <div id="wrapper-main-menu">
         <%= render_main_menu(@project) %>
         <div class="tabs-buttons" style="display:none;">
             <button class="tab-left" onclick="moveTabLeft(this); return false;"></button>
             <button class="tab-right" onclick="moveTabRight(this); return false;"></button>
-        </div>
         </div>
     </div>
     <% end %>
 </div>
 
 <div id="main" class="<%= sidebar_content? ? '' : 'nosidebar' %>">
-    <div id="wrapper-main">
     <div id="sidebar">
         <%= yield :sidebar %>
         <%= view_layouts_base_sidebar_hook_response %>
@@ -128,54 +115,17 @@
         <%= call_hook :view_layouts_base_content %>
         <div style="clear:both;"></div>
     </div>
-    </div>
 </div>
-
-</div> <!-- #wrapper3 -->
-
-<a href="#" id="scrollup" class="hide-when-print" style="display: none;"><%=l(:label_sort_higher)%></a><%= javascript_tag "$('#scrollup').click(function(){$('html,body').animate({scrollTop:0},600);return false;});" %>
+<div id="footer">
+    Powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %> &copy; 2006-2020 Jean-Philippe Lang
+</div>
+</div>
 
 <div id="ajax-indicator" style="display:none;"><span><%= l(:label_loading) %></span></div>
 <div id="ajax-modal" style="display:none;"></div>
 
-<div id="footer">
-<div id="wrapper-footer">
-    <ul class="social-menu">
-        <li class="social-link-blog"><a href="https://manuel.cillero.es" title="<%= l(:link_my_blog) %>" class="icon-blog"><span><%= l(:link_my_blog) %></span></a></li>
-        <li class="social-link-twitter"><a href="https://twitter.com/manuelcillero" title="Twitter" target="_blank" class="icon-twitter"><span>Twitter</span></a></li>
-        <li class="social-link-facebook"><a href="https://facebook.com/manuelcillero" title="Facebook" target="_blank" class="icon-facebook"><span>Facebook</span></a></li>
-        <li class="social-link-linkedin"><a href="https://es.linkedin.com/in/manuelcillero" title="Linkedin" target="_blank" class="icon-linkedin"><span>Linkedin</span></a></li>
-        <li class="social-link-gitlab"><a href="https://gitlab.com/manuelcillero" title="Gitlab" target="_blank" class="icon-gitlab"><span>Gitlab</span></a></li>
-        <li class="social-link-mail"><a href="https://manuel.cillero.es/contacto/#suitepro" title="Mail" class="icon-mail"><span>Mail</span></a></li>
-    </ul>
-    <div class="bgl"><div class="bgr">
-        <span class="copyright"><%= Time.current.year %> &copy; SuitePro <span class="powered">(powered by <%= link_to Redmine::Info.app_name, Redmine::Info.url %>)</span></span>
-        <div id="legal">
-        <span class="legal-legal"><a href="/projects/suitepro/wiki/Legal"><%= l(:label_legal) %></a></span>
-        <span class="legal-terms"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Condiciones_de_uso"><%= l(:label_legal_terms) %></a></span>
-        <span class="legal-privacy"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_privacidad"><%= l(:label_legal_privacy) %></a></span>
-        <span class="legal-cookies"> &nbsp;|&nbsp; <a href="/projects/suitepro/wiki/Política_de_cookies"><%= l(:label_legal_cookies) %></a></span>
-        </div>
-    </div></div>
 </div>
 </div>
-
-</div> <!-- #wrapper2 -->
-
-</div> <!-- #wrapper -->
 <%= call_hook :view_layouts_base_body_bottom %>
-
-<script>
-//<![CDATA[
-window.addEventListener("load", function(){
-window.cookieconsent.initialise({
-  "palette": { "popup": { "background": "rgba(20,20,20,0.8)" }, "button": { "background": "#fff" } },
-  "theme": "classic",
-  "position": "bottom-left",
-  "content": { "message": "<a href='https://suitepro.cillero.es'>SuitePro</a> requiere el uso de cookies para ofrecer la mejor experiencia de acceso a sus contenidos. Puedes aceptar su uso o abandonar la página si lo deseas.", "dismiss": "ACEPTO SU USO", "link": "Más información", "href": "/projects/suitepro/wiki/Pol%C3%ADtica_de_cookies", "target": "_self" }
-})});
-//]]>
-</script>
-
 </body>
 </html>

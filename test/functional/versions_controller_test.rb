@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,7 +36,9 @@ class VersionsControllerTest < Redmine::ControllerTest
     assert_response :success
 
     # Version with no date set appears
-    assert_select 'h3', :text => Version.find(3).name
+    assert_select 'h3', :text => "#{Version.find(3).name}"
+    assert_select 'span[class=?]', 'badge badge-status-open', :text => 'open'
+
     # Completed version doesn't appear
     assert_select 'h3', :text => Version.find(1).name, :count => 0
 
@@ -94,11 +98,70 @@ class VersionsControllerTest < Redmine::ControllerTest
     end
   end
 
+  def test_index_should_show_issue_assignee
+    with_settings :gravatar_enabled => '1' do
+      Issue.generate!(:project_id => 3, :fixed_version_id => 4, :assigned_to => User.find_by_login('jsmith'))
+      Issue.generate!(:project_id => 3, :fixed_version_id => 4)
+
+      get :index, :params => {:project_id => 3}
+      assert_response :success
+
+      assert_select 'table.related-issues' do
+        assert_select 'tr.issue', :count => 2 do
+          assert_select 'img.gravatar[title=?]', 'Assignee: John Smith', :count => 1
+        end
+      end
+    end
+  end
+
   def test_show
-    get :show, :params => {:id => 2}
+    with_settings :gravatar_enabled => '0' do
+      get :show, :params => {:id => 2}
+      assert_response :success
+
+      assert_select 'h2', :text => /1.0/
+      assert_select 'span[class=?]', 'badge badge-status-locked', :text => 'locked'
+
+      # no issue avatar when gravatar is disabled
+      assert_select 'img.gravatar', :count => 0
+    end
+  end
+
+  def test_show_should_show_issue_assignee
+    with_settings :gravatar_enabled => '1' do
+      get :show, :params => {:id => 2}
+      assert_response :success
+
+      assert_select 'table.related-issues' do
+        assert_select 'tr.issue td.assigned_to', :count => 2 do
+          assert_select 'img.gravatar[title=?]', 'Assignee: Dave Lopper', :count => 1
+        end
+      end
+    end
+  end
+
+  def test_show_issue_calculations_should_take_into_account_only_visible_issues
+    issue_9 = Issue.find(9)
+    issue_9.fixed_version_id = 4
+    issue_9.estimated_hours = 3
+    issue_9.save!
+
+    issue_13 = Issue.find(13)
+    issue_13.fixed_version_id = 4
+    issue_13.estimated_hours = 2
+    issue_13.save!
+
+    @request.session[:user_id] = 7
+
+    get :show, :params => {:id => 4}
     assert_response :success
 
-    assert_select 'h2', :text => /1.0/
+    assert_select 'p.progress-info' do
+      assert_select 'a', :text => '1 issue'
+      assert_select 'a', :text => '1 open'
+    end
+
+    assert_select '.time-tracking td.total-hours a:first-child', :text => '2.00 hours'
   end
 
   def test_show_should_link_to_spent_time_on_version
@@ -124,6 +187,33 @@ class VersionsControllerTest < Redmine::ControllerTest
         assert_select 'a', :text => 'none'
       end
     end
+  end
+
+  def test_show_should_round_down_progress_percentages
+    issue = Issue.find(12)
+    issue.estimated_hours = 40
+    issue.save!
+
+    with_settings :default_language => 'en' do
+      get :show, :params => {:id => 2}
+      assert_response :success
+
+      assert_select 'div.version-overview' do
+        assert_select 'table.progress-98' do
+          assert_select 'td[class=closed][title=?]', 'closed: 98%'
+          assert_select 'td[class=done][title=?]', '% Done: 99%'
+        end
+        assert_select 'p[class=percent]', :text => '99%'
+      end
+    end
+  end
+
+  def test_show_should_display_link_to_new_issue
+    @request.session[:user_id] = 1
+    get :show, :params => {:id => 3}
+
+    assert_response :success
+    assert_select 'a.icon.icon-add', :text => 'New issue'
   end
 
   def test_new

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -99,9 +101,6 @@ class User < Principal
   attr_accessor :last_before_login_on
   attr_accessor :remote_ip
 
-  # Prevents unauthorized assignments
-  attr_protected :password, :password_confirmation, :hashed_password
-
   LOGIN_LENGTH_LIMIT = 60
   MAIL_LENGTH_LIMIT = 60
 
@@ -113,6 +112,9 @@ class User < Principal
   validates_length_of :firstname, :lastname, :maximum => 30
   validates_length_of :identity_url, maximum: 255
   validates_inclusion_of :mail_notification, :in => MAIL_NOTIFICATION_OPTIONS.collect(&:first), :allow_blank => true
+  Setting::PASSWORD_CHAR_CLASSES.each do |k, v|
+    validates_format_of :password, :with => v, :message => :"must_contain_#{k}", :allow_blank => true, :if => Proc.new {Setting.password_required_char_classes.include?(k)}
+  end
   validate :validate_password_length
   validate do
     if password_confirmation && password != password_confirmation
@@ -242,7 +244,7 @@ class User < Principal
         end
       end
     end
-    user.update_column(:last_login_on, Time.now) if user && !user.new_record? && user.active?
+    user.update_last_login_on! if user && !user.new_record? && user.active?
     user
   rescue => text
     raise text
@@ -252,7 +254,7 @@ class User < Principal
   def self.try_to_autologin(key)
     user = Token.find_active_user('autologin', key, Setting.autologin.to_i)
     if user
-      user.update_column(:last_login_on, Time.now)
+      user.update_last_login_on!
       user
     end
   end
@@ -318,6 +320,12 @@ class User < Principal
     update_attribute(:status, STATUS_LOCKED)
   end
 
+  def update_last_login_on!
+    return if last_login_on.present? && last_login_on >= 1.minute.ago
+
+    update_column(:last_login_on, Time.now)
+  end
+
   # Returns true if +clear_password+ is the correct user's password, otherwise false
   def check_password?(clear_password)
     if auth_source_id.present?
@@ -337,8 +345,7 @@ class User < Principal
 
   # Does the backend storage allow this user to change their password?
   def change_password_allowed?
-    return true if auth_source.nil?
-    return auth_source.allow_password_changes?
+    auth_source.nil? ? true : auth_source.allow_password_changes?
   end
 
   # Returns true if the user password has expired
@@ -357,15 +364,27 @@ class User < Principal
   end
 
   def generate_password?
-    generate_password == '1' || generate_password == true
+    ActiveRecord::Type::Boolean.new.deserialize(generate_password)
   end
 
   # Generate and set a random password on given length
   def random_password(length=40)
-    chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
-    chars -= %w(0 O 1 l)
-    password = ''
-    length.times {|i| password << chars[SecureRandom.random_number(chars.size)] }
+    chars_list = [('A'..'Z').to_a, ('a'..'z').to_a, ('0'..'9').to_a]
+    # auto-generated passwords contain special characters only when admins
+    # require users to use passwords which contains special characters
+    if Setting.password_required_char_classes.include?('special_chars')
+      chars_list << ("\x20".."\x7e").to_a.select {|c| c =~ Setting::PASSWORD_CHAR_CLASSES['special_chars']}
+    end
+    chars_list.each {|v| v.reject! {|c| %(0O1l|'"`*).include?(c)}}
+
+    password = +''
+    chars_list.each do |chars|
+      password << chars[SecureRandom.random_number(chars.size)]
+      length -= 1
+    end
+    chars = chars_list.flatten
+    length.times { password << chars[SecureRandom.random_number(chars.size)] }
+    password = password.split('').shuffle(random: SecureRandom).join
     self.password = password
     self.password_confirmation = password
     self
@@ -489,7 +508,7 @@ class User < Principal
       user = where(:login => login).detect {|u| u.login == login}
       unless user
         # Fail over to case-insensitive if none was found
-        user = where("LOWER(login) = ?", login.downcase).first
+        user = find_by("LOWER(login) = ?", login.downcase)
       end
       user
     end
@@ -517,7 +536,7 @@ class User < Principal
     name
   end
 
-  CSS_CLASS_BY_STATUS = {
+  LABEL_BY_STATUS = {
     STATUS_ANONYMOUS  => 'anon',
     STATUS_ACTIVE     => 'active',
     STATUS_REGISTERED => 'registered',
@@ -525,7 +544,7 @@ class User < Principal
   }
 
   def css_classes
-    "user #{CSS_CLASS_BY_STATUS[status]}"
+    "user #{LABEL_BY_STATUS[status]}"
   end
 
   # Returns the current day according to user's time zone
@@ -539,10 +558,14 @@ class User < Principal
 
   # Returns the day of +time+ according to user's time zone
   def time_to_date(time)
-    if time_zone.nil?
-      time.to_date
+    self.convert_time_to_user_timezone(time).to_date
+  end
+
+  def convert_time_to_user_timezone(time)
+    if self.time_zone
+      time.in_time_zone(self.time_zone)
     else
-      time.in_time_zone(time_zone).to_date
+      time.utc? ? time.localtime : time
     end
   end
 
@@ -607,24 +630,24 @@ class User < Principal
     # eg. project.children.visible(user)
     Project.unscoped do
       return @project_ids_by_role if @project_ids_by_role
-  
+
       group_class = anonymous? ? GroupAnonymous : GroupNonMember
       group_id = group_class.pluck(:id).first
-  
+
       members = Member.joins(:project, :member_roles).
         where("#{Project.table_name}.status <> 9").
         where("#{Member.table_name}.user_id = ? OR (#{Project.table_name}.is_public = ? AND #{Member.table_name}.user_id = ?)", self.id, true, group_id).
         pluck(:user_id, :role_id, :project_id)
-  
+
       hash = {}
       members.each do |user_id, role_id, project_id|
         # Ignore the roles of the builtin group if the user is a member of the project
         next if user_id != id && project_ids.include?(project_id)
-  
+
         hash[role_id] ||= []
         hash[role_id] << project_id
       end
-  
+
       result = Hash.new([])
       if hash.present?
         roles = Role.where(:id => hash.keys).to_a
@@ -732,7 +755,8 @@ class User < Principal
       (!admin? || User.active.admin.where("id <> ?", id).exists?)
   end
 
-  safe_attributes 'firstname',
+  safe_attributes(
+    'firstname',
     'lastname',
     'mail',
     'mail_notification',
@@ -740,21 +764,21 @@ class User < Principal
     'language',
     'custom_field_values',
     'custom_fields',
-    'identity_url'
-
-  safe_attributes 'login',
-    :if => lambda {|user, current_user| user.new_record?}
-
-  safe_attributes 'status',
+    'identity_url')
+  safe_attributes(
+    'login',
+    :if => lambda {|user, current_user| user.new_record?})
+  safe_attributes(
+    'status',
     'auth_source_id',
     'generate_password',
     'must_change_passwd',
     'login',
     'admin',
-    :if => lambda {|user, current_user| current_user.admin?}
-
-  safe_attributes 'group_ids',
-    :if => lambda {|user, current_user| current_user.admin? && !user.new_record?}
+    :if => lambda {|user, current_user| current_user.admin?})
+  safe_attributes(
+    'group_ids',
+    :if => lambda {|user, current_user| current_user.admin? && !user.new_record?})
 
   # Utility method to help check if a user should be notified about an
   # event.
@@ -771,9 +795,9 @@ class User < Principal
         case mail_notification
         when 'selected', 'only_my_events'
           # user receives notifications for created/assigned issues on unselected projects
-          object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+          object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.previous_assignee)
         when 'only_assigned'
-          is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+          is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.previous_assignee)
         when 'only_owner'
           object.author == self
         end
@@ -795,7 +819,7 @@ class User < Principal
   # Returns the anonymous user.  If the anonymous user does not exist, it is created.  There can be only
   # one anonymous user per database.
   def self.anonymous
-    anonymous_user = AnonymousUser.unscoped.first
+    anonymous_user = AnonymousUser.unscoped.find_by(:lastname => 'Anonymous')
     if anonymous_user.nil?
       anonymous_user = AnonymousUser.unscoped.create(:lastname => 'Anonymous', :firstname => '', :login => '', :status => 0)
       raise 'Unable to create the anonymous user.' if anonymous_user.new_record?
@@ -815,6 +839,13 @@ class User < Principal
         User.where(:id => user.id).update_all(:salt => salt, :hashed_password => hashed_password)
       end
     end
+  end
+
+  def bookmarked_project_ids
+    project_ids = []
+    bookmarked_project_ids = self.pref[:bookmarked_project_ids]
+    project_ids = bookmarked_project_ids.split(',') unless bookmarked_project_ids.nil?
+    project_ids.map(&:to_i)
   end
 
   protected
@@ -845,7 +876,7 @@ class User < Principal
   # This helps to keep the account secure in case the associated email account
   # was compromised.
   def destroy_tokens
-    if hashed_password_changed? || (status_changed? && !active?)
+    if saved_change_to_hashed_password? || (saved_change_to_status? && !active?)
       tokens = ['recovery', 'autologin', 'session']
       Token.where(:user_id => id, :action => tokens).delete_all
     end
@@ -880,14 +911,17 @@ class User < Principal
     WikiContent::Version.where(['author_id = ?', id]).update_all(['author_id = ?', substitute.id])
   end
 
-  # Return password digest
-  def self.hash_password(clear_password)
-    Digest::SHA1.hexdigest(clear_password || "")
-  end
+  # Singleton class method is public
+  class << self
+    # Return password digest
+    def hash_password(clear_password)
+      Digest::SHA1.hexdigest(clear_password || "")
+    end
 
-  # Returns a 128bits random salt as a hex string (32 chars long)
-  def self.generate_salt
-    Redmine::Utils.random_hex(16)
+    # Returns a 128bits random salt as a hex string (32 chars long)
+    def generate_salt
+      Redmine::Utils.random_hex(16)
+    end
   end
 
   # Send a security notification to all admins if the user has gained/lost admin privileges
@@ -900,16 +934,16 @@ class User < Principal
     }
 
     deliver = false
-    if (admin? && id_changed? && active?) ||    # newly created admin
-       (admin? && admin_changed? && active?) || # regular user became admin
-       (admin? && status_changed? && active?)   # locked admin became active again
+    if (admin? && saved_change_to_id? && active?) ||    # newly created admin
+       (admin? && saved_change_to_admin? && active?) || # regular user became admin
+       (admin? && saved_change_to_status? && active?)   # locked admin became active again
 
        deliver = true
        options[:message] = :mail_body_security_notification_add
 
     elsif (admin? && destroyed? && active?) ||      # active admin user was deleted
-          (!admin? && admin_changed? && active?) || # admin is no longer admin
-          (admin? && status_changed? && !active?)   # admin was locked
+          (!admin? && saved_change_to_admin? && active?) || # admin is no longer admin
+          (admin? && saved_change_to_status? && !active?)   # admin was locked
 
           deliver = true
           options[:message] = :mail_body_security_notification_remove
@@ -917,7 +951,7 @@ class User < Principal
 
     if deliver
       users = User.active.where(admin: true).to_a
-      Mailer.security_notification(users, options).deliver
+      Mailer.deliver_security_notification(users, User.current, options)
     end
   end
 end

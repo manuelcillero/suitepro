@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,20 +19,18 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class RepositoriesMercurialControllerTest < Redmine::ControllerTest
+class RepositoriesMercurialControllerTest < Redmine::RepositoryControllerTest
   tests RepositoriesController
 
   fixtures :projects, :users, :email_addresses, :roles, :members, :member_roles,
            :repositories, :enabled_modules
 
   REPOSITORY_PATH = Rails.root.join('tmp/test/mercurial_repository').to_s
-  CHAR_1_HEX = "\xc3\x9c"
   PRJ_ID     = 3
   NUM_REV    = 34
 
-  ruby19_non_utf8_pass = Encoding.default_external.to_s != 'UTF-8'
-
   def setup
+    super
     User.current = nil
     @project    = Project.find(PRJ_ID)
     @repository = Repository::Mercurial.create(
@@ -40,13 +40,9 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
                       )
     assert @repository
     @diff_c_support = true
-    @char_1        = CHAR_1_HEX.dup.force_encoding('UTF-8')
-    @tag_char_1    = "tag-#{CHAR_1_HEX}-00".force_encoding('UTF-8')
-    @branch_char_0 = "branch-#{CHAR_1_HEX}-00".force_encoding('UTF-8')
-    @branch_char_1 = "branch-#{CHAR_1_HEX}-01".force_encoding('UTF-8')
   end
 
-  if ruby19_non_utf8_pass
+  if Encoding.default_external.to_s != 'UTF-8'
     puts "TODO: Mercurial functional test fails " +
          "when Encoding.default_external is not UTF-8. " +
          "Current value is '#{Encoding.default_external.to_s}'"
@@ -96,6 +92,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :show, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['images'])[:param]
         }
       assert_response :success
@@ -119,6 +116,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [0, '0', '0885933ad4f6'].each do |r1|
         get :show, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['images'])[:param],
             :rev => r1
           }
@@ -128,7 +126,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
           assert_select 'tr', 1
           assert_select 'tr.file td.filename a', :text => 'delete.png'
         end
-  
+
         assert_select 'table.changesets tbody' do
           assert_select 'tr'
         end
@@ -143,6 +141,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [13, '13', '3a330eb32958'].each do |r1|
         get :show, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['sql_escape', 'percent%dir'])[:param],
             :rev => r1
           }
@@ -153,7 +152,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
           assert_select 'tr.file td.filename a', :text => 'percent%file1.txt'
           assert_select 'tr.file td.filename a', :text => 'percentfile1.txt'
         end
-  
+
         assert_select 'table.changesets tbody' do
           assert_select 'tr td.id a', :text => /^13:/
           assert_select 'tr td.id a', :text => /^11:/
@@ -171,6 +170,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [21, '21', 'adf805632193'].each do |r1|
         get :show, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :path => repository_path_hash(['latin-1-dir'])[:param],
             :rev => r1
           }
@@ -179,11 +179,11 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
         assert_select 'table.entries tbody' do
           assert_select 'tr', 4
           assert_select 'tr.file td.filename a', :text => "make-latin-1-file.rb"
-          assert_select 'tr.file td.filename a', :text => "test-#{@char_1}-1.txt"
-          assert_select 'tr.file td.filename a', :text => "test-#{@char_1}-2.txt"
-          assert_select 'tr.file td.filename a', :text => "test-#{@char_1}.txt"
+          assert_select 'tr.file td.filename a', :text => "test-Ü-1.txt"
+          assert_select 'tr.file td.filename a', :text => "test-Ü-2.txt"
+          assert_select 'tr.file td.filename a', :text => "test-Ü.txt"
         end
-  
+
         assert_select 'table.changesets tbody' do
           assert_select 'tr td.id a', :text => /^21:/
           assert_select 'tr td.id a', :text => /^20:/
@@ -212,16 +212,17 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       @repository.fetch_changesets
       @project.reload
       assert_equal NUM_REV, @repository.changesets.count
-       [
+      [
           'default',
-          @branch_char_1,
+          'branch-Ü-01',
           'branch (1)[2]&,%.-3_4',
-          @branch_char_0,
+          'branch-Ü-00',
           'test_branch.latin-1',
           'test-branch-00',
       ].each do |bra|
         get :show, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => bra
           }
         assert_response :success
@@ -236,13 +237,14 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       @repository.fetch_changesets
       @project.reload
       assert_equal NUM_REV, @repository.changesets.count
-       [
-        @tag_char_1,
+      [
+        'tag-Ü-00',
         'tag_test.00',
         'tag-init-revision'
       ].each do |tag|
         get :show, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => tag
           }
         assert_response :success
@@ -255,6 +257,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_changes
       get :changes, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['images', 'edit.png'])[:param]
         }
       assert_response :success
@@ -264,6 +267,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_entry_show
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['sources', 'watchers_controller.rb'])[:param]
         }
       assert_response :success
@@ -275,7 +279,8 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [21, '21', 'adf805632193'].each do |r1|
         get :entry, :params => {
             :id => PRJ_ID,
-          :path => repository_path_hash(['latin-1-dir', "test-#{@char_1}-2.txt"])[:param],
+            :repository_id => @repository.id,
+          :path => repository_path_hash(['latin-1-dir', "test-Ü-2.txt"])[:param],
           :rev => r1
           }
         assert_response :success
@@ -288,11 +293,12 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
         [27, '27', '7bbf4c738e71'].each do |r1|
           get :entry, :params => {
               :id => PRJ_ID,
-            :path => repository_path_hash(['latin-1-dir', "test-#{@char_1}.txt"])[:param],
+              :repository_id => @repository.id,
+            :path => repository_path_hash(['latin-1-dir', "test-Ü.txt"])[:param],
             :rev => r1
             }
           assert_response :success
-          assert_select 'tr#L1 td.line-code', :text => /test-#{@char_1}.txt/
+          assert_select 'tr#L1 td.line-code', :text => /test-Ü.txt/
         end
       end
     end
@@ -300,6 +306,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_entry_download
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['sources', 'watchers_controller.rb'])[:param],
           :format => 'raw'
         }
@@ -315,6 +322,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_directory_entry
       get :entry, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['sources'])[:param]
         }
       assert_response :success
@@ -332,6 +340,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
         ['inline', 'sbs'].each do |dt|
           get :diff, :params => {
               :id => PRJ_ID,
+              :repository_id => @repository.id,
               :rev => r1,
               :type => dt
             }
@@ -355,6 +364,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
           ['inline', 'sbs'].each do |dt|
             get :diff, :params => {
                 :id     => PRJ_ID,
+                :repository_id => @repository.id,
                 :rev    => r1,
                 :rev_to => r2,
                 :type => dt
@@ -372,12 +382,13 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
           ['inline', 'sbs'].each do |dt|
             get :diff, :params => {
                 :id => PRJ_ID,
+                :repository_id => @repository.id,
                 :rev => r1,
                 :type => dt
               }
             assert_response :success
             assert_select 'table' do
-              assert_select 'thead th.filename', :text => /latin-1-dir\/test-#{@char_1}-2.txt/
+              assert_select 'thead th.filename', :text => /latin-1-dir\/test-Ü-2.txt/
               assert_select 'tbody td.diff_in', :text => /It is written in Python/
             end
           end
@@ -388,6 +399,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_diff_should_show_modified_filenames
       get :diff, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => '400bb8672109',
           :type => 'inline'
         }
@@ -398,6 +410,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_diff_should_show_deleted_filenames
       get :diff, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :rev => 'b3a615152df8',
           :type => 'inline'
         }
@@ -408,6 +421,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
     def test_annotate
       get :annotate, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['sources', 'watchers_controller.rb'])[:param]
         }
       assert_response :success
@@ -428,6 +442,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       assert_equal NUM_REV, @repository.changesets.count
       get :annotate, :params => {
           :id => PRJ_ID,
+          :repository_id => @repository.id,
           :path => repository_path_hash(['sources', 'welcome_controller.rb'])[:param]
         }
       assert_response 404
@@ -442,6 +457,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [2, '400bb8672109', '400', 400].each do |r1|
         get :annotate, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => r1,
             :path => repository_path_hash(['sources', 'watchers_controller.rb'])[:param]
           }
@@ -454,7 +470,8 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       [21, '21', 'adf805632193'].each do |r1|
         get :annotate, :params => {
             :id => PRJ_ID,
-          :path => repository_path_hash(['latin-1-dir', "test-#{@char_1}-2.txt"])[:param],
+            :repository_id => @repository.id,
+          :path => repository_path_hash(['latin-1-dir', "test-Ü-2.txt"])[:param],
           :rev => r1
           }
         assert_response :success
@@ -475,10 +492,11 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
         [27, '7bbf4c738e71'].each do |r1|
           get :annotate, :params => {
               :id => PRJ_ID,
-            :path => repository_path_hash(['latin-1-dir', "test-#{@char_1}.txt"])[:param],
+              :repository_id => @repository.id,
+            :path => repository_path_hash(['latin-1-dir', "test-Ü.txt"])[:param],
             :rev => r1
             }
-          assert_select 'tr#L1 td.line-code', :text => /test-#{@char_1}.txt/
+          assert_select 'tr#L1 td.line-code', :text => /test-Ü.txt/
         end
       end
     end
@@ -492,12 +510,13 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
         with_settings :default_language => "en" do
           get :revision, :params => {
               :id => PRJ_ID,
+              :repository_id => @repository.id,
               :rev => r
             }
           assert_response :success
           assert_select 'title',
                         :text => 'Revision 1:9d5b5b004199 - Added 2 files and modified one. - eCookbook Subproject 1 - Redmine'
-          end
+        end
       end
     end
 
@@ -509,6 +528,7 @@ class RepositoriesMercurialControllerTest < Redmine::ControllerTest
       ['', ' ', nil].each do |r|
         get :revision, :params => {
             :id => PRJ_ID,
+            :repository_id => @repository.id,
             :rev => r
           }
         assert_response 404

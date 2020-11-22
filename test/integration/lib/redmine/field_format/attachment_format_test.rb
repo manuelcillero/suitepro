@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,6 +37,7 @@ class AttachmentFieldFormatTest < Redmine::IntegrationTest
            :attachments
 
   def setup
+    User.current = nil
     set_tmp_attachments_directory
     @field = IssueCustomField.generate!(:name => "File", :field_format => "attachment")
     log_user "jsmith", "jsmith"
@@ -85,7 +88,7 @@ class AttachmentFieldFormatTest < Redmine::IntegrationTest
     # preview the attachment
     get link.attr('href')
     assert_response :success
-    assert_template :file
+    assert_select 'h2', :text => "#{issue.tracker} ##{issue.id} » testfile.txt"
   end
 
   def test_create_without_attachment

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -68,6 +70,10 @@ module Redmine
         end
 
         def save_attachments(attachments, author=User.current)
+          if attachments.respond_to?(:to_unsafe_hash)
+            attachments = attachments.to_unsafe_hash
+          end
+
           if attachments.is_a?(Hash)
             attachments = attachments.stringify_keys
             attachments = attachments.to_a.sort {|a, b|
@@ -86,7 +92,7 @@ module Redmine
           if attachments.is_a?(Array)
             @failed_attachment_count = 0
             attachments.each do |attachment|
-              next unless attachment.is_a?(Hash)
+              next unless attachment.present?
               a = nil
               if file = attachment['file']
                 a = Attachment.create(:file => file, :author => author)

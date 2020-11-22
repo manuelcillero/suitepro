@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,13 +17,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-require 'SVG/Graph/Bar'
-require 'SVG/Graph/BarHorizontal'
 require 'digest/sha1'
 require 'redmine/scm/adapters'
 
-class ChangesetNotFound < Exception; end
-class InvalidRevisionParam < Exception; end
+class ChangesetNotFound < StandardError; end
+class InvalidRevisionParam < StandardError; end
 
 class RepositoriesController < ApplicationController
   menu_item :repository
@@ -148,6 +148,13 @@ class RepositoriesController < ApplicationController
       send_opt[:disposition] = disposition(@path)
       send_data @repository.cat(@path, @rev), send_opt
     else
+      # set up pagination from entry to entry
+      parent_path = @path.split('/')[0...-1].join('/')
+      @entries = @repository.entries(parent_path, @rev).reject(&:is_dir?)
+      if index = @entries.index{|e| e.name == @entry.name}
+        @paginator = Redmine::Pagination::Paginator.new(@entries.size, 1, index+1)
+      end
+
       if !@entry.size || @entry.size <= Setting.file_max_size_displayed.to_i.kilobyte
         content = @repository.cat(@path, @rev)
         (show_error_not_found; return) unless content
@@ -232,7 +239,7 @@ class RepositoriesController < ApplicationController
     if params[:format] == 'diff'
       @diff = @repository.diff(@path, @rev, @rev_to)
       (show_error_not_found; return) unless @diff
-      filename = "changeset_r#{@rev}"
+      filename = +"changeset_r#{@rev}"
       filename << "_r#{@rev_to}" if @rev_to
       send_data @diff.join, :filename => "#{filename}.diff",
                             :type => 'text/x-patch',
@@ -250,18 +257,20 @@ class RepositoriesController < ApplicationController
                       Digest::MD5.hexdigest("#{@path}-#{@rev}-#{@rev_to}-#{@diff_type}-#{current_language}")
       unless read_fragment(@cache_key)
         @diff = @repository.diff(@path, @rev, @rev_to)
-        show_error_not_found unless @diff
+        (show_error_not_found; return) unless @diff
       end
 
       @changeset = @repository.find_changeset_by_name(@rev)
       @changeset_to = @rev_to ? @repository.find_changeset_by_name(@rev_to) : nil
       @diff_format_revisions = @repository.diff_format_revisions(@changeset, @changeset_to)
+      render :diff, :formats => :html, :layout => 'base.html.erb'
     end
   end
 
   def stats
   end
 
+  # Returns JSON data for repository graphs
   def graph
     data = nil
     case params[:graph]
@@ -271,8 +280,7 @@ class RepositoriesController < ApplicationController
       data = graph_commits_per_author(@repository)
     end
     if data
-      headers["Content-Type"] = "image/svg+xml"
-      send_data(data, :type => "image/svg+xml", :disposition => "inline")
+      render :json => data
     else
       render_404
     end
@@ -313,7 +321,7 @@ class RepositoriesController < ApplicationController
     @rev = params[:rev].blank? ? @repository.default_branch : params[:rev].to_s.strip
     @rev_to = params[:rev_to]
 
-    unless @rev.to_s.match(REV_PARAM_RE) && @rev_to.to_s.match(REV_PARAM_RE)
+    unless REV_PARAM_RE.match?(@rev.to_s) && REV_PARAM_RE.match?(@rev_to.to_s)
       if @repository.branches.blank?
         raise InvalidRevisionParam
       end
@@ -341,55 +349,37 @@ class RepositoriesController < ApplicationController
   end
 
   def graph_commits_per_month(repository)
-    @date_to = User.current.today
-    @date_from = @date_to << 11
-    @date_from = Date.civil(@date_from.year, @date_from.month, 1)
+    date_to = User.current.today
+    date_from = date_to << 11
+    date_from = Date.civil(date_from.year, date_from.month, 1)
     commits_by_day = Changeset.
-      where("repository_id = ? AND commit_date BETWEEN ? AND ?", repository.id, @date_from, @date_to).
+      where("repository_id = ? AND commit_date BETWEEN ? AND ?", repository.id, date_from, date_to).
       group(:commit_date).
       count
     commits_by_month = [0] * 12
-    commits_by_day.each {|c| commits_by_month[(@date_to.month - c.first.to_date.month) % 12] += c.last }
+    commits_by_day.each {|c| commits_by_month[(date_to.month - c.first.to_date.month) % 12] += c.last }
 
     changes_by_day = Change.
       joins(:changeset).
-      where("#{Changeset.table_name}.repository_id = ? AND #{Changeset.table_name}.commit_date BETWEEN ? AND ?", repository.id, @date_from, @date_to).
+      where("#{Changeset.table_name}.repository_id = ? AND #{Changeset.table_name}.commit_date BETWEEN ? AND ?", repository.id, date_from, date_to).
       group(:commit_date).
       count
     changes_by_month = [0] * 12
-    changes_by_day.each {|c| changes_by_month[(@date_to.month - c.first.to_date.month) % 12] += c.last }
+    changes_by_day.each {|c| changes_by_month[(date_to.month - c.first.to_date.month) % 12] += c.last }
 
     fields = []
     today = User.current.today
     12.times {|m| fields << month_name(((today.month - 1 - m) % 12) + 1)}
 
-    graph = SVG::Graph::Bar.new(
-      :height => 300,
-      :width => 800,
-      :fields => fields.reverse,
-      :stack => :side,
-      :scale_integers => true,
-      :step_x_labels => 2,
-      :show_data_values => false,
-      :graph_title => l(:label_commits_per_month),
-      :show_graph_title => true
-    )
-
-    graph.add_data(
-      :data => commits_by_month[0..11].reverse,
-      :title => l(:label_revision_plural)
-    )
-
-    graph.add_data(
-      :data => changes_by_month[0..11].reverse,
-      :title => l(:label_change_plural)
-    )
-
-    graph.burn
+    data = {
+      :labels => fields.reverse,
+      :commits => commits_by_month[0..11].reverse,
+      :changes => changes_by_month[0..11].reverse
+    }
   end
 
   def graph_commits_per_author(repository)
-    #data
+    # data
     stats = repository.stats_by_author
     fields, commits_data, changes_data = [], [], []
     stats.each do |name, hsh|
@@ -398,7 +388,7 @@ class RepositoriesController < ApplicationController
       changes_data << hsh[:changes_count]
     end
 
-    #expand to 10 values if needed
+    # expand to 10 values if needed
     fields = fields + [""]*(10 - fields.length) if fields.length<10
     commits_data = commits_data + [0]*(10 - commits_data.length) if commits_data.length<10
     changes_data = changes_data + [0]*(10 - changes_data.length) if changes_data.length<10
@@ -406,27 +396,11 @@ class RepositoriesController < ApplicationController
     # Remove email address in usernames
     fields = fields.collect {|c| c.gsub(%r{<.+@.+>}, '') }
 
-    #prepare graph
-    graph = SVG::Graph::BarHorizontal.new(
-      :height => 30 * commits_data.length,
-      :width => 800,
-      :fields => fields,
-      :stack => :side,
-      :scale_integers => true,
-      :show_data_values => false,
-      :rotate_y_labels => false,
-      :graph_title => l(:label_commits_per_author),
-      :show_graph_title => true
-    )
-    graph.add_data(
-      :data => commits_data,
-      :title => l(:label_revision_plural)
-    )
-    graph.add_data(
-      :data => changes_data,
-      :title => l(:label_change_plural)
-    )
-    graph.burn
+    data = {
+      :labels => fields.reverse,
+      :commits => commits_data.reverse,
+      :changes => changes_data.reverse
+    }
   end
 
   def disposition(path)

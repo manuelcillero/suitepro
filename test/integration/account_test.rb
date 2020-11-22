@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -58,14 +60,14 @@ class AccountTest < Redmine::IntegrationTest
       assert_equal 'autologin', token.action
       assert_equal user.id, session[:user_id]
       assert_equal token.value, cookies['autologin']
-  
+
       # Session is cleared
       reset!
       User.current = nil
       # Clears user's last login timestamp
       user.update_attribute :last_login_on, nil
       assert_nil user.reload.last_login_on
-  
+
       # User comes back with user's autologin cookie
       cookies[:autologin] = token.value
       get '/my/page'
@@ -144,6 +146,61 @@ class AccountTest < Redmine::IntegrationTest
 
     log_user('jsmith', 'newpass123')
     assert_equal false, Token.exists?(token.id), "Password recovery token was not deleted"
+  end
+
+  def test_lost_password_expired_token
+    Token.delete_all
+
+    get "/account/lost_password"
+    assert_response :success
+    assert_select 'input[name=mail]'
+
+    post "/account/lost_password", :params => {
+        :mail => 'jSmith@somenet.foo'
+      }
+    assert_redirected_to "/login"
+
+    token = Token.first
+    assert_equal 'recovery', token.action
+    assert_equal 'jsmith@somenet.foo', token.user.mail
+    refute token.expired?
+
+    get "/account/lost_password", :params => {
+        :token => token.value
+      }
+    assert_redirected_to '/account/lost_password'
+
+    follow_redirect!
+    assert_response :success
+
+    # suppose the user forgets to continue the process and the token expires.
+    token.update_column :created_on, 1.week.ago
+    assert token.expired?
+
+    assert_select 'input[type=hidden][name=token][value=?]', token.value
+    assert_select 'input[name=new_password]'
+    assert_select 'input[name=new_password_confirmation]'
+
+    post "/account/lost_password", :params => {
+        :token => token.value, :new_password => 'newpass123',
+        :new_password_confirmation => 'newpass123'
+      }
+
+    assert_redirected_to "/account/lost_password"
+    assert_equal 'This password recovery link has expired, please try again.', flash[:error]
+    follow_redirect!
+    assert_response :success
+
+    post "/account/lost_password", :params => {
+        :mail => 'jSmith@somenet.foo'
+      }
+    assert_redirected_to "/login"
+
+    # should have a new token now
+    token = Token.last
+    assert_equal 'recovery', token.action
+    assert_equal 'jsmith@somenet.foo', token.user.mail
+    refute token.expired?
   end
 
   def test_user_with_must_change_passwd_should_be_forced_to_change_its_password

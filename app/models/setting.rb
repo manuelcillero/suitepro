@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,6 +18,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class Setting < ActiveRecord::Base
+
+  PASSWORD_CHAR_CLASSES = {
+        'uppercase'     => /[A-Z]/,
+        'lowercase'     => /[a-z]/,
+        'digits'        => /[0-9]/,
+        'special_chars' => /[[:ascii:]&&[:graph:]&&[:^alnum:]]/
+    }
 
   DATE_FORMATS = [
         '%Y-%m-%d',
@@ -34,7 +43,7 @@ class Setting < ActiveRecord::Base
     '%I:%M %p'
     ]
 
-  ENCODINGS = %w(US-ASCII
+  ENCODINGS =  %w(US-ASCII
                   windows-1250
                   windows-1251
                   windows-1252
@@ -82,7 +91,6 @@ class Setting < ActiveRecord::Base
   validates_numericality_of :value, :only_integer => true, :if => Proc.new { |setting|
     (s = available_settings[setting.name]) && s['format'] == 'int'
   }
-  attr_protected :id
 
   # Hash used to cache setting values
   @cached_settings = {}
@@ -106,19 +114,18 @@ class Setting < ActiveRecord::Base
 
   # Returns the value of the setting named name
   def self.[](name)
-    v = @cached_settings[name]
-    v ? v : (@cached_settings[name] = find_or_default(name).value)
+    @cached_settings[name] ||= find_or_default(name).value
   end
 
   def self.[]=(name, v)
     setting = find_or_default(name)
-    setting.value = (v ? v : "")
+    setting.value = v || ''
     @cached_settings[name] = nil
     setting.save
     setting.value
   end
 
-	# Updates multiple settings from params and sends a security notification if needed
+  # Updates multiple settings from params and sends a security notification if needed
   def self.set_all_from_params(settings)
     return nil unless settings.is_a?(Hash)
     settings = settings.dup.symbolize_keys
@@ -136,30 +143,41 @@ class Setting < ActiveRecord::Base
       end
     end
     if changes.any?
-      Mailer.security_settings_updated(changes)
+      Mailer.deliver_settings_updated(User.current, changes)
     end
     nil
   end
 
   def self.validate_all_from_params(settings)
     messages = []
-
-    if settings.key?(:mail_handler_body_delimiters) || settings.key?(:mail_handler_enable_regex_delimiters)
-      regexp = Setting.mail_handler_enable_regex_delimiters?
-      if settings.key?(:mail_handler_enable_regex_delimiters)
-        regexp = settings[:mail_handler_enable_regex_delimiters].to_s != '0'
-      end
-      if regexp
-        settings[:mail_handler_body_delimiters].to_s.split(/[\r\n]+/).each do |delimiter|
-          begin
-            Regexp.new(delimiter)
-          rescue RegexpError => e
-            messages << [:mail_handler_body_delimiters, "#{l('activerecord.errors.messages.not_a_regexp')} (#{e.message})"]
+    [
+     [:mail_handler_enable_regex_delimiters,         :mail_handler_body_delimiters,    /[\r\n]+/],
+     [:mail_handler_enable_regex_excluded_filenames, :mail_handler_excluded_filenames, /\s*,\s*/]
+    ].each do |enable_regex, regex_field, delimiter|
+      if settings.key?(regex_field) || settings.key?(enable_regex)
+        regexp = Setting.send("#{enable_regex}?")
+        if settings.key?(enable_regex)
+          regexp = settings[enable_regex].to_s != '0'
+        end
+        if regexp
+          settings[regex_field].to_s.split(delimiter).each do |value|
+            begin
+              Regexp.new(value)
+            rescue RegexpError => e
+              messages << [regex_field, "#{l('activerecord.errors.messages.not_a_regexp')} (#{e.message})"]
+            end
           end
         end
       end
     end
-
+    if settings.key?(:mail_from)
+      begin
+        mail_from = Mail::Address.new(settings[:mail_from])
+        raise unless mail_from.address =~ EmailAddress::EMAIL_REGEXP
+      rescue
+        messages << [:mail_from, l('activerecord.errors.messages.invalid')]
+      end
+    end
     messages
   end
 
@@ -254,19 +272,19 @@ class Setting < ActiveRecord::Base
   def self.define_setting(name, options={})
     available_settings[name.to_s] = options
 
-    src = <<-END_SRC
-    def self.#{name}
-      self[:#{name}]
-    end
+    src = <<~END_SRC
+      def self.#{name}
+        self[:#{name}]
+      end
 
-    def self.#{name}?
-      self[:#{name}].to_i > 0
-    end
+      def self.#{name}?
+        self[:#{name}].to_i > 0
+      end
 
-    def self.#{name}=(value)
-      self[:#{name}] = value
-    end
-END_SRC
+      def self.#{name}=(value)
+        self[:#{name}] = value
+      end
+    END_SRC
     class_eval src, __FILE__, __LINE__
   end
 
@@ -285,7 +303,7 @@ END_SRC
   load_available_settings
   load_plugin_settings
 
-private
+  private
 
   def force_utf8_strings(arg)
     if arg.is_a?(String)
@@ -318,4 +336,5 @@ private
     end
     setting
   end
+  private_class_method :find_or_default
 end

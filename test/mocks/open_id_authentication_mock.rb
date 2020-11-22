@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Mocks out OpenID
 #
 # http://www.northpub.com/articles/2007/04/02/testing-openid-support
@@ -14,7 +16,7 @@ module OpenIdAuthentication
 
   protected
 
-    def authenticate_with_open_id(identity_url = params[:openid_url], options = {}) #:doc:
+    def authenticate_with_open_id(identity_url = params[:openid_url], options = {})
       if User.find_by_identity_url(identity_url) || identity_url.include?('good')
         extension_response_fields = {}
 

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,7 +35,7 @@ class MessagesControllerTest < Redmine::ControllerTest
 
     assert_select 'h2', :text => 'First post'
   end
-  
+
   def test_show_should_contain_reply_field_tags_for_quoting
     @request.session[:user_id] = 2
     get :show, :params => {
@@ -129,6 +131,7 @@ class MessagesControllerTest < Redmine::ControllerTest
           }
         }
     end
+    assert_equal I18n.t(:notice_successful_create), flash[:notice]
     message = Message.find_by_subject('Test created message')
     assert_not_nil message
     assert_redirected_to "/boards/1/topics/#{message.to_param}"
@@ -136,14 +139,17 @@ class MessagesControllerTest < Redmine::ControllerTest
     assert_equal 2, message.author_id
     assert_equal 1, message.board_id
 
-    mail = ActionMailer::Base.deliveries.last
-    assert_not_nil mail
-    assert_equal "[#{message.board.project.name} - #{message.board.name} - msg#{message.root.id}] Test created message", mail.subject
-    assert_mail_body_match 'Message body', mail
+    mails = ActionMailer::Base.deliveries
+    assert_not_empty mails
+    mails.each do |mail|
+      assert_equal "[#{message.board.project.name} - #{message.board.name} - msg#{message.root.id}] Test created message", mail.subject
+      assert_mail_body_match 'Message body', mail
+    end
+
     # author
-    assert mail.bcc.include?('jsmith@somenet.foo')
+    assert_equal ['jsmith@somenet.foo'], mails[0].bcc
     # project member
-    assert mail.bcc.include?('dlopper@somenet.foo')
+    assert_equal ['dlopper@somenet.foo'], mails[1].bcc
   end
 
   def test_get_edit
@@ -168,6 +174,7 @@ class MessagesControllerTest < Redmine::ControllerTest
         }
       }
     assert_redirected_to '/boards/1/topics/1'
+    assert_equal I18n.t(:notice_successful_update), flash[:notice]
     message = Message.find(1)
     assert_equal 'New subject', message.subject
     assert_equal 'New body', message.content
@@ -186,6 +193,7 @@ class MessagesControllerTest < Redmine::ControllerTest
         }
       }
     assert_redirected_to '/boards/1/topics/1'
+    assert_equal I18n.t(:notice_successful_update), flash[:notice]
     message = Message.find(1)
     assert_equal true, message.sticky?
     assert_equal true, message.locked?
@@ -214,15 +222,17 @@ class MessagesControllerTest < Redmine::ControllerTest
         :id => 1,
         :reply => {
           :content => 'This is a test reply',
-          :subject => 'Test reply' 
+          :subject => 'Test reply'
         }
       }
     reply = Message.order('id DESC').first
     assert_redirected_to "/boards/1/topics/1?r=#{reply.id}"
+    assert_equal I18n.t(:notice_successful_update), flash[:notice]
     assert Message.find_by_subject('Test reply')
   end
 
   def test_destroy_topic
+    set_tmp_attachments_directory
     @request.session[:user_id] = 2
     assert_difference 'Message.count', -3 do
       post :destroy, :params => {
@@ -231,6 +241,7 @@ class MessagesControllerTest < Redmine::ControllerTest
         }
     end
     assert_redirected_to '/projects/ecookbook/boards/1'
+    assert_equal I18n.t(:notice_successful_delete), flash[:notice]
     assert_nil Message.find_by_id(1)
   end
 
@@ -243,10 +254,26 @@ class MessagesControllerTest < Redmine::ControllerTest
         }
     end
     assert_redirected_to '/boards/1/topics/1?r=2'
+    assert_equal I18n.t(:notice_successful_delete), flash[:notice]
     assert_nil Message.find_by_id(2)
   end
 
-  def test_quote
+  def test_quote_if_message_is_root
+    @request.session[:user_id] = 2
+    get :quote, :params => {
+        :board_id => 1,
+        :id => 1
+      },
+      :xhr => true
+    assert_response :success
+    assert_equal 'text/javascript', response.content_type
+
+    assert_include 'RE: First post', response.body
+    assert_include "Redmine Admin wrote:", response.body
+    assert_include '> This is the very first post\n> in the forum', response.body
+  end
+
+  def test_quote_if_message_is_not_root
     @request.session[:user_id] = 2
     get :quote, :params => {
         :board_id => 1,
@@ -257,6 +284,7 @@ class MessagesControllerTest < Redmine::ControllerTest
     assert_equal 'text/javascript', response.content_type
 
     assert_include 'RE: First post', response.body
+    assert_include 'John Smith wrote in message#3:', response.body
     assert_include '> An other reply', response.body
   end
 
@@ -265,9 +293,9 @@ class MessagesControllerTest < Redmine::ControllerTest
     post :preview, :params => {
         :board_id => 1,
         :message => {
-          :subject => "",
-          :content => "Previewed text"
-        }
+          :subject => ""
+        },
+        :text => "Previewed text"
       }
     assert_response :success
     assert_include 'Previewed text', response.body
@@ -280,8 +308,8 @@ class MessagesControllerTest < Redmine::ControllerTest
         :board_id => 1,
         :message => {
           :subject => "",
-          :content => "Previewed text"
-        }
+        },
+        :text => "Previewed text"
       }
     assert_response :success
     assert_include 'Previewed text', response.body

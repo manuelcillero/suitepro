@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -67,8 +69,6 @@ class Project < ActiveRecord::Base
                 :url => Proc.new {|o| {:controller => 'projects', :action => 'show', :id => o}},
                 :author => nil
 
-  attr_protected :status
-
   validates_presence_of :name, :identifier
   validates_uniqueness_of :identifier, :if => Proc.new {|p| p.identifier_changed?}
   validates_length_of :name, :maximum => 255
@@ -80,9 +80,9 @@ class Project < ActiveRecord::Base
   validates_exclusion_of :identifier, :in => %w( new )
   validate :validate_parent
 
-  after_save :update_inherited_members, :if => Proc.new {|project| project.inherit_members_changed?}
-  after_save :remove_inherited_member_roles, :add_inherited_member_roles, :if => Proc.new {|project| project.parent_id_changed?}
-  after_update :update_versions_from_hierarchy_change, :if => Proc.new {|project| project.parent_id_changed?}
+  after_save :update_inherited_members, :if => Proc.new {|project| project.saved_change_to_inherit_members?}
+  after_save :remove_inherited_member_roles, :add_inherited_member_roles, :if => Proc.new {|project| project.saved_change_to_parent_id?}
+  after_update :update_versions_from_hierarchy_change, :if => Proc.new {|project| project.saved_change_to_parent_id?}
   before_destroy :delete_all_members
 
   scope :has_module, lambda {|mod|
@@ -93,14 +93,8 @@ class Project < ActiveRecord::Base
   scope :all_public, lambda { where(:is_public => true) }
   scope :visible, lambda {|*args| where(Project.visible_condition(args.shift || User.current, *args)) }
   scope :allowed_to, lambda {|*args|
-    user = User.current
-    permission = nil
-    if args.first.is_a?(Symbol)
-      permission = args.shift
-    else
-      user = args.shift
-      permission = args.shift
-    end
+    user = args.first.is_a?(Symbol) ? User.current : args.shift
+    permission = args.shift
     where(Project.allowed_to_condition(user, permission, *args))
   }
   scope :like, lambda {|arg|
@@ -181,7 +175,7 @@ class Project < ActiveRecord::Base
     base_statement = (perm && perm.read? ? "#{Project.table_name}.status <> #{Project::STATUS_ARCHIVED}" : "#{Project.table_name}.status = #{Project::STATUS_ACTIVE}")
     if !options[:skip_pre_condition] && perm && perm.project_module
       # If the permission belongs to a project module, make sure the module is enabled
-      base_statement << " AND EXISTS (SELECT 1 AS one FROM #{EnabledModule.table_name} em WHERE em.project_id = #{Project.table_name}.id AND em.name='#{perm.project_module}')"
+      base_statement += " AND EXISTS (SELECT 1 AS one FROM #{EnabledModule.table_name} em WHERE em.project_id = #{Project.table_name}.id AND em.name='#{perm.project_module}')"
     end
     if project = options[:project]
       project_statement = project.project_condition(options[:with_subprojects])
@@ -257,6 +251,15 @@ class Project < ActiveRecord::Base
     scope
   end
 
+  # Creates or updates project time entry activities
+  def update_or_create_time_entry_activities(activities)
+    transaction do
+      activities.each do |id, activity|
+        update_or_create_time_entry_activity(id, activity)
+      end
+    end
+  end
+
   # Will create a new Project specific Activity or update an existing one
   #
   # This will raise a ActiveRecord::Rollback if the TimeEntryActivity
@@ -266,7 +269,7 @@ class Project < ActiveRecord::Base
       self.create_time_entry_activity_if_needed(activity_hash)
     else
       activity = project.time_entry_activities.find_by_id(id.to_i)
-      activity.update_attributes(activity_hash) if activity
+      activity.update(activity_hash) if activity
     end
   end
 
@@ -304,7 +307,7 @@ class Project < ActiveRecord::Base
   end
 
   def self.find(*args)
-    if args.first && args.first.is_a?(String) && !args.first.match(/^\d*$/)
+    if args.first && args.first.is_a?(String) && !/^\d*$/.match?(args.first)
       project = find_by_identifier(*args)
       raise ActiveRecord::RecordNotFound, "Couldn't find Project with identifier=#{args.first}" if project.nil?
       project
@@ -344,7 +347,7 @@ class Project < ActiveRecord::Base
       nil
     else
       # id is used for projects with a numeric identifier (compatibility)
-      @to_param ||= (identifier.to_s =~ %r{^\d*$} ? id.to_s : identifier)
+      @to_param ||= (%r{^\d*$}.match?(identifier.to_s) ? id.to_s : identifier)
     end
   end
 
@@ -380,15 +383,11 @@ class Project < ActiveRecord::Base
     true
   end
 
-  # Unarchives the project
-  # All its ancestors must be active
+  # Unarchives the project and its archived ancestors
   def unarchive
-    return false if ancestors.detect {|a| a.archived?}
-    new_status = STATUS_ACTIVE
-    if parent
-      new_status = parent.status
-    end
-    update_attribute :status, new_status
+    new_status = ancestors.any?(&:closed?) ? STATUS_CLOSED : STATUS_ACTIVE
+    self_and_ancestors.status(STATUS_ARCHIVED).update_all :status => new_status
+    reload
   end
 
   def close
@@ -412,14 +411,6 @@ class Project < ActiveRecord::Base
       @allowed_parents << parent
     end
     @allowed_parents
-  end
-
-  # Sets the parent of the project with authorization check
-  def set_allowed_parent!(p)
-    ActiveSupport::Deprecation.warn "Project#set_allowed_parent! is deprecated and will be removed in Redmine 4, use #safe_attributes= instead."
-    p = p.id if p.is_a?(Project)
-    send :safe_attributes, {:project_id => p}
-    save
   end
 
   # Sets the parent of the project and saves the project
@@ -527,8 +518,8 @@ class Project < ActiveRecord::Base
     member
   end
 
-	# Default role that is given to non-admin users that
-	# create a project
+  # Default role that is given to non-admin users that
+  # create a project
   def self.default_member_role
     Role.givable.find_by_id(Setting.new_project_user_role_id.to_i) || Role.givable.first
   end
@@ -625,10 +616,11 @@ class Project < ActiveRecord::Base
   end
 
   def css_classes
-    s = 'project'
+    s = +'project'
     s << ' root' if root?
     s << ' child' if child?
     s << (leaf? ? ' leaf' : ' parent')
+    s << ' public' if is_public?
     unless active?
       if archived?
         s << ' archived'
@@ -641,20 +633,22 @@ class Project < ActiveRecord::Base
 
   # The earliest start date of a project, based on it's issues and versions
   def start_date
-    @start_date ||= [
-     issues.minimum('start_date'),
-     shared_versions.minimum('effective_date'),
-     Issue.fixed_version(shared_versions).minimum('start_date')
-    ].compact.min
+    @start_date ||=
+      [
+        issues.minimum('start_date'),
+        shared_versions.minimum('effective_date'),
+        Issue.fixed_version(shared_versions).minimum('start_date')
+      ].compact.min
   end
 
   # The latest due date of an issue or version
   def due_date
-    @due_date ||= [
-     issues.maximum('due_date'),
-     shared_versions.maximum('effective_date'),
-     Issue.fixed_version(shared_versions).maximum('due_date')
-    ].compact.max
+    @due_date ||=
+      [
+        issues.maximum('due_date'),
+        shared_versions.maximum('effective_date'),
+        Issue.fixed_version(shared_versions).maximum('due_date')
+      ].compact.max
   end
 
   def overdue?
@@ -746,7 +740,8 @@ class Project < ActiveRecord::Base
     target.destroy unless target.blank?
   end
 
-  safe_attributes 'name',
+  safe_attributes(
+    'name',
     'description',
     'homepage',
     'is_public',
@@ -757,10 +752,12 @@ class Project < ActiveRecord::Base
     'issue_custom_field_ids',
     'parent_id',
     'default_version_id',
-    'default_assigned_to_id'
+    'default_assigned_to_id')
 
-  safe_attributes 'enabled_module_names',
-    :if => lambda {|project, user|
+  safe_attributes(
+    'enabled_module_names',
+    :if =>
+      lambda {|project, user|
         if project.new_record?
           if user.admin?
             true
@@ -770,12 +767,17 @@ class Project < ActiveRecord::Base
         else
           user.allowed_to?(:select_project_modules, project)
         end
-      }
+      })
 
-  safe_attributes 'inherit_members',
-    :if => lambda {|project, user| project.parent.nil? || project.parent.visible?(user)}
+  safe_attributes(
+    'inherit_members',
+    :if => lambda {|project, user| project.parent.nil? || project.parent.visible?(user)})
 
   def safe_attributes=(attrs, user=User.current)
+    if attrs.respond_to?(:to_unsafe_hash)
+      attrs = attrs.to_unsafe_hash
+    end
+
     return unless attrs.is_a?(Hash)
     attrs = attrs.deep_dup
 
@@ -789,6 +791,18 @@ class Project < ActiveRecord::Base
           @unallowed_parent_id = true
         end
       end
+    end
+
+    # Reject custom fields values not visible by the user
+    if attrs['custom_field_values'].present?
+      editable_custom_field_ids = editable_custom_field_values(user).map {|v| v.custom_field_id.to_s}
+      attrs['custom_field_values'].reject! {|k, v| !editable_custom_field_ids.include?(k.to_s)}
+    end
+
+    # Reject custom fields not visible by the user
+    if attrs['custom_fields'].present?
+      editable_custom_field_ids = editable_custom_field_values(user).map {|v| v.custom_field_id.to_s}
+      attrs['custom_fields'].reject! {|c| !editable_custom_field_ids.include?(c['id'].to_s)}
     end
 
     super(attrs, user)
@@ -818,12 +832,17 @@ class Project < ActiveRecord::Base
   def copy(project, options={})
     project = project.is_a?(Project) ? project : Project.find(project)
 
-    to_be_copied = %w(members wiki versions issue_categories issues queries boards)
+    to_be_copied = %w(members wiki versions issue_categories issues queries boards documents)
     to_be_copied = to_be_copied & Array.wrap(options[:only]) unless options[:only].nil?
 
     Project.transaction do
       if save
         reload
+
+        self.attachments = project.attachments.map do |attachment|
+          attachment.copy(:container => self)
+        end
+
         to_be_copied.each do |name|
           send "copy_#{name}", project
         end
@@ -833,11 +852,6 @@ class Project < ActiveRecord::Base
         false
       end
     end
-  end
-
-  def member_principals
-    ActiveSupport::Deprecation.warn "Project#member_principals is deprecated and will be removed in Redmine 4.0. Use #memberships.active instead."
-    memberships.active
   end
 
   # Returns a new unsaved Project instance with attributes copied from +project+
@@ -860,7 +874,8 @@ class Project < ActiveRecord::Base
       ancestors = projects.first.ancestors.to_a
     end
     projects.sort_by(&:lft).each do |project|
-      while (ancestors.any? && !project.is_descendant_of?(ancestors.last))
+      while ancestors.any? &&
+             !project.is_descendant_of?(ancestors.last)
         ancestors.pop
       end
       yield project, ancestors.size
@@ -868,14 +883,26 @@ class Project < ActiveRecord::Base
     end
   end
 
+  # Returns the custom_field_values that can be edited by the given user
+  def editable_custom_field_values(user=nil)
+    visible_custom_field_values(user)
+  end
+
+  def visible_custom_field_values(user = nil)
+    user ||= User.current
+    custom_field_values.select do |value|
+      value.custom_field.visible_by?(project, user)
+    end
+  end
+
   private
 
   def update_inherited_members
     if parent
-      if inherit_members? && !inherit_members_was
+      if inherit_members? && !inherit_members_before_last_save
         remove_inherited_member_roles
         add_inherited_member_roles
-      elsif !inherit_members? && inherit_members_was
+      elsif !inherit_members? && inherit_members_before_last_save
         remove_inherited_member_roles
       end
     end
@@ -932,6 +959,7 @@ class Project < ActiveRecord::Base
         new_wiki_page = WikiPage.new(page.attributes.dup.except("id", "wiki_id", "created_on", "parent_id"))
         new_wiki_page.content = new_wiki_content
         wiki.pages << new_wiki_page
+        new_wiki_page.attachments = page.attachments.map{|attachement| attachement.copy(:container => new_wiki_page)}
         wiki_pages_map[page.id] = new_wiki_page
       end
 
@@ -952,6 +980,11 @@ class Project < ActiveRecord::Base
     project.versions.each do |version|
       new_version = Version.new
       new_version.attributes = version.attributes.dup.except("id", "project_id", "created_on", "updated_on")
+
+      new_version.attachments = version.attachments.map do |attachment|
+        attachment.copy(:container => new_version)
+      end
+
       self.versions << new_version
     end
   end
@@ -1101,6 +1134,21 @@ class Project < ActiveRecord::Base
       new_board.attributes = board.attributes.dup.except("id", "project_id", "topics_count", "messages_count", "last_message_id")
       new_board.project = self
       self.boards << new_board
+    end
+  end
+
+  # Copies documents from +project+
+  def copy_documents(project)
+    project.documents.each do |document|
+      new_document = Document.new
+      new_document.attributes = document.attributes.dup.except("id", "project_id")
+      new_document.project = self
+
+      new_document.attachments = document.attachments.map do |attachement|
+        attachement.copy(:container => new_document)
+      end
+
+      self.documents << new_document
     end
   end
 

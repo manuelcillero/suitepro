@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -159,6 +161,7 @@ class AuthSourcesControllerTest < Redmine::ControllerTest
           :id => 1
         }
       assert_redirected_to '/auth_sources'
+      assert_equal 'This authentication mode is in use and cannot be deleted.', flash[:error]
     end
   end
 
@@ -174,7 +177,7 @@ class AuthSourcesControllerTest < Redmine::ControllerTest
   end
 
   def test_test_connection_with_failure
-    AuthSourceLdap.any_instance.stubs(:initialize_ldap_con).raises(Net::LDAP::LdapError.new("Something went wrong"))
+    AuthSourceLdap.any_instance.stubs(:initialize_ldap_con).raises(Net::LDAP::Error.new("Something went wrong"))
 
     get :test_connection, :params => {
         :id => 1

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -118,7 +120,7 @@ class WorkflowsController < ApplicationController
   def find_roles
     ids = Array.wrap(params[:role_id])
     if ids == ['all']
-      @roles = Role.sorted.to_a
+      @roles = Role.sorted.select(&:consider_workflow?)
     elsif ids.present?
       @roles = Role.where(:id => ids).to_a
     end

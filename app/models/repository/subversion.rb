@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +20,6 @@
 require 'redmine/scm/adapters/subversion_adapter'
 
 class Repository::Subversion < Repository
-  attr_protected :root_url
   validates_presence_of :url
   validates_format_of :url, :with => %r{\A(http|https|svn(\+[^\s:\/\\]+)?|file):\/\/.+}i
 

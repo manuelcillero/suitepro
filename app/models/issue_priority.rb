@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,7 +21,7 @@ class IssuePriority < Enumeration
   has_many :issues, :foreign_key => 'priority_id'
 
   after_destroy {|priority| priority.class.compute_position_names}
-  after_save {|priority| priority.class.compute_position_names if (priority.position_changed? && priority.position) || priority.active_changed?}
+  after_save {|priority| priority.class.compute_position_names if (priority.saved_change_to_position? && priority.position) || priority.saved_change_to_active? || priority.saved_change_to_is_default?}
 
   OptionName = :enumeration_issue_priorities
 
@@ -52,7 +54,8 @@ class IssuePriority < Enumeration
     if priorities.any?
       default = priorities.detect(&:is_default?) || priorities[(priorities.size - 1) / 2]
       priorities.each_with_index do |priority, index|
-        name = case
+        name =
+          case
           when priority.position == default.position
             "default"
           when priority.position < default.position

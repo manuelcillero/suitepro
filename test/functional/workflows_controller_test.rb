@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +20,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class WorkflowsControllerTest < Redmine::ControllerTest
-  fixtures :roles, :trackers, :workflows, :users, :issue_statuses
+  fixtures :roles, :trackers, :workflows, :users, :issue_statuses, :custom_fields
 
   def setup
     User.current = nil
@@ -48,9 +50,10 @@ class WorkflowsControllerTest < Redmine::ControllerTest
 
     # used status only
     statuses = IssueStatus.where(:id => [2, 3, 5]).sorted.pluck(:name)
-    assert_equal ["New issue"] + statuses,
+    assert_equal(
+      ["New issue"] + statuses,
       css_select('table.workflows.transitions-always tbody tr td:first').map(&:text).map(&:strip)
-
+    )
     # allowed transitions
     assert_select 'input[type=checkbox][name=?][value="1"][checked=checked]', 'transitions[3][5][always]'
     # not allowed
@@ -74,8 +77,10 @@ class WorkflowsControllerTest < Redmine::ControllerTest
 
     # statuses 1 and 5 not displayed
     statuses = IssueStatus.where(:id => [2, 3]).sorted.pluck(:name)
-    assert_equal ["New issue"] + statuses,
+    assert_equal(
+      ["New issue"] + statuses,
       css_select('table.workflows.transitions-always tbody tr td:first').map(&:text).map(&:strip)
+    )
   end
 
   def test_get_edit_should_include_allowed_statuses_for_new_issues
@@ -92,8 +97,8 @@ class WorkflowsControllerTest < Redmine::ControllerTest
     get :edit, :params => {:role_id => 'all', :tracker_id => 'all'}
     assert_response :success
 
-    assert_select 'select[name=?][multiple=multiple]', 'role_id[]' do
-      assert_select 'option[selected=selected]', Role.all.select(&:consider_workflow?).count
+    assert_select 'select[name=?]', 'role_id[]' do
+      assert_select 'option[selected=selected][value=all]'
     end
     assert_select 'select[name=?]', 'tracker_id[]' do
       assert_select 'option[selected=selected][value=all]'
@@ -107,10 +112,23 @@ class WorkflowsControllerTest < Redmine::ControllerTest
     assert_response :success
 
     statuses = IssueStatus.all.sorted.pluck(:name)
-    assert_equal ["New issue"] + statuses,
+    assert_equal(
+      ["New issue"] + statuses,
       css_select('table.workflows.transitions-always tbody tr td:first').map(&:text).map(&:strip)
+    )
+    assert_select 'input[type=checkbox][name=?]', 'transitions[0][1][always]'
+  end
 
-    assert_select 'input[type=checkbox][name=?]', 'transitions[1][1][always]'
+  def test_get_edit_should_show_checked_disabled_transition_checkbox_between_same_statuses
+    get :edit, :params => {:role_id => 2, :tracker_id => 1}
+    assert_response :success
+    assert_select 'table.workflows.transitions-always tbody tr:nth-child(2)' do
+      assert_select 'td.name', :text => 'New'
+      # assert that the td is enabled
+      assert_select "td[title='New » New'][class=?]", 'enabled'
+      # assert that the checkbox is disabled and checked
+      assert_select "input[name='transitions[1][1][always]'][checked=?][disabled=?]", 'checked', 'disabled', 1
+    end
   end
 
   def test_post_edit
@@ -307,8 +325,10 @@ class WorkflowsControllerTest < Redmine::ControllerTest
     assert_response :success
 
     statuses = IssueStatus.all.sorted.pluck(:name)
-    assert_equal statuses,
+    assert_equal(
+      statuses,
       css_select('table.workflows.fields_permissions thead tr:nth-child(2) td:not(:first-child)').map(&:text).map(&:strip)
+    )
   end
 
   def test_get_permissions_should_set_css_class

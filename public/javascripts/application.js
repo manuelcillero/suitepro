@@ -1,5 +1,5 @@
 /* Redmine - project management software
-   Copyright (C) 2006-2017  Jean-Philippe Lang */
+   Copyright (C) 2006-2019  Jean-Philippe Lang */
 
 /* Fix for CVE-2015-9251, to be removed with JQuery >= 3.0 */
 $.ajaxPrefilter(function (s) {
@@ -17,7 +17,7 @@ function toggleCheckboxesBySelector(selector) {
   $(selector).each(function(index) {
     if (!$(this).is(':checked')) { all_checked = false; }
   });
-  $(selector).prop('checked', !all_checked);
+  $(selector).prop('checked', !all_checked).trigger('change');
 }
 
 function showAndScrollTo(id, focus) {
@@ -32,6 +32,7 @@ function toggleRowGroup(el) {
   var tr = $(el).parents('tr').first();
   var n = tr.next();
   tr.toggleClass('open');
+  $(el).toggleClass('icon-expended icon-collapsed');
   while (n.length && !n.hasClass('group')) {
     n.toggle();
     n = n.next('tr');
@@ -43,6 +44,7 @@ function collapseAllRowGroups(el) {
   tbody.children('tr').each(function(index) {
     if ($(this).hasClass('group')) {
       $(this).removeClass('open');
+      $(this).find('.expander').switchClass('icon-expended', 'icon-collapsed');
     } else {
       $(this).hide();
     }
@@ -54,6 +56,7 @@ function expandAllRowGroups(el) {
   tbody.children('tr').each(function(index) {
     if ($(this).hasClass('group')) {
       $(this).addClass('open');
+      $(this).find('.expander').switchClass('icon-collapsed', 'icon-expended');
     } else {
       $(this).show();
     }
@@ -72,6 +75,7 @@ function toggleAllRowGroups(el) {
 function toggleFieldset(el) {
   var fieldset = $(el).parents('fieldset').first();
   fieldset.toggleClass('collapsed');
+  fieldset.children('legend').toggleClass('icon-expended icon-collapsed');
   fieldset.children('div').toggle();
 }
 
@@ -117,7 +121,8 @@ function initFilters() {
     toggleFilter($(this).val());
   });
   $('#filters-table').on('click', '.toggle-multiselect', function() {
-    toggleMultiSelect($(this).siblings('select'));
+    toggleMultiSelect($(this).siblings('select'))
+    $(this).toggleClass('icon-toggle-plus icon-toggle-minus')
   });
   $('#filters-table').on('keypress', 'input[type=text]', function(e) {
     if (e.keyCode == 13) $(this).closest('form').submit();
@@ -172,7 +177,7 @@ function buildFilterRow(field, operator, values) {
   select = tr.find('td.operator select');
   for (i = 0; i < operators.length; i++) {
     var option = $('<option>').val(operators[i]).text(operatorLabels[operators[i]]);
-    if (operators[i] == operator) { option.attr('selected', true); }
+    if (operators[i] == operator) { option.prop('selected', true); }
     select.append(option);
   }
   select.change(function(){ toggleOperator(field); });
@@ -184,7 +189,7 @@ function buildFilterRow(field, operator, values) {
   case "list_subprojects":
     tr.find('td.values').append(
       '<span style="display:none;"><select class="value" id="values_'+fieldId+'_1" name="v['+field+'][]"></select>' +
-      ' <span class="toggle-multiselect">&nbsp;</span></span>'
+      ' <span class="toggle-multiselect icon-only icon-toggle-plus">&nbsp;</span></span>'
     );
     select = tr.find('td.values select');
     if (values.length > 1) { select.attr('multiple', true); }
@@ -193,7 +198,7 @@ function buildFilterRow(field, operator, values) {
       var option = $('<option>');
       if ($.isArray(filterValue)) {
         option.val(filterValue[1]).text(filterValue[0]);
-        if ($.inArray(filterValue[1], values) > -1) {option.attr('selected', true);}
+        if ($.inArray(filterValue[1], values) > -1) {option.prop('selected', true);}
         if (filterValue.length == 3) {
           var optgroup = select.find('optgroup').filter(function(){return $(this).attr('label') == filterValue[2]});
           if (!optgroup.length) {optgroup = $('<optgroup>').attr('label', filterValue[2]);}
@@ -201,7 +206,7 @@ function buildFilterRow(field, operator, values) {
         }
       } else {
         option.val(filterValue).text(filterValue);
-        if ($.inArray(filterValue, values) > -1) {option.attr('selected', true);}
+        if ($.inArray(filterValue, values) > -1) {option.prop('selected', true);}
       }
       select.append(option);
     }
@@ -235,7 +240,7 @@ function buildFilterRow(field, operator, values) {
       var filterValue = filterValues[i];
       var option = $('<option>');
       option.val(filterValue[1]).text(filterValue[0]);
-      if (values[0] == filterValue[1]) { option.attr('selected', true); }
+      if (values[0] == filterValue[1]) { option.prop('selected', true); }
       select.append(option);
     }
     break;
@@ -289,11 +294,14 @@ function toggleOperator(field) {
   switch (operator.val()) {
     case "!*":
     case "*":
+    case "nd":
     case "t":
     case "ld":
+    case "nw":
     case "w":
     case "lw":
     case "l2w":
+    case "nm":
     case "m":
     case "lm":
     case "y":
@@ -342,15 +350,71 @@ function toggleMultiSelect(el) {
 
 function showTab(name, url) {
   $('#tab-content-' + name).parent().find('.tab-content').hide();
-  $('#tab-content-' + name).parent().find('div.tabs a').removeClass('selected');
   $('#tab-content-' + name).show();
+  $('#tab-' + name).closest('.tabs').find('a').removeClass('selected');
   $('#tab-' + name).addClass('selected');
-  //replaces current URL with the "href" attribute of the current link
-  //(only triggered if supported by browser)
-  if ("replaceState" in window.history) {
+
+  replaceInHistory(url)
+
+  return false;
+}
+
+function showIssueHistory(journal, url) {
+  tab_content = $('#tab-content-history');
+  tab_content.parent().find('.tab-content').hide();
+  tab_content.show();
+  tab_content.parent().children('div.tabs').find('a').removeClass('selected');
+
+  $('#tab-' + journal).addClass('selected');
+
+  replaceInHistory(url)
+
+  switch(journal) {
+    case 'notes':
+      tab_content.find('.journal:not(.has-notes)').hide();
+      tab_content.find('.journal.has-notes').show();
+      break;
+    case 'properties':
+      tab_content.find('.journal.has-notes').hide();
+      tab_content.find('.journal:not(.has-notes)').show();
+      break;
+    default:
+      tab_content.find('.journal').show();
+  }
+
+  return false;
+}
+
+function getRemoteTab(name, remote_url, url, load_always) {
+  load_always = load_always || false;
+  var tab_content = $('#tab-content-' + name);
+
+  tab_content.parent().find('.tab-content').hide();
+  tab_content.parent().children('div.tabs').find('a').removeClass('selected');
+  $('#tab-' + name).addClass('selected');
+
+  replaceInHistory(url);
+
+  if (tab_content.children().length == 0 && load_always == false) {
+    $.ajax({
+      url: remote_url,
+      type: 'get',
+      success: function(data){
+        tab_content.html(data)
+      }
+    });
+  }
+
+  tab_content.show();
+  return false;
+}
+
+//replaces current URL with the "href" attribute of the current link
+//(only triggered if supported by browser)
+function replaceInHistory(url) {
+  if ("replaceState" in window.history && url !== undefined) {
     window.history.replaceState(null, document.title, url);
   }
-  return false;
 }
 
 function moveTabRight(el) {
@@ -426,7 +490,7 @@ function showModal(id, width, title) {
   if (el.length === 0 || el.is(':visible')) {return;}
   if (!title) title = el.find('h3.title').text();
   // moves existing modals behind the transparent background
-  $(".modal").zIndex(99);
+  $(".modal").css('zIndex',99);
   el.dialog({
     width: width,
     modal: true,
@@ -434,7 +498,7 @@ function showModal(id, width, title) {
     dialogClass: 'modal',
     title: title
   }).on('dialogclose', function(){
-    $(".modal").zIndex(101);
+    $(".modal").css('zIndex',101);
   });
   el.find("input[type=text], input[type=submit]").first().focus();
 }
@@ -447,17 +511,6 @@ function hideModal(el) {
     modal = $('#ajax-modal');
   }
   modal.dialog("close");
-}
-
-function submitPreview(url, form, target) {
-  $.ajax({
-    url: url,
-    type: 'post',
-    data: $('#'+form).serialize(),
-    success: function(data){
-      $('#'+target).html(data);
-    }
-  });
 }
 
 function collapseScmEntry(id) {
@@ -484,10 +537,12 @@ function scmEntryClick(id, url) {
     var el = $('#'+id);
     if (el.hasClass('open')) {
         collapseScmEntry(id);
+        el.find('.expander').switchClass('icon-expended', 'icon-collapsed');
         el.addClass('collapsed');
         return false;
     } else if (el.hasClass('loaded')) {
         expandScmEntry(id);
+        el.find('.expander').switchClass('icon-collapsed', 'icon-expended');
         el.removeClass('collapsed');
         return false;
     }
@@ -500,6 +555,7 @@ function scmEntryClick(id, url) {
       success: function(data) {
         el.after(data);
         el.addClass('open').addClass('loaded').removeClass('loading');
+        el.find('.expander').switchClass('icon-collapsed', 'icon-expended');
       }
     });
     return true;
@@ -767,6 +823,36 @@ function setupTabs() {
   }
 }
 
+function setupFilePreviewNavigation() {
+  // only bind arrow keys when preview navigation is present
+  const element = $('.pagination.filepreview').first();
+  if (element) {
+
+    const handleArrowKey = function(selector, e){
+      const href = $(element).find(selector).attr('href');
+      if (href) {
+        window.location = href;
+        e.preventDefault();
+      }
+    };
+
+    $(document).keydown(function(e) {
+      if(e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+      switch(e.key) {
+        case 'ArrowLeft':
+          handleArrowKey('.previous a', e);
+          break;
+
+        case 'ArrowRight':
+          handleArrowKey('.next a', e);
+          break;
+      }
+    });
+  }
+}
+
+
+
 function hideOnLoad() {
   $('.hol').hide();
 }
@@ -844,6 +930,33 @@ function toggleNewObjectDropdown() {
 $(document).ready(function(){
   $('#content').on('change', 'input[data-disables], input[data-enables], input[data-shows]', toggleDisabledOnChange);
   toggleDisabledInit();
+
+  $('#history .tabs').on('click', 'a', function(e){
+    var tab = $(e.target).attr('id').replace('tab-','');
+    document.cookie = 'history_last_tab=' + tab
+  });
+});
+
+$(document).ready(function(){
+  $('#content').on('click', 'div.jstTabs a.tab-preview', function(event){
+    var tab = $(event.target);
+
+    var url = tab.data('url');
+    var form = tab.parents('form');
+    var jstBlock = tab.parents('.jstBlock');
+
+    var element = encodeURIComponent(jstBlock.find('.wiki-edit').val());
+    var attachments = form.find('.attachments_fields input').serialize();
+
+    $.ajax({
+      url: url,
+      type: 'post',
+      data: "text=" + element + '&' + attachments,
+      success: function(data){
+        jstBlock.find('.wiki-preview').html(data);
+      }
+    });
+  });
 });
 
 function keepAnchorOnSignIn(form){
@@ -857,8 +970,98 @@ function keepAnchorOnSignIn(form){
   return true;
 }
 
+$(function ($) {
+  $('#auth_source_ldap_mode').change(function () {
+    $('.ldaps_warning').toggle($(this).val() != 'ldaps_verify_peer');
+  }).change();
+});
+
+function setFilecontentContainerHeight() {
+  var $filecontainer = $('.filecontent-container');
+  var fileTypeSelectors = ['.image', 'video'];
+
+  if($filecontainer.length > 0 && $filecontainer.find(fileTypeSelectors.join(',')).length === 1) {
+    var containerOffsetTop = $filecontainer.offset().top;
+    var containerMarginBottom = parseInt($filecontainer.css('marginBottom'));
+    var paginationHeight = $filecontainer.next('.pagination').height();
+    var diff = containerOffsetTop + containerMarginBottom + paginationHeight;
+
+    $filecontainer.css('height', 'calc(100vh - ' + diff + 'px)')
+  }
+}
+
+function setupAttachmentDetail() {
+  setFilecontentContainerHeight();
+  $(window).resize(setFilecontentContainerHeight);
+}
+
+
+$(function () {
+    $('[title]').tooltip({
+        show: {
+          delay: 400
+        },
+        position: {
+          my: "center bottom-5",
+          at: "center top"
+        }
+    });
+});
+
+function inlineAutoComplete(element) {
+    'use strict';
+    // do not attach if Tribute is already initialized
+    if (element.dataset.tribute === 'true') {return;}
+
+    const issuesUrl = element.dataset.issuesUrl;
+    const usersUrl = element.dataset.usersUrl;
+
+    const remoteSearch = function(url, cb) {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function ()
+      {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            cb(data);
+          } else if (xhr.status === 403) {
+            cb([]);
+          }
+        }
+      };
+      xhr.open("GET", url, true);
+      xhr.send();
+    };
+
+    const tribute = new Tribute({
+      trigger: '#',
+      values: function (text, cb) {
+        if (event.target.type === 'text' && $(element).attr('autocomplete') != 'off') {
+          $(element).attr('autocomplete', 'off');
+        }
+        remoteSearch(issuesUrl + text, function (issues) {
+          return cb(issues);
+        });
+      },
+      lookup: 'label',
+      fillAttr: 'label',
+      requireLeadingSpace: true,
+      selectTemplate: function (issue) {
+        return '#' + issue.original.id;
+      }
+    });
+
+    tribute.attach(element);
+}
+
+
 $(document).ready(setupAjaxIndicator);
 $(document).ready(hideOnLoad);
 $(document).ready(addFormObserversForDoubleSubmit);
 $(document).ready(defaultFocus);
+$(document).ready(setupAttachmentDetail);
 $(document).ready(setupTabs);
+$(document).ready(setupFilePreviewNavigation);
+$(document).on('focus', '[data-auto-complete=true]', function(event) {
+  inlineAutoComplete(event.target);
+});

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -64,11 +66,55 @@ class UsersControllerTest < Redmine::ControllerTest
     end
   end
 
+  def test_index_csv
+    with_settings :default_language => 'en' do
+      get :index, :params => { :format => 'csv' }
+      assert_response :success
+
+      assert_equal User.logged.status(1).count, response.body.chomp.split("\n").size - 1
+      assert_include 'active', response.body
+      assert_not_include 'locked', response.body
+      assert_equal 'text/csv', @response.media_type
+    end
+  end
+
+  def test_index_csv_with_status_filter
+    with_settings :default_language => 'en' do
+      get :index, :params => { :status => 3, :format => 'csv' }
+      assert_response :success
+
+      assert_equal User.logged.status(3).count, response.body.chomp.split("\n").size - 1
+      assert_include 'locked', response.body
+      assert_not_include 'active', response.body
+      assert_equal 'text/csv', @response.media_type
+    end
+  end
+
+  def test_index_csv_with_name_filter
+    get :index, :params => {:name => 'John', :format => 'csv'}
+    assert_response :success
+
+    assert_equal User.logged.like('John').count, response.body.chomp.split("\n").size - 1
+    assert_include 'John', response.body
+    assert_equal 'text/csv', @response.media_type
+  end
+
+  def test_index_csv_with_group_filter
+    get :index, :params => {:group_id => '10', :format => 'csv'}
+    assert_response :success
+
+    assert_equal Group.find(10).users.count, response.body.chomp.split("\n").size - 1
+    assert_equal 'text/csv', @response.media_type
+  end
+
   def test_show
     @request.session[:user_id] = nil
     get :show, :params => {:id => 2}
     assert_response :success
     assert_select 'h2', :text => /John Smith/
+
+    # groups block should not be rendeder for users which are not part of any group
+    assert_select 'div#groups', 0
   end
 
   def test_show_should_display_visible_custom_fields
@@ -77,7 +123,7 @@ class UsersControllerTest < Redmine::ControllerTest
     get :show, :params => {:id => 2}
     assert_response :success
 
-    assert_select 'li', :text => /Phone number/
+    assert_select 'li[class=?]', 'cf_4', :text => /Phone number/
   end
 
   def test_show_should_not_display_hidden_custom_fields
@@ -127,8 +173,20 @@ class UsersControllerTest < Redmine::ControllerTest
     get :show, :params => {:id => 2}
     assert_response :success
 
-    # membership of private project admin can see
-    assert_select 'li a', :text => "OnlineStore"
+    assert_select 'table.list.projects>tbody' do
+      assert_select 'tr:nth-of-type(1)' do
+        assert_select 'td:nth-of-type(1)>span>a', :text => 'eCookbook'
+        assert_select 'td:nth-of-type(2)', :text => 'Manager'
+      end
+      assert_select 'tr:nth-of-type(2)' do
+        assert_select 'td:nth-of-type(1)>span>a', :text => 'Private child of eCookbook'
+        assert_select 'td:nth-of-type(2)', :text => 'Manager'
+      end
+      assert_select 'tr:nth-of-type(3)' do
+        assert_select 'td:nth-of-type(1)>span>a', :text => 'OnlineStore'
+        assert_select 'td:nth-of-type(2)', :text => 'Developer'
+      end
+    end
   end
 
   def test_show_current_should_require_authentication
@@ -142,6 +200,37 @@ class UsersControllerTest < Redmine::ControllerTest
     get :show, :params => {:id => 'current'}
     assert_response :success
     assert_select 'h2', :text => /John Smith/
+  end
+
+  def test_show_issues_counts
+    @request.session[:user_id] = 2
+    get :show, :params => {:id => 2}
+    assert_select 'table.list.issue-report>tbody' do
+      assert_select 'tr:nth-of-type(1)' do
+        assert_select 'td:nth-of-type(1)>a', :text => 'Assigned issues'
+        assert_select 'td:nth-of-type(2)>a', :text => '1'   # open
+        assert_select 'td:nth-of-type(3)>a', :text => '0'   # closed
+        assert_select 'td:nth-of-type(4)>a', :text => '1'   # total
+      end
+      assert_select 'tr:nth-of-type(2)' do
+        assert_select 'td:nth-of-type(1)>a', :text => 'Reported issues'
+        assert_select 'td:nth-of-type(2)>a', :text => '11'  # open
+        assert_select 'td:nth-of-type(3)>a', :text => '2'   # closed
+        assert_select 'td:nth-of-type(4)>a', :text => '13'  # total
+      end
+    end
+  end
+
+  def test_show_user_should_list_user_groups
+    @request.session[:user_id] = 1
+    get :show, :params => {:id => 8}
+
+    assert_select 'div#groups', 1 do
+      assert_select 'h3', :text => 'Groups'
+      assert_select 'li', 2
+      assert_select 'a[href=?]', '/groups/10/edit', :text => 'A Team'
+      assert_select 'a[href=?]', '/groups/11/edit', :text => 'B Team'
+    end
   end
 
   def test_new
@@ -203,7 +292,8 @@ class UsersControllerTest < Redmine::ControllerTest
           'time_zone' => 'Paris',
           'comments_sorting' => 'desc',
           'warn_on_leaving_unsaved' => '0',
-          'textarea_font' => 'proportional'
+          'textarea_font' => 'proportional',
+          'history_default_tab' => 'history'
         }
       }
     end
@@ -214,6 +304,7 @@ class UsersControllerTest < Redmine::ControllerTest
     assert_equal 'desc', user.pref[:comments_sorting]
     assert_equal '0', user.pref[:warn_on_leaving_unsaved]
     assert_equal 'proportional', user.pref[:textarea_font]
+    assert_equal 'history', user.pref[:history_default_tab]
   end
 
   def test_create_with_generate_password_should_email_the_password
@@ -259,7 +350,7 @@ class UsersControllerTest < Redmine::ControllerTest
 
   def test_create_with_failure
     assert_no_difference 'User.count' do
-      post :create, :params => {:user => {}}
+      post :create, :params => {:user => {:login => 'foo'}}
     end
     assert_response :success
     assert_select_error /Email cannot be blank/
@@ -268,7 +359,9 @@ class UsersControllerTest < Redmine::ControllerTest
   def test_create_with_failure_sould_preserve_preference
     assert_no_difference 'User.count' do
       post :create, :params => {
-        :user => {},
+        :user => {
+          :login => 'foo'
+        },
         :pref => {
           'no_self_notified' => '1',
           'hide_mail' => '1',
@@ -327,10 +420,12 @@ class UsersControllerTest < Redmine::ControllerTest
     assert_nil ActionMailer::Base.deliveries.last
   end
 
-
   def test_edit
-    get :edit, :params => {:id => 2}
+    with_settings :gravatar_enabled => '1' do
+      get :edit, :params => {:id => 2}
+    end
     assert_response :success
+    assert_select 'h2>a+img.gravatar'
     assert_select 'input[name=?][value=?]', 'user[login]', 'jsmith'
   end
 
@@ -346,6 +441,14 @@ class UsersControllerTest < Redmine::ControllerTest
     assert User.find(6).anonymous?
     get :edit, :params => {:id => 6}
     assert_response 404
+  end
+
+  def test_edit_user_with_full_text_formatting_custom_field_should_not_fail
+    field = UserCustomField.find(4)
+    field.update_attribute :text_formatting, 'full'
+
+    get :edit, :params => {:id => 2}
+    assert_response :success
   end
 
   def test_update

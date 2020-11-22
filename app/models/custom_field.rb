@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +37,6 @@ class CustomField < ActiveRecord::Base
   validates_length_of :regexp, maximum: 255
   validates_inclusion_of :field_format, :in => Proc.new { Redmine::FieldFormat.available_formats }
   validate :validate_custom_field
-  attr_protected :id
 
   before_validation :set_searchable
   before_save do |field|
@@ -43,7 +44,7 @@ class CustomField < ActiveRecord::Base
   end
   after_save :handle_multiplicity_change
   after_save do |field|
-    if field.visible_changed? && field.visible
+    if field.saved_change_to_visible? && field.visible
       field.roles.clear
     end
   end
@@ -54,10 +55,11 @@ class CustomField < ActiveRecord::Base
     if user.admin?
       # nop
     elsif user.memberships.any?
-      where("#{table_name}.visible = ? OR #{table_name}.id IN (SELECT DISTINCT cfr.custom_field_id FROM #{Member.table_name} m" +
-        " INNER JOIN #{MemberRole.table_name} mr ON mr.member_id = m.id" +
-        " INNER JOIN #{table_name_prefix}custom_fields_roles#{table_name_suffix} cfr ON cfr.role_id = mr.role_id" +
-        " WHERE m.user_id = ?)",
+      where(
+        "#{table_name}.visible = ? OR #{table_name}.id IN (SELECT DISTINCT cfr.custom_field_id FROM #{Member.table_name} m" +
+          " INNER JOIN #{MemberRole.table_name} mr ON mr.member_id = m.id" +
+          " INNER JOIN #{table_name_prefix}custom_fields_roles#{table_name_suffix} cfr ON cfr.role_id = mr.role_id" +
+          " WHERE m.user_id = ?)",
         true, user.id)
     else
       where(:visible => true)
@@ -67,7 +69,8 @@ class CustomField < ActiveRecord::Base
     visible? || user.admin?
   end
 
-  safe_attributes 'name',
+  safe_attributes(
+    'name',
     'field_format',
     'possible_values',
     'regexp',
@@ -90,7 +93,7 @@ class CustomField < ActiveRecord::Base
     'user_role',
     'version_status',
     'extensions_allowed',
-    'full_width_layout'
+    'full_width_layout')
 
   def format
     @format ||= Redmine::FieldFormat.find(field_format)
@@ -191,6 +194,10 @@ class CustomField < ActiveRecord::Base
     full_width_layout == '1'
   end
 
+  def full_text_formatting?
+    text_formatting == 'full'
+  end
+
   # Returns a ORDER BY clause that can used to sort customized
   # objects by their value of the custom field.
   # Returns nil if the custom field can not be used for sorting.
@@ -222,19 +229,6 @@ class CustomField < ActiveRecord::Base
         " INNER JOIN #{MemberRole.table_name} mr ON mr.member_id = m.id" +
         " INNER JOIN #{table_name_prefix}custom_fields_roles#{table_name_suffix} cfr ON cfr.role_id = mr.role_id" +
         " WHERE m.user_id = #{user.id} AND cfr.custom_field_id = #{id_column})"
-    end
-  end
-
-  def self.visibility_condition
-    if user.admin?
-      "1=1"
-    elsif user.anonymous?
-      "#{table_name}.visible"
-    else
-      "#{project_key} IN (SELECT DISTINCT m.project_id FROM #{Member.table_name} m" +
-        " INNER JOIN #{MemberRole.table_name} mr ON mr.member_id = m.id" +
-        " INNER JOIN #{table_name_prefix}custom_fields_roles#{table_name_suffix} cfr ON cfr.role_id = mr.role_id" +
-        " WHERE m.user_id = #{user.id} AND cfr.custom_field_id = #{id})"
     end
   end
 
@@ -311,12 +305,16 @@ class CustomField < ActiveRecord::Base
     super(attr_name, *args)
   end
 
+  def css_classes
+    "cf_#{id}"
+  end
+
   protected
 
   # Removes multiple values for the custom field after setting the multiple attribute to false
   # We kepp the value with the highest id for each customized object
   def handle_multiplicity_change
-    if !new_record? && multiple_was && !multiple
+    if !new_record? && multiple_before_last_save && !multiple
       ids = custom_values.
         where("EXISTS(SELECT 1 FROM #{CustomValue.table_name} cve WHERE cve.custom_field_id = #{CustomValue.table_name}.custom_field_id" +
           " AND cve.customized_type = #{CustomValue.table_name}.customized_type AND cve.customized_id = #{CustomValue.table_name}.customized_id" +

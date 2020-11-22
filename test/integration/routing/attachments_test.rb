@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +22,8 @@ require File.expand_path('../../../test_helper', __FILE__)
 class RoutingAttachmentsTest < Redmine::RoutingTest
   def test_attachments
     should_route 'GET /attachments/1' => 'attachments#show', :id => '1'
-    should_route 'GET /attachments/1/filename.ext' => 'attachments#show', :id => '1', :filename => 'filename.ext'
+    should_route 'GET /attachments/1/filename.ext' => 'attachments#show', :id => '1', :filename => 'filename.ext', :format => 'html'
+    should_route 'GET /attachments/1/filename.txt' => 'attachments#show', :id => '1', :filename => 'filename.txt', :format => 'html'
 
     should_route 'GET /attachments/download/1' => 'attachments#download', :id => '1'
     should_route 'GET /attachments/download/1/filename.ext' => 'attachments#download', :id => '1', :filename => 'filename.ext'

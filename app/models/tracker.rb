@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,22 +29,16 @@ class Tracker < ActiveRecord::Base
   before_destroy :check_integrity
   belongs_to :default_status, :class_name => 'IssueStatus'
   has_many :issues
-  has_many :workflow_rules, :dependent => :delete_all do
-    def copy(source_tracker)
-      ActiveSupport::Deprecation.warn "tracker.workflow_rules.copy is deprecated and will be removed in Redmine 4.0, use tracker.copy_worflow_rules instead"
-      proxy_association.owner.copy_workflow_rules(source_tracker)
-    end
-  end
+  has_many :workflow_rules, :dependent => :delete_all
   has_and_belongs_to_many :projects
   has_and_belongs_to_many :custom_fields, :class_name => 'IssueCustomField', :join_table => "#{table_name_prefix}custom_fields_trackers#{table_name_suffix}", :association_foreign_key => 'custom_field_id'
   acts_as_positioned
-
-  attr_protected :fields_bits
 
   validates_presence_of :default_status
   validates_presence_of :name
   validates_uniqueness_of :name
   validates_length_of :name, :maximum => 30
+  validates_length_of :description, :maximum => 255
 
   scope :sorted, lambda { order(:position) }
   scope :named, lambda {|arg| where("LOWER(#{table_name}.name) = LOWER(?)", arg.to_s.strip)}
@@ -70,13 +66,15 @@ class Tracker < ActiveRecord::Base
     joins(:projects).where(condition).distinct
   }
 
-  safe_attributes 'name',
+  safe_attributes(
+    'name',
     'default_status_id',
     'is_in_roadmap',
     'core_fields',
     'position',
     'custom_field_ids',
-    'project_ids'
+    'project_ids',
+    'description')
 
   def to_s; name end
 
@@ -143,8 +141,9 @@ class Tracker < ActiveRecord::Base
     end
   end
 
-private
+  private
+
   def check_integrity
-    raise Exception.new("Cannot delete tracker") if Issue.where(:tracker_id => self.id).any?
+    raise "Cannot delete tracker" if Issue.where(:tracker_id => self.id).any?
   end
 end

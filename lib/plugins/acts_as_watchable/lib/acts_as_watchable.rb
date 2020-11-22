@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ActsAsWatchable
 module Redmine
   module Acts
@@ -17,7 +19,6 @@ module Redmine
               joins(:watchers).
               where("#{Watcher.table_name}.user_id = ?", user_id)
             }
-            attr_protected :watcher_ids, :watcher_user_ids
           end
           send :include, Redmine::Acts::Watchable::InstanceMethods
         end

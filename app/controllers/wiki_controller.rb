@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,8 +44,6 @@ class WikiController < ApplicationController
   helper :watchers
   include Redmine::Export::PDF
 
-  include ActionView::Helpers::SanitizeHelper
-
   # List of pages, sorted alphabetically and by parent (hierarchy)
   def index
     load_pages_for_index
@@ -72,7 +72,7 @@ class WikiController < ApplicationController
       @page.title = '' unless editable?
       @page.validate
       if @page.errors[:title].blank?
-        path = project_wiki_page_path(@project, @page.title)
+        path = project_wiki_page_path(@project, @page.title, :parent => params[:parent])
         respond_to do |format|
           format.html { redirect_to path }
           format.js   { render :js => "window.location = #{path.to_json}" }
@@ -109,7 +109,7 @@ class WikiController < ApplicationController
         send_data(export, :type => 'text/html', :filename => filename_for_content_disposition("#{@page.title}.html"))
         return
       elsif params[:format] == 'txt'
-        send_data(strip_tags(@content.text), :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
+        send_data(@content.text, :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
         return
       end
     end
@@ -325,7 +325,7 @@ class WikiController < ApplicationController
       @attachments += page.attachments
       @previewed = page.content
     end
-    @text = params[:content][:text]
+    @text = params[:content].present? ? params[:content][:text] : params[:text]
     render :partial => 'common/preview'
   end
 
@@ -336,7 +336,7 @@ class WikiController < ApplicationController
     redirect_to :action => 'show', :id => @page.title, :project_id => @project
   end
 
-private
+  private
 
   def find_wiki
     @project = Project.find(params[:project_id])

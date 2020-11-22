@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +22,11 @@ require File.expand_path('../../test_helper', __FILE__)
 class CustomFieldTest < ActiveSupport::TestCase
   fixtures :custom_fields, :roles, :projects,
            :trackers, :issue_statuses,
-           :issues
+           :issues, :users
+
+  def setup
+    User.current = nil
+  end
 
   def test_create
     field = UserCustomField.new(:name => 'Money money money', :field_format => 'float')
@@ -101,7 +107,7 @@ class CustomFieldTest < ActiveSupport::TestCase
 
   def test_possible_values_should_return_utf8_encoded_strings
     field = CustomField.new
-    s = "Value".force_encoding('BINARY')
+    s = "Value".b
     field.possible_values = s
     assert_equal [s], field.possible_values
     assert_equal 'UTF-8', field.possible_values.first.encoding.name
@@ -341,5 +347,29 @@ class CustomFieldTest < ActiveSupport::TestCase
     assert_equal 12.5, field.cast_value('12.5')
     assert_equal 12.5, field.cast_value('+12.5')
     assert_equal -12.5, field.cast_value('-12.5')
+  end
+
+  def test_project_custom_field_visibility
+    project_field = ProjectCustomField.generate!(:visible => false, :field_format => 'list', :possible_values => %w[a b c])
+    project = Project.find(3)
+    project.custom_field_values = { project_field.id => 'a' }
+
+    # Admins can find projects with the field
+    with_current_user(User.find(1)) do
+      assert_includes Project.where(project_field.visibility_by_project_condition), project
+    end
+
+    # The field is not visible to normal users
+    with_current_user(User.find(2)) do
+      refute_includes Project.where(project_field.visibility_by_project_condition), project
+    end
+  end
+
+  def test_full_text_formatting?
+    field = IssueCustomField.create!(:name => 'Long text', :field_format => 'text', :text_formatting => 'full')
+    assert field.full_text_formatting?
+
+    field2 = IssueCustomField.create!(:name => 'Another long text', :field_format => 'text')
+    assert !field2.full_text_formatting?
   end
 end

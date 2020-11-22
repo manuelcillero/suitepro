@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -95,9 +97,20 @@ class Redmine::Views::Builders::JsonTest < ActiveSupport::TestCase
     end
   end
 
+  def test_request_response
+    assert_json_output({'request' => { 'get' => 'book' }, 'response' => { 'book' => { 'title' => 'Book 1' } }}) do |b|
+      b.request do
+        b.get 'book'
+      end
+      b.response do
+        b.book title: 'Book 1'
+      end
+    end
+  end
+
   def assert_json_output(expected, &block)
-    builder = Redmine::Views::Builders::Json.new(ActionDispatch::TestRequest.new, ActionDispatch::TestResponse.new)
-    block.call(builder)
+    builder = Redmine::Views::Builders::Json.new(ActionDispatch::TestRequest.create, ActionDispatch::TestResponse.create)
+    yield(builder)
     assert_equal(expected, ActiveSupport::JSON.decode(builder.output))
   end
 end

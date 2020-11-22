@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +24,6 @@ class Message < ActiveRecord::Base
   acts_as_tree :counter_cache => :replies_count, :order => "#{Message.table_name}.created_on ASC"
   acts_as_attachable
   belongs_to :last_reply, :class_name => 'Message'
-  attr_protected :id
 
   acts_as_searchable :columns => ['subject', 'content'],
                      :preload => {:board => :project},
@@ -32,8 +33,17 @@ class Message < ActiveRecord::Base
                 :description => :content,
                 :group => :parent,
                 :type => Proc.new {|o| o.parent_id.nil? ? 'message' : 'reply'},
-                :url => Proc.new {|o| {:controller => 'messages', :action => 'show', :board_id => o.board_id}.merge(o.parent_id.nil? ? {:id => o.id} :
-                                                                                                                                       {:id => o.parent_id, :r => o.id, :anchor => "message-#{o.id}"})}
+                :url =>
+                  Proc.new {|o|
+                    {:controller => 'messages', :action => 'show',
+                     :board_id => o.board_id}.
+                       merge(
+                         if o.parent_id.nil?
+                           {:id => o.id}
+                         else
+                           {:id => o.parent_id, :r => o.id, :anchor => "message-#{o.id}"}
+                         end)
+                  }
 
   acts_as_activity_provider :scope => preload({:board => :project}, :author),
                             :author_key => :author_id
@@ -46,7 +56,7 @@ class Message < ActiveRecord::Base
   after_create :add_author_as_watcher, :reset_counters!
   after_update :update_messages_board
   after_destroy :reset_counters!
-  after_create :send_notification
+  after_create_commit :send_notification
 
   scope :visible, lambda {|*args|
     joins(:board => :project).
@@ -55,9 +65,9 @@ class Message < ActiveRecord::Base
 
   safe_attributes 'subject', 'content'
   safe_attributes 'locked', 'sticky', 'board_id',
-    :if => lambda {|message, user|
-      user.allowed_to?(:edit_messages, message.project)
-    }
+                  :if => lambda {|message, user|
+                    user.allowed_to?(:edit_messages, message.project)
+                  }
 
   def visible?(user=User.current)
     !user.nil? && user.allowed_to?(:view_messages, project)
@@ -69,9 +79,9 @@ class Message < ActiveRecord::Base
   end
 
   def update_messages_board
-    if board_id_changed?
+    if saved_change_to_board_id?
       Message.where(["id = ? OR parent_id = ?", root.id, root.id]).update_all({:board_id => board_id})
-      Board.reset_counters!(board_id_was)
+      Board.reset_counters!(board_id_before_last_save)
       Board.reset_counters!(board_id)
     end
   end
@@ -115,7 +125,7 @@ class Message < ActiveRecord::Base
 
   def send_notification
     if Setting.notified_events.include?('message_posted')
-      Mailer.message_posted(self).deliver
+      Mailer.deliver_message_posted(self)
     end
   end
 end

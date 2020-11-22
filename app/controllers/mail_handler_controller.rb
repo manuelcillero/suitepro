@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,7 +28,7 @@ class MailHandlerController < ActionController::Base
   def index
     options = params.dup
     email = options.delete(:email)
-    if MailHandler.receive(email, options)
+    if MailHandler.safe_receive(email, options)
       head :created
     else
       head :unprocessable_entity

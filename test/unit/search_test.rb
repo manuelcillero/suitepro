@@ -1,7 +1,7 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -193,6 +193,11 @@ class SearchTest < ActiveSupport::TestCase
 
     f = Redmine::Search::Fetcher.new('Special chars "in a phrase Öö"', User.anonymous, %w(issues), Project.all)
     assert_equal ['Special', 'chars', 'in a phrase Öö'], f.tokens
+  end
+
+  def test_fetcher_should_exclude_single_character_tokens_except_for_chinese_characters
+    f = Redmine::Search::Fetcher.new('ca f é 漢 あ 한', User.anonymous, %w(issues), Project.all)
+    assert_equal ['ca', '漢'], f.tokens
   end
 
   private

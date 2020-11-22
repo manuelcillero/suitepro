@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -63,7 +65,7 @@ class LayoutTest < Redmine::IntegrationTest
     Role.anonymous.add_permission! :add_issues
 
     get '/projects/ecookbook/issues/new'
-    assert_select 'head script[src^=?]', '/javascripts/jstoolbar/jstoolbar-textile.min.js?'
+    assert_select 'head script[src^=?]', '/javascripts/jstoolbar/jstoolbar.js?'
   end
 
   def test_calendar_header_tags

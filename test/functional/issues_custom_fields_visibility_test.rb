@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,11 +31,14 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
            :projects_trackers,
            :enabled_modules,
            :enumerations,
-           :workflows
+           :workflows,
+           :custom_fields, :custom_fields_trackers
 
   def setup
-    CustomField.delete_all
+    CustomField.destroy_all
     Issue.delete_all
+    Watcher.delete_all
+
     field_attributes = {:field_format => 'string', :is_for_all => true, :is_filter => true, :trackers => Tracker.all}
     @fields = []
     @fields << (@field1 = IssueCustomField.create!(field_attributes.merge(:name => 'Field 1', :visible => true)))
@@ -58,7 +63,7 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
     }
 
     Member.where(:project_id => 1).each do |member|
-      member.destroy unless @users_to_test.keys.include?(member.principal)
+      member.destroy unless @users_to_test.key?(member.principal)
     end
   end
 
@@ -169,8 +174,8 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
           :id => @issue.id,
           :issue => {
             :custom_field_values => {
-            @field1.id.to_s => "User#{user.id}Value0",    
-                    @field2.id.to_s => "User#{user.id}Value1",  
+            @field1.id.to_s => "User#{user.id}Value0",
+                    @field2.id.to_s => "User#{user.id}Value1",
                   @field3.id.to_s => "User#{user.id}Value2",
                 }
         }
@@ -220,7 +225,9 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
   end
 
   def test_index_with_partial_custom_field_visibility
+    CustomValue.delete_all
     Issue.delete_all
+
     p1 = Project.generate!
     p2 = Project.generate!
     user = User.generate!
@@ -274,15 +281,16 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
               :priority_id => 5,
               :custom_field_values => {
                 @field1.id.to_s => 'Value0', @field2.id.to_s => 'Value1', @field3.id.to_s => 'Value2'
-              },    
+              },
               :watcher_user_ids => users_to_test.keys.map(&:id)
-              
+
             }
           }
         assert_response 302
       end
     end
-    assert_equal users_to_test.values.uniq.size, ActionMailer::Base.deliveries.size
+
+    assert_equal users_to_test.keys.size, ActionMailer::Base.deliveries.size
     # tests that each user receives 1 email with the custom fields he is allowed to see only
     users_to_test.each do |user, fields|
       mails = ActionMailer::Base.deliveries.select {|m| m.bcc.include? user.mail}
@@ -313,13 +321,13 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
           :issue => {
             :custom_field_values => {
               @field1.id.to_s => 'NewValue0', @field2.id.to_s => 'NewValue1', @field3.id.to_s => 'NewValue2'
-            }    
-            
+            }
+
           }
         }
       assert_response 302
     end
-    assert_equal users_to_test.values.uniq.size, ActionMailer::Base.deliveries.size
+    assert_equal users_to_test.keys.size, ActionMailer::Base.deliveries.size
     # tests that each user receives 1 email with the custom fields he is allowed to see only
     users_to_test.each do |user, fields|
       mails = ActionMailer::Base.deliveries.select {|m| m.bcc.include? user.mail}
@@ -350,8 +358,8 @@ class IssuesCustomFieldsVisibilityTest < Redmine::ControllerTest
           :issue => {
             :custom_field_values => {
               @field2.id.to_s => 'NewValue1', @field3.id.to_s => 'NewValue2'
-            }    
-            
+            }
+
           }
         }
       assert_response 302

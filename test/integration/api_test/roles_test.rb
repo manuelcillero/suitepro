@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 # Redmine - project management software
-# Copyright (C) 2006-2017  Jean-Philippe Lang
+# Copyright (C) 2006-2019  Jean-Philippe Lang
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -53,6 +55,11 @@ class Redmine::ApiTest::RolesTest < Redmine::ApiTest::Base
 
     assert_select 'role' do
       assert_select 'name', :text => 'Manager'
+      assert_select 'assignable', :text => 'true'
+      assert_select 'issues_visibility', :text => 'all'
+      assert_select 'time_entries_visibility', :text => 'all'
+      assert_select 'users_visibility', :text => 'all'
+
       assert_select 'role permissions[type=array]' do
         assert_select 'permission', Role.find(1).permissions.size
         assert_select 'permission', :text => 'view_issues'
