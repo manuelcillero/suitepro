@@ -1,4 +1,4 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path '../../test_helper', __FILE__
 
 class AdditionalsMacrosControllerTest < Additionals::ControllerTest
   fixtures :projects,
@@ -24,6 +24,6 @@ class AdditionalsMacrosControllerTest < Additionals::ControllerTest
     @request.session[:user_id] = nil
     get :show
 
-    assert_response 302
+    assert_response :redirect
   end
 end

@@ -3,16 +3,16 @@ linters:
     max: 140
   RuboCop:
     ignored_cops:
-      - Layout/AlignArray
-      - Layout/AlignHash
-      - Layout/AlignParameters
+      - Layout/ArgumentAlignment
+      - Layout/ArrayAlignment
       - Layout/BlockEndNewline
       - Layout/EmptyLineAfterGuardClause
-      - Layout/FirstParameterIndentation
-      - Layout/IndentArray
+      - Layout/HashAlignment
       - Layout/IndentationConsistency
       - Layout/IndentationWidth
-      - Layout/IndentHash
+      - Layout/IndentFirstArgument
+      - Layout/IndentFirstArrayElement
+      - Layout/IndentFirstHashElement
       - Layout/MultilineArrayBraceLayout
       - Layout/MultilineAssignmentLayout
       - Layout/MultilineBlockLayout
@@ -22,6 +22,7 @@ linters:
       - Layout/MultilineMethodDefinitionBraceLayout
       - Layout/MultilineOperationIndentation
       - Layout/TrailingBlankLines
+      - Layout/TrailingEmptyLines
       - Layout/TrailingWhitespace
       - Lint/BlockAlignment
       - Lint/EndAlignment

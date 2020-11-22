@@ -1,21 +1,18 @@
 module Additionals
   module Patches
     module FormattingHelperPatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-        base.class_eval do
-          alias_method :heads_for_wiki_formatter_without_additionals, :heads_for_wiki_formatter
-          alias_method :heads_for_wiki_formatter, :heads_for_wiki_formatter_with_additionals
-        end
+      extend ActiveSupport::Concern
+
+      included do
+        prepend InstanceOverwriteMethods
       end
 
-      module InstanceMethods
-        def heads_for_wiki_formatter_with_additionals
-          heads_for_wiki_formatter_without_additionals
-
+      module InstanceOverwriteMethods
+        def heads_for_wiki_formatter
+          super
           return if @additionals_macro_list
 
-          @additionals_macro_list = AdditionalsMacro.all(filtered: Additionals.settings[:hidden_macros_in_toolbar].to_a,
+          @additionals_macro_list = AdditionalsMacro.all(filtered: Additionals.setting(:hidden_macros_in_toolbar).to_a,
                                                          only_names: true,
                                                          controller_only: controller_name)
 

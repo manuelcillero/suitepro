@@ -1,28 +1,37 @@
 module AdditionalsMenuHelper
   def additionals_top_menu_setup
-    return unless User.current.try(:hrm_user_type_id).nil?
+    return if Redmine::Plugin.installed? 'redmine_hrm'
 
-    if Additionals.setting?(:remove_mypage)
+    if Additionals.setting? :remove_mypage
       Redmine::MenuManager.map(:top_menu).delete(:my_page) if Redmine::MenuManager.map(:top_menu).exists?(:my_page)
     else
-      handle_top_menu_item(:my_page, url: my_page_path, after: :home, if: proc { User.current.logged? })
+      handle_top_menu_item(:my_page, { url: my_page_path, after: :home, if: proc { User.current.logged? } })
     end
 
-    if Additionals.setting?(:remove_help)
+    if Additionals.setting? :remove_help
       Redmine::MenuManager.map(:top_menu).delete(:help) if Redmine::MenuManager.map(:top_menu).exists?(:help)
     elsif User.current.logged?
-      handle_top_menu_item(:help, url: '#', symbol: 'fas_question', last: true)
+      handle_top_submenu_item :help, url: '#', symbol: 'fas_question', last: true
       @additionals_help_items = additionals_help_menu_items
     else
-      handle_top_menu_item(:help, url: Redmine::Info.help_url, symbol: 'fas_question', last: true)
+      handle_top_menu_item :help, url: Redmine::Info.help_url, symbol: 'fas_question', last: true
     end
   end
 
-  def handle_top_menu_item(menu_name, item)
+  def handle_top_submenu_item(menu_name, item)
+    handle_top_menu_item menu_name, item, with_submenu: true
+  end
+
+  def handle_top_menu_item(menu_name, item, with_submenu: false)
     Redmine::MenuManager.map(:top_menu).delete(menu_name.to_sym) if Redmine::MenuManager.map(:top_menu).exists?(menu_name.to_sym)
 
     html_options = {}
-    html_options[:class] = 'external' if item[:url].include? '://'
+
+    css_classes = []
+    css_classes << 'top-submenu' if with_submenu
+    css_classes << 'external' if item[:url].include? '://'
+    html_options[:class] = css_classes.join(' ') if css_classes.present?
+
     html_options[:title] = item[:title] if item[:title].present?
 
     menu_options = { parent: item[:parent].present? ? item[:parent].to_sym : nil,
@@ -48,7 +57,7 @@ module AdditionalsMenuHelper
       menu_options[:before] = :help
     end
 
-    Redmine::MenuManager.map(:top_menu).push(menu_name, item[:url], menu_options)
+    Redmine::MenuManager.map(:top_menu).push menu_name, item[:url], menu_options
   end
 
   def render_custom_top_menu_item
@@ -56,14 +65,15 @@ module AdditionalsMenuHelper
     return if items.empty?
 
     user_roles = Role.givable
-                     .joins(:members).where(members: { user_id: User.current.id })
-                     .joins(members: :project).where(projects: { status: Project::STATUS_ACTIVE })
+                     .joins(members: :project)
+                     .where(members: { user_id: User.current.id },
+                            projects: { status: Project::STATUS_ACTIVE })
                      .distinct
                      .reorder(nil)
-                     .pluck(:id)
+                     .ids
 
     items.each do |item|
-      additionals_custom_top_menu_item(item, user_roles)
+      additionals_custom_top_menu_item item, user_roles
     end
   end
 
@@ -72,10 +82,10 @@ module AdditionalsMenuHelper
     Additionals::MAX_CUSTOM_MENU_ITEMS.times do |num|
       menu_name = "custom_menu#{num}"
       item = { menu_name: menu_name.to_sym,
-               url: Additionals.settings[menu_name + '_url'],
-               name: Additionals.settings[menu_name + '_name'],
-               title: Additionals.settings[menu_name + '_title'],
-               roles: Additionals.settings[menu_name + '_roles'] }
+               url: Additionals.setting("#{menu_name}_url"),
+               name: Additionals.setting("#{menu_name}_name"),
+               title: Additionals.setting("#{menu_name}_title"),
+               roles: Additionals.setting("#{menu_name}_roles") }
 
       if item[:name].present? && item[:url].present? && item[:roles].present?
         items << item
@@ -110,7 +120,7 @@ module AdditionalsMenuHelper
     end
 
     if show_entry
-      handle_top_menu_item(item[:menu_name], item)
+      handle_top_menu_item item[:menu_name], item
     elsif Redmine::MenuManager.map(:top_menu).exists?(item[:menu_name])
       Redmine::MenuManager.map(:top_menu).delete(item[:menu_name])
     end
@@ -118,12 +128,16 @@ module AdditionalsMenuHelper
 
   def addtionals_help_plugin_items
     user_items = [{ title: 'Redmine Guide', url: Redmine::Info.help_url },
-                  { title: "Redmine #{l(:label_macro_plural)}", url: additionals_macros_path }]
+                  { title: "Redmine #{l :label_macro_plural}", url: additionals_macros_path }]
 
-    admin_items = [{ title: 'Additionals', url: 'https://additionals.readthedocs.io/en/latest/manual/', manual: true },
-                   { title: 'Redmine Changelog', url: 'https://www.redmine.org/projects/redmine/wiki/Changelog_3_4' },
-                   { title: 'Redmine Upgrade', url: 'https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade' },
-                   { title: 'Redmine Security Advisories', url: 'https://www.redmine.org/projects/redmine/wiki/Security_Advisories' }]
+    admin_items = [{ title: 'Additionals',
+                     url: 'https://additionals.readthedocs.io/en/latest/manual/', manual: true },
+                   { title: 'Redmine Changelog',
+                     url: "https://www.redmine.org/projects/redmine/wiki/Changelog_#{Redmine::VERSION::MAJOR}_#{Redmine::VERSION::MINOR}" },
+                   { title: 'Redmine Upgrade',
+                     url: 'https://www.redmine.org/projects/redmine/wiki/RedmineUpgrade' },
+                   { title: 'Redmine Security Advisories',
+                     url: 'https://www.redmine.org/projects/redmine/wiki/Security_Advisories' }]
 
     Redmine::Plugin.all.each do |plugin|
       next if plugin.id == :additionals
@@ -145,7 +159,7 @@ module AdditionalsMenuHelper
 
       plugin_item.each do |temp_item|
         u_items = if !temp_item[:manual].nil? && temp_item[:manual]
-                    { title: "#{temp_item[:title]} #{l(:label_help_manual)}", url: temp_item[:url] }
+                    { title: "#{temp_item[:title]} #{l :label_help_manual}", url: temp_item[:url] }
                   else
                     { title: temp_item[:title], url: temp_item[:url] }
                   end
@@ -173,18 +187,17 @@ module AdditionalsMenuHelper
     s = []
     pages.each_with_index do |item, idx|
       s << if item[:title] == '-'
-             content_tag(:li, tag(:hr))
+             tag.li tag.hr
            else
-             html_options = { class: 'help_item_' + idx.to_s }
+             html_options = { class: "help_item_#{idx}" }
              if item[:url].include? '://'
                html_options[:class] << ' external'
                html_options[:target] = '_blank'
              end
-             content_tag(:li,
-                         link_to(item[:title], item[:url], html_options))
+             tag.li(link_to(item[:title], item[:url], html_options))
            end
     end
-    safe_join(s)
+    safe_join s
   end
 
   # Plugin help items definition for plugins,

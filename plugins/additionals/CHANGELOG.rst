@@ -1,6 +1,74 @@
 Changelog
 =========
 
+3.0.0
++++++
+
+- Introduce dashboards
+- Redmine 4.1 or newer is required
+- FontAwesome 5.14.0 support
+- D3 6.1.1 support
+- Mermaid 8.8.0 support
+- d3plus to v2.0.0-alpha.29 support
+- drop wiki header and footer settings
+
+2.0.24
+++++++
+
+- FontAwesome 5.13.0 support
+- Mermaid 8.4.8 support
+- clipboard.js updated to v2.0.6
+- fix for spam protection with invisible_captcha
+- D3 5.16.0 support
+- Ruby 2.4 is required
+
+2.0.23
+++++++
+
+- members macro now supports with_sum option
+- FontAwesome 5.12 support
+- FontAwesome ajax search has been added
+- Mermaid 8.4.6 support
+- D3 5.15.0 support
+- Drop nvd3 library
+- Drop Chartjs stacked100 library
+- Drop d3plus-hierarchy library
+- Drop calendar macro
+- Support private comments with issue macro
+- Google Docs macro has been added
+- Fix bug with Rack 2.0.8 or newer
+- Drop Redmine 3.4 support
+- Add Redmine 4.1 support
+- Use view_layouts_base_body_top hook, which is available since Redmine 3.4
+- Refactoring new hooks (without template)
+- asciinema.org macro has been added - thanks to @kotashiratsuka
+- Select2 4.0.13 support
+
+2.0.22
+++++++
+
+- FontAwesome 5.11.2 support
+- Mermaid 8.4.2 support
+- Select2 4.0.12 support
+- Chart.js 2.9.3 support
+- Chart.js Plugin datalabels 0.7.0 support
+- d3plus to v2.0.0-alpha.25
+- Fix user visibility for members macro
+- Fix user visibility for issue reports
+- Drop ZeroClipboard library
+
+2.0.21
+++++++
+
+- fix mail notification if issue author changed
+- fix permission bug for closed issues with freezed mode
+- Ruby 2.2.x support has been dropped. Use 2.3.x or newer ruby verion
+- FontAwesome 5.9.0 support
+- remove issue_close_with_open_children functionality, because this is included in Redmine 3.4.x #47 (thanks to @pva)
+- add hierarchy support for projects macro #45
+- select2 support
+- bootstrap-datepicker 1.9.0 support
+
 2.0.20
 ++++++
 

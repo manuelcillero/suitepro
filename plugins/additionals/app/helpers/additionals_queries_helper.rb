@@ -52,9 +52,9 @@ module AdditionalsQueriesHelper
   end
 
   def additionals_load_query_id(query_class, session_key, query_id, options, object_type)
-    cond = 'project_id IS NULL'
-    cond << " OR project_id = #{@project.id}" if @project
-    @query = query_class.where(cond).find(query_id)
+    scope = query_class.where(project_id: nil)
+    scope = scope.or(query_class.where(project_id: @project.id)) if @project
+    @query = scope.find(query_id)
     raise ::Unauthorized unless @query.visible?
 
     @query.project = @project
@@ -72,19 +72,20 @@ module AdditionalsQueriesHelper
   end
 
   def additionals_query_cache_key(object_type)
-    project_id = @project.nil? ? 0 : @project.id
+    project_id = @project ? @project.id : 0
     "#{object_type}_query_data_#{session.id}_#{project_id}"
   end
 
-  def additionals_select2_search_users(where_filter = '', where_params = {})
+  def additionals_select2_search_users(options = {})
     q = params[:q].to_s.strip
     exclude_id = params[:user_id].to_i
     scope = User.active.where(type: 'User')
-    scope = scope.where.not(id: exclude_id) if exclude_id > 0
-    scope = scope.where(where_filter, where_params) if where_filter.present?
-    scope = scope.like(q) if q.present?
+    scope = scope.visible unless options[:all_visible]
+    scope = scope.where.not(id: exclude_id) if exclude_id.positive?
+    scope = scope.where(options[:where_filter], options[:where_params]) if options[:where_filter]
+    q.split(' ').map { |search_string| scope = scope.like(search_string) } if q.present?
     scope = scope.order(last_login_on: :desc)
-                 .limit(params[:limit] || Additionals::SELECT2_INIT_ENTRIES)
+                 .limit(Additionals::SELECT2_INIT_ENTRIES)
     @users = scope.to_a.sort! { |x, y| x.name <=> y.name }
     render layout: false, partial: 'auto_completes/additionals_users'
   end
@@ -97,9 +98,10 @@ module AdditionalsQueriesHelper
                 query.columns
               end
 
-    stream = StringIO.new('')
-    export_to_xlsx(items, columns, filename: stream)
-    stream.string
+    options[:filename] = StringIO.new('')
+
+    export_to_xlsx(items, columns, options)
+    options[:filename].string
   end
 
   def additionals_result_to_xlsx(items, columns, options = {})
@@ -161,10 +163,18 @@ module AdditionalsQueriesHelper
       columns.each_with_index do |c, column_index|
         value = csv_content(c, line)
         if c.name == :id # ID
-          link = url_for(controller: line.class.name.underscore.pluralize, action: 'show', id: line.id)
-          worksheet.write(line_index + 1, column_index, link, hyperlink_format, value)
+          if options[:no_id_link].blank?
+            link = url_for(controller: line.class.name.underscore.pluralize, action: 'show', id: line.id)
+            worksheet.write(line_index + 1, column_index, link, hyperlink_format, value)
+          else
+            # id without link
+            worksheet.write(line_index + 1,
+                            column_index,
+                            value,
+                            workbook.add_format(xlsx_cell_format(:cell, value, line_index)))
+          end
         elsif xlsx_hyperlink_cell?(value)
-          worksheet.write(line_index + 1, column_index, value, hyperlink_format, value)
+          worksheet.write(line_index + 1, column_index, value[0..254], hyperlink_format, value)
         elsif !c.inline?
           # block column can be multiline strings
           value.gsub!("\r\n", "\n")
@@ -188,7 +198,7 @@ module AdditionalsQueriesHelper
     value_str = value.to_s
 
     # 1.1: margin
-    width = (value_str.length + value_str.chars.reject(&:ascii_only?).length) * 1.1 + 1
+    width = (value_str.length + value_str.chars.count { |e| !e.ascii_only? }) * 1.1 + 1
     # 30: max width
     width > 30 ? 30 : width
   end
@@ -206,7 +216,7 @@ module AdditionalsQueriesHelper
       format[:bg_color] = 'silver' unless index.even?
     else
       format[:bg_color] = 'silver' unless index.even?
-      format[:color] = 'red' if value.is_a?(Numeric) && value < 0
+      format[:color] = 'red' if value.is_a?(Numeric) && value.negative?
     end
 
     format
@@ -214,13 +224,13 @@ module AdditionalsQueriesHelper
 
   def xlsx_hyperlink_cell?(token)
     # Match http, https or ftp URL
-    if token =~ %r{\A[fh]tt?ps?://}
+    if %r{\A[fh]tt?ps?://}.match?(token)
       true
       # Match mailto:
     elsif token.present? && token.start_with?('mailto:')
       true
       # Match internal or external sheet link
-    elsif token =~ /\A(?:in|ex)ternal:/
+    elsif /\A(?:in|ex)ternal:/.match?(token)
       true
     end
   end
@@ -229,7 +239,7 @@ module AdditionalsQueriesHelper
   # columns in ignored_column_names are skipped (names as symbols)
   # TODO: this is a temporary fix and should be removed
   # after https://www.redmine.org/issues/29830 is in Redmine core.
-  def query_as_hidden_field_tags(query, ignored_column_names = nil)
+  def query_as_hidden_field_tags(query)
     tags = hidden_field_tag('set_filter', '1', id: nil)
 
     if query.filters.present?
@@ -243,8 +253,10 @@ module AdditionalsQueriesHelper
     else
       tags << hidden_field_tag('f[]', '', id: nil)
     end
+
+    ignored_block_columns = query.block_columns.map(&:name)
     query.columns.each do |column|
-      next if ignored_column_names.present? && ignored_column_names.include?(column.name)
+      next if ignored_block_columns.include?(column.name)
 
       tags << hidden_field_tag('c[]', column.name, id: nil)
     end
@@ -257,5 +269,12 @@ module AdditionalsQueriesHelper
     tags << hidden_field_tag('sort', query.sort_criteria.to_param, id: nil) if query.sort_criteria.present?
 
     tags
+  end
+
+  def render_query_group_view(query, locals = {})
+    return if locals[:group_name].blank?
+
+    render partial: 'queries/additionals_group_view',
+           locals: { query: query }.merge(locals)
   end
 end

@@ -7,7 +7,7 @@ module Additionals
 
   Syntax:
 
-    {{members([PROJECT_NAME, title=My members list, role=ROLE)]}}
+    {{members([PROJECT_NAME, title=My members list, role=ROLE, with_sum=BOOL)]}}
 
     PROJECT_NAME can be project identifier, project name or project id
 
@@ -15,6 +15,9 @@ module Additionals
 
     {{members}}
     ...List all members for all projects (with the current user permission)
+
+    {{members(with_sum=true)}}
+    ...List all members for all projects and show title with amount of members
 
     {{members(the-identifier)}}
     ...A box showing all members for the project with the identifier of 'the-identifier'
@@ -29,7 +32,7 @@ module Additionals
       DESCRIPTION
 
       macro :members do |_obj, args|
-        args, options = extract_macro_options(args, :role, :title)
+        args, options = extract_macro_options(args, :role, :title, :with_sum)
 
         project_id = args[0]
         user_roles = []
@@ -42,28 +45,33 @@ module Additionals
           project ||= Project.visible.find_by(name: project_id)
           return if project.nil?
 
-          raw_users = User.active
-                          .where(["#{User.table_name}.id IN (SELECT DISTINCT user_id FROM members WHERE project_id=(?))", project.id])
-                          .sorted
-          return if raw_users.nil?
+          principals = project.visible_users
+          return if principals.nil?
 
           users = []
-          raw_users.each do |user|
-            user_roles[user.id] = user.roles_for_project(project)
-            users << user if options[:role].blank? || Additionals.check_role_matches(user_roles[user.id], options[:role])
+          principals.each do |principal|
+            next unless principal.type == 'User'
+
+            user_roles[principal.id] = principal.roles_for_project(project)
+            users << principal if options[:role].blank? || Additionals.check_role_matches(user_roles[principal.id], options[:role])
           end
         else
-          project_ids = Project.visible.collect(&:id)
-          return unless project_ids.any?
-
-          # members of the user's projects
-          users = User.active
-                      .where(["#{User.table_name}.id IN (SELECT DISTINCT user_id FROM members WHERE project_id IN (?))", project_ids])
+          users = User.visible
+                      .where(type: 'User')
+                      .active
                       .sorted
         end
+
+        list_title = if options[:with_sum]
+                       list_title = options[:title].presence || l(:label_member_plural)
+                       list_title + " (#{users.count})"
+                     else
+                       options[:title]
+                     end
+
         render partial: 'wiki/user_macros', locals: { users: users,
                                                       user_roles: user_roles,
-                                                      list_title: options[:title] }
+                                                      list_title: list_title }
       end
     end
   end

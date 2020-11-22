@@ -1,24 +1,39 @@
 module Additionals
   module Patches
     module IssuePatch
-      def self.included(base)
-        base.send(:include, InstanceMethods)
-        base.class_eval do
-          alias_method :editable_without_additionals?, :editable?
-          alias_method :editable?, :editable_with_additionals?
-          validate :validate_change_on_closed
-          validate :validate_timelog_required
-          validate :validate_open_sub_issues
-          validate :validate_current_user_status
-          before_validation :auto_assigned_to
-          before_save :change_status_with_assigned_to_change,
-                      :autowatch_involved
+      extend ActiveSupport::Concern
 
-          safe_attributes 'author_id',
-                          if: proc { |issue, user|
-                            issue.new_record? && user.allowed_to?(:change_new_issue_author, issue.project) ||
-                              issue.persisted? && user.allowed_to?(:edit_issue_author, issue.project)
-                          }
+      included do
+        include InstanceMethods
+
+        alias_method :editable_without_additionals?, :editable?
+        alias_method :editable?, :editable_with_additionals?
+        validate :validate_change_on_closed
+        validate :validate_timelog_required
+        validate :validate_current_user_status
+        before_validation :auto_assigned_to
+        before_save :change_status_with_assigned_to_change,
+                    :autowatch_involved
+
+        safe_attributes 'author_id',
+                        if: proc { |issue, user|
+                          issue.new_record? && user.allowed_to?(:change_new_issue_author, issue.project) ||
+                            issue.persisted? && user.allowed_to?(:edit_issue_author, issue.project)
+                        }
+      end
+
+      class_methods do
+        def join_issue_status(options = {})
+          sql = "JOIN #{IssueStatus.table_name} ON #{IssueStatus.table_name}.id = #{table_name}.status_id"
+          return sql unless options.key?(:is_closed)
+
+          sql << " AND #{IssueStatus.table_name}.is_closed ="
+          sql << if options[:is_closed]
+                   " #{connection.quoted_true}"
+                 else
+                   " #{connection.quoted_false}"
+                 end
+          sql
         end
       end
 
@@ -48,23 +63,24 @@ module Additionals
 
           add_autowatcher(User.current)
           add_autowatcher(author) if (new_record? || author_id != author_id_was) && author != User.current
-          unless assigned_to_id.nil? || assigned_to_id == User.current.id
-            add_autowatcher(assigned_to) if new_record? || assigned_to_id != assigned_to_id_was
+
+          if !assigned_to_id.nil? && assigned_to_id != User.current.id && (new_record? || assigned_to_id != assigned_to_id_was)
+            add_autowatcher(assigned_to)
           end
 
           true
         end
 
         def log_time_allowed?(user = User.current)
-          !closed? || user.allowed_to?(:log_time_on_closed_issues, project)
+          !status_was.is_closed || user.allowed_to?(:log_time_on_closed_issues, project)
         end
 
         def editable_with_additionals?(user = User.current)
-          return false unless editable_without_additionals?(user)
+          return false unless editable_without_additionals? user
           return true unless closed?
-          return true unless Additionals.setting?(:issue_freezed_with_close)
+          return true unless Additionals.setting? :issue_freezed_with_close
 
-          user.allowed_to?(:edit_closed_issues, project)
+          user.allowed_to? :edit_closed_issues, project
         end
       end
 
@@ -85,16 +101,14 @@ module Additionals
       end
 
       def new_ticket_message
-        @new_ticket_message = ''
-        message = Additionals.settings[:new_ticket_message]
-        @new_ticket_message << message if message.present?
+        @new_ticket_message ||= Additionals.setting(:new_ticket_message).presence || ''
       end
 
       def status_x_affected?(new_status_id)
         return false unless Additionals.setting?(:issue_current_user_status)
-        return false if Additionals.settings[:issue_assign_to_x].blank?
+        return false if Additionals.setting(:issue_assign_to_x).blank?
 
-        if Additionals.settings[:issue_assign_to_x].include?(new_status_id.to_s)
+        if Additionals.setting(:issue_assign_to_x).include?(new_status_id.to_s)
           true
         else
           false
@@ -105,18 +119,18 @@ module Additionals
 
       def auto_assigned_to
         return if !Additionals.setting?(:issue_auto_assign) ||
-                  Additionals.settings[:issue_auto_assign_status].blank? ||
-                  Additionals.settings[:issue_auto_assign_role].blank? ||
+                  Additionals.setting(:issue_auto_assign_status).blank? ||
+                  Additionals.setting(:issue_auto_assign_role).blank? ||
                   assigned_to_id.present?
 
-        return unless Additionals.settings[:issue_auto_assign_status].include?(status_id.to_s)
+        return unless Additionals.setting(:issue_auto_assign_status).include?(status_id.to_s)
 
         self.assigned_to_id = auto_assigned_to_user
         true
       end
 
       def auto_assigned_to_user
-        manager_role = Role.builtin.find_by(id: Additionals.settings[:issue_auto_assign_role])
+        manager_role = Role.builtin.find_by(id: Additionals.setting(:issue_auto_assign_role))
         groups = autoassign_get_group_list
         return groups[manager_role].first.id unless groups.nil? || groups[manager_role].blank?
 
@@ -127,10 +141,10 @@ module Additionals
       def timelog_required?(check_status_id)
         usr = User.current
         return false if !Additionals.setting?(:issue_timelog_required) ||
-                        Additionals.settings[:issue_timelog_required_tracker].blank? ||
-                        Additionals.settings[:issue_timelog_required_tracker].exclude?(tracker_id.to_s) ||
-                        Additionals.settings[:issue_timelog_required_status].blank? ||
-                        Additionals.settings[:issue_timelog_required_status].exclude?(check_status_id.to_s) ||
+                        Additionals.setting(:issue_timelog_required_tracker).blank? ||
+                        Additionals.setting(:issue_timelog_required_tracker).exclude?(tracker_id.to_s) ||
+                        Additionals.setting(:issue_timelog_required_status).blank? ||
+                        Additionals.setting(:issue_timelog_required_status).exclude?(check_status_id.to_s) ||
                         !usr.allowed_to?(:log_time, project) ||
                         usr.allowed_to?(:issue_timelog_never_required, project) ||
                         time_entries.present?
@@ -145,21 +159,13 @@ module Additionals
       end
 
       def validate_change_on_closed
-        return true if !closed? ||
-                       new_record? ||
-                       !Additionals.setting?(:issue_freezed_with_close) ||
+        return true if new_record? ||
                        !status_was.is_closed ||
+                       !changed? ||
+                       !Additionals.setting?(:issue_freezed_with_close) ||
                        User.current.allowed_to?(:edit_closed_issues, project)
 
         errors.add :base, :issue_changes_not_allowed
-      end
-
-      def validate_open_sub_issues
-        return true unless Additionals.setting?(:issue_close_with_open_children)
-
-        errors.add :base, :issue_cannot_close_with_open_children if subject.present? &&
-                                                                    closing? &&
-                                                                    descendants.find { |d| !d.closed? }
       end
 
       def validate_current_user_status
@@ -174,13 +180,13 @@ module Additionals
 
       def change_status_with_assigned_to_change
         return true if !Additionals.setting?(:issue_status_change) ||
-                       Additionals.settings[:issue_status_x].blank? ||
-                       Additionals.settings[:issue_status_y].blank?
+                       Additionals.setting(:issue_status_x).blank? ||
+                       Additionals.setting(:issue_status_y).blank?
 
         if !assigned_to_id_changed? &&
            status_id_changed? &&
-           (Additionals.settings[:issue_status_x].include? status_id_was.to_s) &&
-           Additionals.settings[:issue_status_y].to_i == status_id
+           (Additionals.setting(:issue_status_x).include? status_id_was.to_s) &&
+           Additionals.setting(:issue_status_y).to_i == status_id
           self.assigned_to = author
         end
       end

@@ -1,88 +1,99 @@
 module Additionals
   MAX_CUSTOM_MENU_ITEMS = 5
   SELECT2_INIT_ENTRIES = 20
-
+  DEFAULT_MODAL_WIDTH = '350px'.freeze
   GOTO_LIST = " \xc2\xbb".freeze
-  LIST_SEPARATOR = GOTO_LIST + ' '
+  LIST_SEPARATOR = "#{GOTO_LIST} ".freeze
+
+  RenderAsync.configuration.jquery = true
 
   class << self
     def setup
-      incompatible_plugins(%w[redmine_tweaks
-                              redmine_issue_control_panel
+      incompatible_plugins %w[redmine_issue_control_panel
                               redmine_editauthor
                               redmine_changeauthor
-                              redmine_auto_watch])
-      patch(%w[AccountController
+                              redmine_auto_watch]
+
+      patch %w[AccountController
+               ApplicationController
+               AutoCompletesController
                Issue
                IssuePriority
                TimeEntry
                Project
                Wiki
-               WikiController
+               ProjectsController
+               WelcomeController
+               ReportsController
                Principal
                QueryFilter
                Role
                User
-               UserPreference])
+               UserPreference]
 
-      Rails.configuration.assets.paths << Emoji.images_path
       Redmine::WikiFormatting.format_names.each do |format|
         case format
         when 'markdown'
-          Redmine::WikiFormatting::Markdown::HTML.send(:include, Patches::FormatterMarkdownPatch)
-          Redmine::WikiFormatting::Markdown::Helper.send(:include, Patches::FormattingHelperPatch)
+          Redmine::WikiFormatting::Markdown::HTML.include Patches::FormatterMarkdownPatch
+          Redmine::WikiFormatting::Markdown::Helper.include Patches::FormattingHelperPatch
         when 'textile'
-          Redmine::WikiFormatting::Textile::Formatter.send(:include, Patches::FormatterTextilePatch)
-          Redmine::WikiFormatting::Textile::Helper.send(:include, Patches::FormattingHelperPatch)
+          Redmine::WikiFormatting::Textile::Formatter.include Patches::FormatterTextilePatch
+          Redmine::WikiFormatting::Textile::Helper.include Patches::FormattingHelperPatch
         end
       end
 
+      IssuesController.send :helper, AdditionalsIssuesHelper
+      SettingsController.send :helper, AdditionalsSettingsHelper
+      WikiController.send :helper, AdditionalsWikiPdfHelper
+      CustomFieldsController.send :helper, AdditionalsCustomFieldsHelper
+
       # Static class patches
-      IssuesController.send(:helper, AdditionalsIssuesHelper)
-      WikiController.send(:helper, AdditionalsWikiPdfHelper)
-      Redmine::AccessControl.send(:include, Additionals::Patches::AccessControlPatch)
+      Redmine::AccessControl.include Additionals::Patches::AccessControlPatch
 
       # Global helpers
-      ActionView::Base.send :include, Additionals::Helpers
-      ActionView::Base.send :include, AdditionalsFontawesomeHelper
-      ActionView::Base.send :include, AdditionalsMenuHelper
+      ActionView::Base.include Additionals::Helpers
+      ActionView::Base.include AdditionalsFontawesomeHelper
+      ActionView::Base.include AdditionalsMenuHelper
+      ActionView::Base.include Additionals::AdditionalsSelect2Helper
 
       # Hooks
       require_dependency 'additionals/hooks'
 
       # Macros
-      load_macros(%w[calendar cryptocompare date fa gist gmap group_users iframe
+      load_macros %w[cryptocompare date fa gist gmap google_docs group_users iframe
                      issue redmine_issue redmine_wiki
                      last_updated_at last_updated_by meteoblue member new_issue project
-                     recently_updated reddit slideshare tradingview twitter user vimeo youtube])
-    end
-
-    def settings
-      settings_compatible(:plugin_additionals)
+                     recently_updated reddit slideshare tradingview twitter user vimeo youtube asciinema]
     end
 
     def settings_compatible(plugin_name)
       if Setting[plugin_name].class == Hash
-        if Rails.version >= '5.2'
-          # convert Rails 4 data (this runs only once)
-          new_settings = ActiveSupport::HashWithIndifferentAccess.new(Setting[plugin_name])
-          Setting.send("#{plugin_name}=", new_settings)
-          new_settings
-        else
-          ActionController::Parameters.new(Setting[plugin_name])
-        end
+        # convert Rails 4 data (this runs only once)
+        new_settings = ActiveSupport::HashWithIndifferentAccess.new(Setting[plugin_name])
+        Setting.send("#{plugin_name}=", new_settings)
+        new_settings
       else
         # Rails 5 uses ActiveSupport::HashWithIndifferentAccess
         Setting[plugin_name]
       end
     end
 
+    # support with default setting as fall back
+    def setting(value)
+      if settings.key? value
+        settings[value]
+      else
+        load_settings[value]
+      end
+    end
+
     def setting?(value)
-      true?(settings[value])
+      true? setting(value)
     end
 
     def true?(value)
-      return true if value.to_i == 1 || value.to_s.casecmp('true').zero?
+      return false if value.is_a? FalseClass
+      return true if value.is_a?(TrueClass) || value.to_i == 1 || value.to_s.casecmp('true').zero?
 
       false
     end
@@ -103,29 +114,49 @@ module Additionals
 
     def patch(patches = [], plugin_id = 'additionals')
       patches.each do |name|
-        patch_dir = Rails.root.join('plugins', plugin_id, 'lib', plugin_id, 'patches')
+        patch_dir = Rails.root.join("plugins/#{plugin_id}/lib/#{plugin_id}/patches")
         require "#{patch_dir}/#{name.underscore}_patch"
 
         target = name.constantize
         patch = "#{plugin_id.camelize}::Patches::#{name}Patch".constantize
 
-        target.send(:include, patch) unless target.included_modules.include?(patch)
+        target.include(patch) unless target.included_modules.include?(patch)
       end
     end
 
     def load_macros(macros = [], plugin_id = 'additionals')
-      macro_dir = Rails.root.join('plugins', plugin_id, 'lib', plugin_id, 'wiki_macros')
+      macro_dir = Rails.root.join("plugins/#{plugin_id}/lib/#{plugin_id}/wiki_macros")
       macros.each do |macro|
         require_dependency "#{macro_dir}/#{macro.underscore}_macro"
       end
     end
 
     def load_settings(plugin_id = 'additionals')
-      data = YAML.safe_load(ERB.new(IO.read(Rails.root.join('plugins',
-                                                            plugin_id,
-                                                            'config',
-                                                            'settings.yml'))).result) || {}
-      data.symbolize_keys
+      cached_settings_name = "@load_settings_#{plugin_id}"
+      cached_settings = instance_variable_get cached_settings_name
+      if cached_settings.nil?
+        data = YAML.safe_load(ERB.new(IO.read(Rails.root.join("plugins/#{plugin_id}/config/settings.yml"))).result) || {}
+        instance_variable_set cached_settings_name, data.symbolize_keys
+      else
+        cached_settings
+      end
+    end
+
+    def hash_remove_with_default(field, options, default = nil)
+      value = nil
+      if options.key? field
+        value = options[field]
+        options.delete field
+      elsif !default.nil?
+        value = default
+      end
+      [value, options]
+    end
+
+    private
+
+    def settings
+      settings_compatible :plugin_additionals
     end
   end
 end

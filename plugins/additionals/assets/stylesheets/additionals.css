@@ -12,7 +12,12 @@
   padding-left: 0;
 }
 
-.query-description {
+#top-menu a.top-submenu {
+  padding-bottom: 10px;
+}
+
+.query-description,
+.dashboard-description {
   color: #666;
   margin-bottom: 15px;
   font-size: 95%;
@@ -22,6 +27,8 @@
 .flyout-is-active #admin-menu li a.additionals {
   padding-left: 8px !important;
 }
+
+.sudo-admin { color: #d80000; }
 
 .nodata.nodata-left { text-align: left; }
 
@@ -39,10 +46,6 @@
 .additionals-footer {
   text-align: center;
   font-size: 90%;
-}
-
-.month-calendar {
-  display: inline-block;
 }
 
 .login-additionals {
@@ -157,18 +160,20 @@
 
 div.clear-both { clear: both; }
 
-/* for Redmine 3.4 - fix problem with tabs */
+/* fix problem with tabs */
 .default-query-settings-label label {
-  margin-left: -100px !important;
-}
-
-/* for Redmine 4.x - fix problem with tabs */
-.default-query-settings-label-redmine4 label {
   width: 250px !important;
   margin-left: 0 !important;
   float: none;
   font-weight: normal;
   text-align: left;
+}
+
+.clipboard_button {
+  padding-bottom: 2px;
+  padding-top: 2px;
+  text-align: center;
+  float: left;
 }
 
 /* TAGs */
@@ -186,6 +191,7 @@ span.additionals-tag-label-color {
 
 td.tags span.additionals-tag-label-color {
   display: inline-block;
+  line-height: normal;
   margin: 2px !important;
 }
 
@@ -253,7 +259,8 @@ img.additionals-avatar { margin-right: 0.25em; }
   border: 0;
   max-width: inherit;
   border-radius: 4px;
-  font: normal 12px"Helvetica Neue", Sans-Serif;
+  box-shadow: 0 0 6px #888;
+  font-size: 12px;
 }
 
 a.external.redmine-link {
@@ -322,9 +329,50 @@ div.additionals-projects li.project.odd {
   list-style-position: inside;
 }
 
+.additionals-block {
+  margin-bottom: 20px;
+}
+
+.additionals-chart-wrapper {
+  width: 99%;
+}
+
+.additionals-chart-left {
+  float: left;
+  height: 320px;
+  width: 360px;
+}
+
+/* has to be same width as additionals-table-of-values */
+.additionals-chart-right {
+  float: left;
+  height: 320px;
+  width: 450px;
+}
+
+.additionals-table-of-values {
+  float: left;
+  width: 450px;
+}
+
+table.table-of-values {
+  margin-left: 20px;
+}
+
+table.table-of-values td {
+  padding: 3px;
+}
+
+table.table-of-values caption {
+  font-weight: bold;
+}
+
 .additionals-projects ul {
   padding-left: 0;
 }
+
+.additionals-number-positive { color: green; }
+.additionals-number-negative { color: #cb2525; }
 
 .jstb_macros {
   background-image: url(../images/jstoolbar/bt_macros.png);
@@ -334,4 +382,44 @@ div.relation-list-header {
   background: #eee;
   font-weight: bold;
   padding-bottom: 2px;
+}
+
+div.splitcontent.dashboard {
+  margin-bottom: 20px;
+}
+
+span.dashboard-block-alert,
+span.dashboard-system-default {
+  padding-left: 4px;
+}
+
+span.dashboard-system-default.global {
+  color: #d80000;
+}
+
+.splitcontentbottom {
+  flex: 1;
+  flex-basis: 100%;
+}
+
+select.dashboard-block-select {
+  min-width: 200px;
+}
+
+div.drdn-items a.disabled,
+div.drdn-items a.disabled:hover { color: #aaa; }
+
+@media screen and (max-width: 899px) {
+  .gototop { display: none; }
+
+  .splitcontentbottom {
+    width: 100%;
+    flex: auto;
+    margin-right: 0;
+    margin-left: 0;
+  }
+}
+
+@media print {
+  .gototop { display: none; }
 }

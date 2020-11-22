@@ -60,7 +60,7 @@ module Additionals
                                               :waypoints,
                                               :zoom)
 
-        raise 'Missing Google Maps Embed API Key. See documentation for more info.' if Additionals.settings[:google_maps_api_key].blank?
+        raise 'Missing Google Maps Embed API Key. See documentation for more info.' if Additionals.setting(:google_maps_api_key).blank?
 
         width = options[:width].presence || 620
         height = options[:height].presence || 350
@@ -70,11 +70,11 @@ module Additionals
           raise 'The correct usage is {{gmap([q=QUERY, mode=MODE, widths=x, height=y])}}'
         end
 
-        src = "https://www.google.com/maps/embed/v1/#{mode}?key=" + Additionals.settings[:google_maps_api_key]
+        src = "https://www.google.com/maps/embed/v1/#{mode}?key=" + Additionals.setting(:google_maps_api_key)
         if options[:q].present?
-          src << '&q=' + ERB::Util.url_encode(options[:q])
+          src << "&q=#{ERB::Util.url_encode(options[:q])}"
         elsif mode == 'search'
-          src << '&q=' + ERB::Util.url_encode(args[0])
+          src << "&q=#{ERB::Util.url_encode(args[0])}"
         end
 
         src_options.each do |key|
@@ -82,7 +82,7 @@ module Additionals
         end
         src << "&#{mode}=" + ERB::Util.url_encode(options[:way_mode]) if options[:way_mode].present?
 
-        content_tag(:iframe, '', width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true')
+        tag.iframe width: width, height: height, src: src, frameborder: 0, allowfullscreen: 'true'
       end
     end
   end

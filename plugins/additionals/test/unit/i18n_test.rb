@@ -1,4 +1,4 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path '../../test_helper', __FILE__
 
 class I18nTest < Additionals::TestCase
   include Redmine::I18n
@@ -18,32 +18,17 @@ class I18nTest < Additionals::TestCase
   end
 
   def test_locales_validness
-    lang_files_count = Dir[Rails.root.join('plugins',
-                                           'additionals',
-                                           'config',
-                                           'locales',
-                                           '*.yml')].size
-    assert_equal 8, lang_files_count
+    lang_files_count = Dir[Rails.root.join('plugins/additionals/config/locales/*.yml')].size
+    assert_equal 13, lang_files_count
     valid_languages.each do |lang|
       assert set_language_if_valid(lang)
+      case lang.to_s
+      when 'en'
+        assert_equal 'Open external URLs', l(:label_open_external_urls)
+      when 'pt-BR', 'cs', 'de', 'es', 'fr', 'it', 'ja', 'ko', 'po', 'ru', 'zh-TW', 'zh'
+        assert_not l(:label_open_external_urls) == 'Open external URLs', lang
+      end
     end
-    # check if parse error exists
-    ::I18n.locale = 'de'
-    assert_equal 'Externe URLs', l(:label_external_urls)
-    ::I18n.locale = 'en'
-    assert_equal 'External urls', l(:label_external_urls)
-    ::I18n.locale = 'es'
-    assert_equal 'URLs externos', l(:label_external_urls)
-    ::I18n.locale = 'fr'
-    assert_equal 'Les urnes externes', l(:label_external_urls)
-    ::I18n.locale = 'it'
-    assert_equal 'Esterno urls', l(:label_external_urls)
-    ::I18n.locale = 'ja'
-    assert_equal '外部URL', l(:label_external_urls)
-    ::I18n.locale = 'zh-TW'
-    assert_equal '外部連結', l(:label_external_urls)
-    ::I18n.locale = 'zh'
-    assert_equal '外部 URLs', l(:label_external_urls)
 
     set_language_if_valid('en')
   end
