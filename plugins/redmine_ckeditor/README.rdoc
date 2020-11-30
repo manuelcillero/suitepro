@@ -17,7 +17,9 @@ See {the official site}[http://ckeditor.com/] for more details.
    # Mac OS X
    brew install imagemagick
 
-* Redmine 3.0.x, (version {1.1.5}[https://github.com/a-ono/redmine_ckeditor/releases/tag/1.1.5])
+* Redmine 4.x (version {1.2.3}[https://github.com/a-ono/redmine_ckeditor/releases/tag/1.2.3])
+
+* Redmine 3.x, (version {1.1.7}[https://github.com/a-ono/redmine_ckeditor/releases/tag/1.1.7])
 
 * Redmine 2.3.x, Ruby 1.9.2 or higher (version {1.0.20}[https://github.com/a-ono/redmine_ckeditor/releases/tag/1.0.20])
 
@@ -33,7 +35,7 @@ See {the official site}[http://ckeditor.com/] for more details.
 
 == Plugin installation and setup
 
-1. Copy the plugin directory into the plugins directory (make sure the name is redmine_ckeditor)
+1. Download the {zip package}[https://github.com/a-ono/redmine_ckeditor/archive/master.zip] and extract the directory that it contains into the plugins directory (make sure the name is redmine_ckeditor)
 2. Install the required gems (in the Redmine root directory)
     bundle install --without development test
 3. Execute migration
@@ -84,7 +86,9 @@ This plugin stores contents in HTML format and renders as is.
 If you have old contents, these look weird.
 
 You can use {redmine_per_project_formatting}[https://github.com/a-ono/redmine_per_project_formatting] plugin for backward compatibility or execute redmine_ckeditor:migrate task for migrating old text to HTML.
-    rake redmine_ckeditor:migrate RAILS_ENV=production [PROJECT=project_identifier1,project_identifier2] [FROM=textile] [TO=html]
+    rake redmine_ckeditor:migrate RAILS_ENV=production FROM=textile TO=html
+You can also use PROJECT parameter to migrate only specific projets
+    rake redmine_ckeditor:migrate RAILS_ENV=production PROJECT=project_identifier1,project_identifier2 FROM=textile TO=html 
 This task requires to {install Pandoc}[http://johnmacfarlane.net/pandoc/installing.html].
 
 == Upgrading CKEditor (for development)
