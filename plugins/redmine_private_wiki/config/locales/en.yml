@@ -2,5 +2,4 @@
 en:
   button_setprivate_wiki: Set Private
   button_setpublic_wiki: Set Public
-  private_flag: P!
-  private_title: Private page
+  private_flag: PRIVATE

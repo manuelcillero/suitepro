@@ -1,21 +1,14 @@
-.private_page_flag,
 .private_wiki_flag {
-    background: #d22;
+    background: #D22;
     color: white;
-    padding: 1px 2px;
+    padding: 2px 2px 2px 2px;
     border-radius: 2px;
-    cursor: default;
-}
-.private_wiki_flag {
-    margin-left: .44em;
-    background: rgb(255, 50, 0, 0.5);
-    line-height: 1em;
 }
 
 .icon-setprivate{
-    background-image: url(../images/hide.png);
+	background-image: url(../images/hide.png);
 }
 
 .icon-setpublic{
-    background-image: url(../images/reveal.png);
+	background-image: url(../images/reveal.png);
 }
