@@ -1,13 +1,17 @@
 /* Layout */
 
-body.controller-welcome #wrapper-main {
-	max-width: 100%;
+body.controller-welcome #main {
+	width: 100%;
 }
 body.controller-welcome #wrapper3 {
 	padding-bottom: 0;
 }
 body.controller-welcome div#content {
+	width: 100%;
 	padding: 0;
+}
+body.controller-welcome .contextual {
+	display: none;
 }
 
 body.controller-welcome #top-menu,

@@ -22,23 +22,25 @@
  *  16. TIP
  *  17. jQuery UI
  *  18. BUTTONS
- *  19. FORMS COMMON
- *  20. FORMS SPECIFIC
- *  21. TABS
- *  22. TABLES
- *  23. OBJECTS
- *  24. REPOSITORIES
- *  25. GLOSSARY
- *  26. RESPONSIVE
- *  27. SELECT2
- *  28. PRINTING
+ *  19. GANTT CHART
+ *  20. FORMS COMMON
+ *  21. FORMS SPECIFIC
+ *  22. TABS
+ *  23. TABLES
+ *  24. ISSUES
+ *  25. ROADMAP
+ *  26. OBJECTS
+ *  27. REPOSITORIES
+ *  28. GLOSSARY
+ *  29. RESPONSIVE
+ *  30. SELECT2
+ *  31. PRINTING
  *
  * Based on Circle Theme by Kirill Bezrukov.
  */
 
-/**********************************************************/
-/* 1. GENERAL */
-/**********************************************************/
+/*******************************************************************************
+ 1. GENERAL */
 
 html {
 	height: 100%;
@@ -51,30 +53,17 @@ body {
 #wrapper-top-menu,
 #wrapper-header,
 #wrapper-main-menu,
-#wrapper-main,
 #wrapper-footer {
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 1240px;
 }
-
-#wrapper3,
-#main {
-	background: #e1e1e1 url(../images/bg_main.png) repeat-x center bottom -1px;
-}
 #wrapper3 {
+	background: #e1e1e1 url(../images/bg_main.png) repeat-x center bottom -1px;
 	padding-bottom: 30px;
 }
-#main {
-	background-color: transparent;
-}
-#wrapper-main {
-	background-color: #fff;
-}
-
 div#content {
 	padding: 30px 30px 10px;
-	width: 70%;
 	background-color: #fff;
 	border-right: 0;
 }
@@ -132,6 +121,7 @@ div.gravatar-with-child + div.subject + p.author {
 input, textarea, select {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 14px;
+	box-sizing: border-box;
 }
 
 input[type="text"].live_search_field,
@@ -150,11 +140,16 @@ input[type="text"].questions-search.autocomplete {
 }
 
 #sidebar a.selected {
-	background-color: #fafafa;
+	background-color: #eee;
+	background-position: inherit;
 	color: #3d454c;
-	line-height: inherit;
 	padding: inherit;
 	margin-left: inherit;
+	line-height: 1.3em;
+}
+
+#sidebar #admin-menu a.selected {
+	line-height: 1.7em;
 }
 
 p.breadcrumb {
@@ -167,7 +162,7 @@ div.subject h3 {
 	font-size: 20px;
 }
 
-p.breadcrumb, p.buttons, p.author, p.other-formats {
+p.breadcrumb, p.buttons, p.author, p.wiki-update-info, p.other-formats {
 	font-size: 13px !important;
 }
 
@@ -205,7 +200,7 @@ abbr[title] {
 	font-size: 34px;
 	line-height: 1.2em;
 }
-#projects-index ul.projects div a.icon-fav {
+#projects-index ul.projects div a.icon-user {
 	padding-right: 20px !important;
 	background-position: right 30%;
 }
@@ -260,9 +255,8 @@ div.wiki .external {
 	transition: all 0.3s ease-in;
 }
 
-/**********************************************************/
-/* 2. FONT ICONS */
-/**********************************************************/
+/*******************************************************************************
+ 2. FONT ICONS */
 
 @font-face {
 	font-family: 'fontello';
@@ -313,9 +307,8 @@ div.wiki .external {
 .icon-facebook:before { content: '\f30c'; }
 .icon-linkedin:before { content: '\f318'; }
 
-/**********************************************************/
-/* 3. HEADER */
-/**********************************************************/
+/*******************************************************************************
+ 3. HEADER */
 
 #header {
 	background-color: #003346;
@@ -374,9 +367,8 @@ div.wiki .external {
 	}
 }
 
-/**********************************************************/
-/* 4. TOP-MENU */
-/**********************************************************/
+/*******************************************************************************
+ 4. TOP-MENU */
 
 #top-menu {
 	height: 31px;
@@ -403,9 +395,8 @@ div.wiki .external {
 	margin-right: 0;
 }
 
-/**********************************************************/
-/* 5. SOCIAL-MENU */
-/**********************************************************/
+/*******************************************************************************
+ 5. SOCIAL-MENU */
 
 ul.social-menu {
 	float: right;
@@ -462,9 +453,8 @@ ul.social-menu .social-link-mail:hover a {
 	margin: 3px 30px 0 0;
 }
 
-/**********************************************************/
-/* 6. MAIN-MENU */
-/**********************************************************/
+/*******************************************************************************
+ 6. MAIN-MENU */
 
 #main-menu {
 	left: 0px;
@@ -582,12 +572,13 @@ ul.social-menu .social-link-mail:hover a {
 	color: #777;
 }
 
-/**********************************************************/
-/* 7. SIDEBAR */
-/**********************************************************/
+/*******************************************************************************
+ 7. SIDEBAR */
 
 #sidebar {
-	padding-right: 30px;
+	background: #fff;
+	border-left: 0;
+	padding: 0 30px 0 0;
 	line-height: 1.42857em;
 }
 #sidebar h3 {
@@ -637,9 +628,8 @@ ul.social-menu .social-link-mail:hover a {
 	margin-top: 5px;
 }
 
-/**********************************************************/
-/* 8. FOOTER */
-/**********************************************************/
+/*******************************************************************************
+ 8. FOOTER */
 
 #scrollup {
 	width: 40px;
@@ -697,9 +687,8 @@ ul.social-menu .social-link-mail:hover a {
 	text-decoration: underline;
 }
 
-/**********************************************************/
-/* 9. NEWS */
-/**********************************************************/
+/*******************************************************************************
+ 9. NEWS */
 
 .news span.author,
 .news span.comments,
@@ -717,9 +706,8 @@ body.controller-news #content > p > em {
 	font-weight: normal;
 }
 
-/**********************************************************/
-/* 10. WIKI */
-/**********************************************************/
+/*******************************************************************************
+ 10. WIKI */
 
 div.wiki ul.toc {
 	float: right;
@@ -749,9 +737,8 @@ div.wiki .query-issue-links {
 	display: none;
 }
 
-/**********************************************************/
-/* 11. DOCUMENTS */
-/**********************************************************/
+/*******************************************************************************
+ 11. DOCUMENTS */
 
 body.controller-documents.action-index #content > h3 {
 	color: #eee;
@@ -783,9 +770,8 @@ body.controller-documents.action-index #content > h4 + p em {
 	font-size: 86%;
 }
 
-/**********************************************************/
-/* 12. FLASH MESSAGES */
-/**********************************************************/
+/*******************************************************************************
+ 12. FLASH MESSAGES */
 
 #errorExplanation, div.flash, .nodata, .warning, .conflict {
 	border: 0px;
@@ -812,12 +798,11 @@ div.flash.warning, .conflict {
 	font-size: 14px;
 }
 
-/**********************************************************/
-/* 13. LOGIN FORM */
-/**********************************************************/
+/*******************************************************************************
+ 13. LOGIN FORM */
 
-body.action-login #wrapper-main {
-	max-width: 100%;
+body.action-login #main {
+	width: 100%;
 }
 body.action-login #wrapper3 {
 	padding-bottom: 0;
@@ -883,7 +868,7 @@ body.action-login #content {
 	font-size: 18px;
 	color: #3d454c;
 }
-#login-form input#login-submit {
+#login-form input[type=submit] {
 	padding: 0;
 	margin-top: 1.65em;
 	height: 2.65em;
@@ -949,9 +934,8 @@ div.login-additionals {
 	}
 }
 
-/**********************************************************/
-/* 14. TAGS */
-/**********************************************************/
+/*******************************************************************************
+ 14. TAGS */
 
 span.tag-label-color {
 	border: 0px !important;
@@ -985,9 +969,8 @@ div#content .contacts-tags-edit ul.tagit {
 	border: 1px solid #e0e2e3;
 }
 
-/**********************************************************/
-/* 15. CONTEXT-MENU */
-/**********************************************************/
+/*******************************************************************************
+ 15. CONTEXT-MENU */
 
 div#content > div.contextual:first-child,
 div.flash + div.contextual {
@@ -995,8 +978,8 @@ div.flash + div.contextual {
 	text-align: right;
 	background-color: #f2f2f2;
 	margin-top: 0;
-	padding-right: 8px;
-}
+	padding: 3px 8px;
+} /*
 div#content > div.contextual label[for="closed"],
 div#content > div.contextual:first-child a,
 div.flash + div.contextual a {
@@ -1020,11 +1003,11 @@ div#content .context-menu-selection {
 }
 div#content #context-menu ul {
 	border-radius: 4px;
-}
-div#content #context-menu li a {
-	color: #333;
+} */
+div#content #context-menu li a { /*
+	color: #333; */
 	line-height: 1.12em;
-}
+} /*
 div#content #context-menu li:hover {
 	background: #f2f4f5;
 	color: #3d454c;
@@ -1034,11 +1017,30 @@ div#content #context-menu li:hover {
 
 div#content #context-menu a.disabled, div#content #context-menu a.disabled:hover {
 	color: #aaa;
-}
+} */
 
-/**********************************************************/
-/* 16. TIP */
-/**********************************************************/
+.contextual {
+	line-height: 1em;
+	min-height: 28px;
+}
+.contextual > a {
+	line-height: 26px;
+}
+.contextual .drdn-items > a { /*
+	color: #333;
+	padding-top: 2px;
+	padding-bottom: 2px; */
+	text-align: left;
+} /*
+.contextual .drdn-items>a:hover {
+	background-color: #f2f4f5;
+	color: #3d454c;
+	border: 1px solid #f2f4f5;
+	border-radius: 0;
+}
+*/
+/*******************************************************************************
+ 16. TIP */
 
 div.tooltip:hover span.tip {
 	border: 1px solid #ccc;
@@ -1053,9 +1055,8 @@ div.tooltip:hover span.tip a {
 	font-weight: bold !important;
 }
 
-/**********************************************************/
-/* 17. jQuery UI */
-/**********************************************************/
+/*******************************************************************************
+ 17. jQuery UI */
 
 .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
 	font-family: "SqMarket","helvetica neue",helvetica,arial,sans-serif;
@@ -1091,9 +1092,21 @@ div.modal {
 	border-radius: 0px;
 }
 
-.ui-widget-content {
-	background: white;
+.ui-menu.ui-widget-content {
+	border-radius: 3px;
 }
+.ui-menu .ui-menu-item:hover {
+	font-weight: normal;
+	background: #eef5fd;
+	color: inherit !important;
+	border: 1px solid #eef5fd;
+}
+.ui-menu .ui-menu-item.ui-state-focus {
+	color: inherit;
+	border-left-color: #ddd;
+	border-right-color: #ddd;
+}
+
 .ui-widget-content select, .ui-widget-content input[type="text"],
 .ui-datepicker .ui-datepicker-title select {
 	font-size: 12px;
@@ -1142,6 +1155,9 @@ div.modal {
 	padding: 5px;
 	margin: -1px;
 }
+.ui-datepicker.ui-widget-content {
+	background: #fff;
+}
 .ui-datepicker .ui-datepicker-buttonpane button {
 	font-weight: normal;
 }
@@ -1178,12 +1194,17 @@ div.modal {
 #ui-datepicker-div {
 	padding: 10px;
 }
-.ui-datepicker .ui-datepicker-buttonpane {
-	padding-top: 0.5em;
-}
 .ui-datepicker-week-col, .ui-datepicker .ui-priority-secondary {
 	color: #aaa;
 }
+
+body .ui-timepicker-div.ui-timepicker-oneLine .ui_tpicker_time_label {
+	padding-top: 6px;
+	color: #aaa;
+	font-weight: 500;
+	font-size: 0.9em;
+}
+
 .ui-dialog .ui-dialog-title {
 	line-height: 1.2em;
 }
@@ -1211,9 +1232,8 @@ div.modal {
 	background-color: #182330;
 }
 
-/**********************************************************/
-/* 18. BUTTONS */
-/**********************************************************/
+/*******************************************************************************
+ 18. BUTTONS */
 
 #ajax-modal p.buttons input,
 .ui-datepicker .ui-datepicker-buttonpane button,
@@ -1292,9 +1312,19 @@ input[type="submit"].small {
 	font-size: 12px;
 }
 
-/**********************************************************/
-/* 19. FORMS COMMON */
-/**********************************************************/
+/*******************************************************************************
+ 19. GANTT CHART */
+
+.gantt_subjects div {
+	height: 20px;
+}
+
+.issue-subject .gravatar {
+	margin-right: 2px;
+}
+
+/*******************************************************************************
+ 20. FORMS COMMON */
 
 .tabular.settings p {
 	padding-left: 200px;
@@ -1309,12 +1339,13 @@ input[type="text"],
 input[type="date"],
 input[type="password"],
 input[type="search"],
+input[type="number"],
 fieldset#filters td.values input {
 	padding: 1px 10px;
 	background-color: #fff;
 	color: #3d454c;
 	border-radius: 0 !important;
-	height: 22px;
+	height: 26px;
 	border: 1px solid #e0e2e3;
 	box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
 	margin: 0px;
@@ -1417,9 +1448,8 @@ img.ui-datepicker-trigger {
 	margin-right: 10px;
 }
 
-/**********************************************************/
-/* 20. FORMS SPECIFIC */
-/**********************************************************/
+/*******************************************************************************
+ 21. FORMS SPECIFIC */
 
 #user_login, #user_firstname, #user_lastname, #user_mail {
 	width: 76%;
@@ -1434,9 +1464,8 @@ input#content_comments {
 	width: 93%;
 }
 
-/**********************************************************/
-/* 21. TABS */
-/**********************************************************/
+/*******************************************************************************
+ 22. TABS */
 
 #content .tabs ul {
 	border-bottom: 1px solid #ECECEC;
@@ -1481,15 +1510,17 @@ input#content_comments {
 	border: 1px solid #ccc;
 }
 
-/**********************************************************/
-/* 22. TABLES */
-/**********************************************************/
+/*******************************************************************************
+ 23. TABLES */
+
+table.list, .table-list { border-collapse: collapse; border-radius: 0; }
 
 table.list thead th, table.list tbody td, table.list tbody tr:hover td { border: solid 1px #d7d7d7; }
 
 table.list td,
 table.list th { padding: 5px; vertical-align: top; }
-table.list input[type="checkbox"] { margin-top: 6px; }
+table.list td.icon { padding-left: 20px; }
+table.list input[type="checkbox"] { vertical-align: baseline; }
 
 table.list tbody tr:hover { background-color: #dfeff7; }
 table.list tr.issue a { color: #666; }
@@ -1527,9 +1558,23 @@ tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #d2eafa; }
 
 table td ul, table th ul { padding-left: 20px; }
 
-/**********************************************************/
-/* 23. OBJECTS */
-/**********************************************************/
+/*******************************************************************************
+ 24. ISSUES */
+
+#history,
+#history .tab-content {
+	border: 0;
+}
+
+/*******************************************************************************
+ 25. ROADMAP */
+
+div#roadmap .related-issues td.assigned_to {
+	padding: 0 3px;
+}
+
+/*******************************************************************************
+ 26. OBJECTS */
 
 div.issue,
 div.person,
@@ -1545,9 +1590,8 @@ table.progress td { padding: 0px; }
 
 div.details { padding: 20px !important; }
 
-/**********************************************************/
-/* 24. REPOSITORIES */
-/**********************************************************/
+/*******************************************************************************
+ 27. REPOSITORIES */
 
 div.changeset-comments,
 tr.changeset > td.comments {
@@ -1574,9 +1618,8 @@ body.controller-issues.action-show div.changeset-comments {
 	padding-bottom: 10px;
 }
 
-/**********************************************************/
-/* 25. GLOSSARY */
-/**********************************************************/
+/*******************************************************************************
+ 28. GLOSSARY */
 
 #glossary_search_params {
 	margin: .5em 0 1.5em;
@@ -1623,10 +1666,19 @@ form[class$="glossary_style"] #grouping label {
 	background-color: #efefef;
 }
 
-/**********************************************************/
-/* 26. RESPONSIVE */
-/**********************************************************/
+/*******************************************************************************
+ 29. RESPONSIVE */
 
+@media screen and (min-width: 1240px) {
+	#main {
+		margin-left: auto;
+		margin-right: auto;
+		width: 1240px;
+	}
+	#sidebar {
+		width: 280px;
+	}
+}
 @media screen and (max-width: 1239px) {
 	#wrapper3 {
 		padding-bottom: 0;
@@ -1658,6 +1710,9 @@ form[class$="glossary_style"] #grouping label {
 	#wrapper-header {
 		height: 64px;
 	}
+	body.action-login #wrapper-header {
+		height: 88px;
+	}
 	body #header {
 		margin-top: 31px;
 		height: 90px;
@@ -1683,7 +1738,7 @@ form[class$="glossary_style"] #grouping label {
 		margin-top: 18px;
 	}
 	div#content > div.contextual a.icon {
-    	padding-left: 25px !important;
+		padding-left: 25px !important;
 	}
 }
 @media all and (max-width: 899px) {
@@ -1775,6 +1830,15 @@ form[class$="glossary_style"] #grouping label {
 		padding-left: 3.333333%;
 		padding-right: 3.333333%;
 	}
+	div#content > .contextual .drdn-content {
+		right: 0;
+		left: auto;
+	}
+
+	.icon-only {
+		height: 8px;
+	}
+
 	#footer div.bgl {
 		margin-left: 3.333333%;
 	}
@@ -1835,9 +1899,8 @@ form[class$="glossary_style"] #grouping label {
 	}
 }
 
-/**********************************************************/
-/* 27. SELECT2 */
-/**********************************************************/
+/*******************************************************************************
+ 30. SELECT2 */
 
 .theme-Circlepro .select2-container--default .select2-selection--single {
 	background-position: 4px 50%;
@@ -1878,9 +1941,8 @@ form[class$="glossary_style"] #grouping label {
 	border-radius: 3px;
 }
 
-/**********************************************************/
-/* 28. PRINTING */
-/**********************************************************/
+/*******************************************************************************
+ 31. PRINTING */
 
 @media print {
 	@page {
@@ -1899,8 +1961,7 @@ form[class$="glossary_style"] #grouping label {
 	}
 	#wrapper3,
 	#header,
-	#main,
-	#wrapper-main {
+	#main {
 		margin: 0;
 		background: #fff;
 	}
