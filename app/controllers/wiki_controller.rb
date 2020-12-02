@@ -44,6 +44,8 @@ class WikiController < ApplicationController
   helper :watchers
   include Redmine::Export::PDF
 
+  include ActionView::Helpers::SanitizeHelper
+
   # List of pages, sorted alphabetically and by parent (hierarchy)
   def index
     load_pages_for_index
@@ -109,7 +111,7 @@ class WikiController < ApplicationController
         send_data(export, :type => 'text/html', :filename => filename_for_content_disposition("#{@page.title}.html"))
         return
       elsif params[:format] == 'txt'
-        send_data(@content.text, :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
+        send_data(strip_tags(@content.text), :type => 'text/plain', :filename => filename_for_content_disposition("#{@page.title}.txt"))
         return
       end
     end

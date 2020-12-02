@@ -16,9 +16,7 @@
            :rev    => changeset.identifier) %>)
     <% end %></p>
 
-    <div class="wiki changeset-comments">
-      <%= format_changeset_comments changeset %>
-    </div>
+    <div class="wiki changeset-comments"><%= format_changeset_comments changeset %></div>
   </div>
   <%= call_hook(:view_issues_history_changeset_bottom, { :changeset => changeset }) %>
 <% end %>

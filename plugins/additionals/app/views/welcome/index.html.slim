@@ -26,29 +26,148 @@
 
     = call_hook :view_welcome_show_actions_dropdown
 
-h2 = welcome_overview_name @dashboard
+- if User.current.logged?
 
-= call_hook :view_welcome_index_top
+  h2 = welcome_overview_name @dashboard
 
-= render partial: 'common/dashboard', locals: { dashboard: @dashboard }
+  = call_hook :view_welcome_index_top
 
-= call_hook :view_welcome_index_bottom
+  = render partial: 'common/dashboard', locals: { dashboard: @dashboard }
 
-- if @dashboard_sidebar
-  - content_for :sidebar do
-    = render partial: 'sidebar'
-    = call_hook :view_welcome_show_sidebar_bottom
+  = call_hook :view_welcome_index_bottom
 
-- content_for :header_tags do
-  = auto_discovery_link_tag :atom,
-                            { controller: 'news',
-                              action: 'index',
-                              key: User.current.rss_key,
-                              format: 'atom' },
-                            title: "#{Setting.app_title}: #{l :label_news_latest}"
-  = auto_discovery_link_tag :atom,
-                            { controller: 'activities',
-                              action: 'index',
-                              key: User.current.rss_key,
-                              format: 'atom' },
-                            title: "#{Setting.app_title}: #{l :label_activity}"
+  - if @dashboard_sidebar
+    - content_for :sidebar do
+      = render partial: 'sidebar'
+      = call_hook :view_welcome_show_sidebar_bottom
+
+  - content_for :header_tags do
+    = auto_discovery_link_tag :atom,
+                              { controller: 'news',
+                                action: 'index',
+                                key: User.current.rss_key,
+                                format: 'atom' },
+                              title: "#{Setting.app_title}: #{l :label_news_latest}"
+    = auto_discovery_link_tag :atom,
+                              { controller: 'activities',
+                                action: 'index',
+                                key: User.current.rss_key,
+                                format: 'atom' },
+                              title: "#{Setting.app_title}: #{l :label_activity}"
+
+- else
+
+  div id="fp"
+
+    = text_field_tag 'forcetop', nil, :style => 'display: none;'
+
+    <!-- Banner -->
+    section id="fp-banner"
+      div class="inner"
+        h2 SuitePro
+        p #{l :welcome_suitepro}
+        ul class="actions special"
+          li
+            <a href="#fp-login" class="button primary scrolly">#{l :label_login}</a>
+      <a href="#one" class="more scrolly">#{l :welcome_discover}</a>
+
+    <!-- One -->
+    section id="one" class="frapper style1 special"
+      div class="inner"
+        header class="major"
+          h2 A SIMPLE WAY TO GET WORK DONE&nbsp;&nbsp;;)
+          p #{raw l :welcome_suitepro_is_redmine, :suitepro => '<strong>SuitePro</strong>', :redmine => '<a href="https://www.redmine.org"><strong>Redmine</strong></a>'}
+        ul class="icons major"
+          <li><span class="fp-icon fp-icon_1 major style1"><span class="label">Ruby</span></span></li>
+          <li><span class="fp-icon fp-icon_2 major style2"><span class="label">Project</span></span></li>
+          <li><span class="fp-icon fp-icon_3 major style3"><span class="label">Workflow</span></span></li>
+
+    <!-- Two -->
+    section id="two" class="frapper alt style2"
+      section class="spotlight"
+        div class="image"
+          = image_tag '/themes/circlepro/images/pic01.jpg'
+        div class="content"
+          h2 #{raw l :welcome_spotlight_1_title}
+          p #{l :welcome_spotlight_1_text}
+      section class="spotlight"
+        div class="image"
+          = image_tag '/themes/circlepro/images/pic02.jpg'
+        div class="content"
+          h2 #{raw l :welcome_spotlight_2_title}
+          p #{l :welcome_spotlight_2_text}
+      section class="spotlight"
+        div class="image"
+          = image_tag '/themes/circlepro/images/pic03.jpg'
+        div class="content"
+          h2 #{raw l :welcome_spotlight_3_title}
+          p #{l :welcome_spotlight_3_text}
+
+    <!-- Three -->
+    section id="three" class="frapper style3 special"
+      div class="inner"
+        header class="major"
+          h2 #{l :welcome_other_features}
+        ul class="features"
+          li class="fp-icon fp-icon_4"
+            h3 #{l :welcome_feature_1_title}
+            p #{l :welcome_feature_1_text}
+          li class="fp-icon fp-icon_5"
+            h3 #{l :welcome_feature_2_title}
+            p #{l :welcome_feature_2_text}
+          li class="fp-icon fp-icon_6"
+            h3 #{l :welcome_feature_3_title}
+            p #{l :welcome_feature_3_text}
+          li class="fp-icon fp-icon_7"
+            h3 #{l :welcome_feature_4_title}
+            p #{l :welcome_feature_4_text}
+          li class="fp-icon fp-icon_8"
+            h3 #{l :welcome_feature_5_title}
+            p #{l :welcome_feature_5_text}
+          li class="fp-icon fp-icon_9"
+            h3 #{l :welcome_feature_6_title}
+            p #{l :welcome_feature_6_text}
+
+    <!-- Login -->
+    section id="fp-login" class="frapper style4"
+      div class="inner"
+        div id="login-form"
+          h2 #{l :label_login}
+          = form_tag signin_path, onsubmit: 'return keepAnchorOnSignIn(this);' do
+            = back_url_hidden_field_tag
+
+            label for="username" #{l :field_login}
+            = text_field_tag 'username', params[:username], :tabindex => '1'
+
+            <label for="password">#{l :field_password}
+              = link_to l(:label_password_lost), lost_password_path, :class => "lost_password" if Setting.lost_password?
+            </label>
+            = password_field_tag 'password', nil, :tabindex => '2'
+
+            - if Setting.openid?
+              label for="openid_url" #{l :field_identity_url}
+              = text_field_tag "openid_url", nil, :tabindex => '3'
+
+            - if Setting.autologin?
+              label for="autologin" #{l :label_stay_logged_in}
+                = check_box_tag 'autologin', 1, false, :tabindex => 4
+
+            <input type="submit" name="login" value="#{l :button_login}" tabindex="5" id="login-submit" />
+
+    <!-- CTA -->
+    section id="fp-cta" class="frapper style4"
+      div class="inner"
+        header
+          h2 #{l :welcome_any_questions}
+          p #{l :welcome_please_contact}
+        ul class="actions stacked"
+          li
+            <a href="https://manuel.cillero.es/contacto/#suitepro" class="button fit primary">#{l :welcome_contact}</a>
+          li
+            <a href="https://manuel.cillero.es/sobre-mi" class="button fit">#{l :welcome_about_me}</a>
+
+  <script src="/themes/circlepro/javascripts/frontpage/jquery.scrolly.min.js"></script>
+  <script src="/themes/circlepro/javascripts/frontpage/browser.min.js"></script>
+  <script src="/themes/circlepro/javascripts/frontpage/breakpoints.min.js"></script>
+  <script src="/themes/circlepro/javascripts/frontpage/util.js"></script>
+  <script src="/themes/circlepro/javascripts/frontpage/main.js"></script>

@@ -189,3 +189,34 @@ en:
   wiki_pdf_remove_title_info: "When active the Wiki title info will not be displayed in PDF view."
   label_copied_to_clipboard: Copied!
   label_copy_to_clipboard: Copy to clipboard
+
+
+  welcome_suitepro: Planning, knowledge sharing, clients support and personal productivity, with both powerful and simplicity in mind.
+  welcome_discover: Discover
+  welcome_suitepro_is_redmine: "%{suitepro} is powered by %{redmine}, the popular project management and issue tracking solution based on the Ruby on Rails framework. Redmine lets us have a powerful workflow for getting tasks done and keep information in one place."
+
+  welcome_spotlight_1_title: "The Basics: Projects,<br /> Tasks, Issue Tracking"
+  welcome_spotlight_1_text: Keep track of everything, with visual indicators to monitorize tasks and subtasks in order to stay up to date with milestones, track of time, workflows and all that requires attention.
+  welcome_spotlight_2_title: "Documents, Wikis,<br /> File Management"
+  welcome_spotlight_2_text: Keep documents and files availables wherever you are. Use the wiki project to save project requeriments, attached files, install and user guides, or meeting minutes at your fingertips.
+  welcome_spotlight_3_title: "Flexible control<br /> of user access"
+  welcome_spotlight_3_text: Using a role-based approach, roles are a collection of permissions outlining how users can operate with the projects. Each member of a project can have one or more roles assigned by administrators.
+
+  welcome_other_features: Other Features
+  welcome_feature_1_title: Gantt Chart And Calendar
+  welcome_feature_1_text: The gantt chart displays issues that have a start date and a due date. The calendar provides an overview of a project as a monthly view.
+  welcome_feature_2_title: News And Forums
+  welcome_feature_2_text: News to show information about the status of projects or any other subjects. The forums allow users from a project to communicate with each others.
+  welcome_feature_3_title: Email notifications And Feeds
+  welcome_feature_3_text: SuitePro can be configured to receive notifications via email. It also provides web feeds to use with external readers or aggregators.
+  welcome_feature_4_title: Code Repositories
+  welcome_feature_4_text: Version Control Systems like Git or Subversion can be used as code repositories and also keep track of changes made to the code.
+  welcome_feature_5_title: Responsive Design
+  welcome_feature_5_text: SuitePro is optimized to look great on mobile devices thanks to its responsive design. All pages adapt automatically to the screen size on a mobile phone, tablet or desktop computer.
+  welcome_feature_6_title: Is Open Source Software
+  welcome_feature_6_text: It means you are not locked into using a particular vendor’s system, and it’s continually evolving in real time as developers add to it and modify it.
+
+  welcome_any_questions: Any Questions?
+  welcome_please_contact: Please feel free to contact me if you need any further information.
+  welcome_contact: Contact
+  welcome_about_me: More About Me

@@ -61,7 +61,8 @@
 
 <%= render(:partial => "wiki/content", :locals => {:content => @content}) %>
 
-<fieldset class="collapsible collapsed hide-when-print">
+<% if @page.attachments.length > 0 || (@editable && authorize_for('wiki', 'add_attachment')) %>
+<fieldset class="collapsible collapsed<% if @page.attachments.length == 0 %> hide-when-print<% end %>">
   <legend onclick="toggleFieldset(this);" class="icon icon-collapsed"><%= l(:label_attachment_plural) %> (<%= @page.attachments.length %>)</legend>
   <div style="display: none;">
 
@@ -81,6 +82,7 @@
   <% end %>
 </div>
 </fieldset>
+<% end %>
 
 <p class="wiki-update-info">
   <% if User.current.allowed_to?(:view_wiki_edits, @project) %>
