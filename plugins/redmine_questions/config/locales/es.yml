@@ -22,6 +22,8 @@ es:
 
   field_questions_tags: Etiquetas
 
+  label_questions_most_popular: Más populares
+
   permission_view_questions: Ver Ayuda y Soporte
   permission_edit_messages_tags: Editar etiquetas
   permission_edit_vote_messages: Votar mensajes
