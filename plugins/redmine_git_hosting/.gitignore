@@ -1,8 +1,0 @@
-.*.swp
-Gemfile.lock
-settings.yml
-/tmp
-/rdoc
-/coverage
-/junit
-custom_hooks.rb
