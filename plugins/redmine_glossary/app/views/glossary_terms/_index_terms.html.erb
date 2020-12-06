@@ -20,7 +20,7 @@
           <%= term.category.try!(:name) %>
         </td>
         <td class="description">
-          <%= term.description %>
+          <% @paragraphs = Nokogiri::HTML.parse(term.description).css('p') %><%=textilizable @paragraphs.first.inner_html + (@paragraphs.size > 1 ? '<p>…</p>' : '') %>
         </td>
       </tr>
     <% end %>

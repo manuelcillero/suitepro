@@ -1,0 +1,39 @@
+# Spanish strings go here for Rails i18n
+es:
+  label_glossary_terms: Glosario
+  label_glossary_term: Término
+  label_glossary_term_new: Nuevo término
+  label_glossary_term_import_csv: Importar de CSV
+  label_glossary_categories: Categorías
+  label_glossary_category: Categoría
+  label_glossary_category_new: Nueva categoría
+
+  glossary_title: Glosario
+  project_module_glossary: Glosario
+
+  label_view: Ver
+  label_import: Importar
+  label_glossary_index: Índice
+  label_not_categorized: Resto
+  label_grouping: Agrupar
+  label_categorized: Categorías
+  label_glossary_term_plural: Glosario
+
+  index_en: |
+      A B C D E F
+      G H I J K L
+      M N Ñ O P Q
+      R S T U V W
+      X Y Z
+
+  index_rubi: |
+
+
+  permission_view_glossary_terms: Ver glosario
+  permission_manage_glossary_terms: Administrar glosario
+
+  field_name_en: En inglés
+  field_abbr_whole: Acrónimo de
+  field_datatype: Tipo de dato en código
+  field_codename: Abreviatura en código
+  field_rubi: Ruby
