@@ -18,7 +18,7 @@
  *  12. FLASH MESSAGES
  *  13. LOGIN FORM
  *  14. TAGS
- *  15. CONTEXT-MENU
+ *  15. CONTEXTUAL-MENU
  *  16. TIP
  *  17. jQuery UI
  *  18. BUTTONS
@@ -137,6 +137,10 @@ input[type="text"].questions-search.autocomplete {
 
 input[type="text"].questions-search.autocomplete {
 	padding-left: 30px !important;
+}
+
+input[type="file"] {
+	max-width: 100%;
 }
 
 #sidebar a.selected {
@@ -320,13 +324,7 @@ div.wiki .external {
 	height: 88px;
 	background: url(../images/logo.png) no-repeat 30px 0;
 	position: relative;
-} /*
-@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2) {
-	#wrapper-header > h1 {
-		background-image: url(../images/logo2x.png);
-		background-size: 38px 40px;
-	}
-} */
+}
 
 #wrapper-header > h1 {
 	position: absolute;
@@ -367,6 +365,17 @@ div.wiki .external {
 	}
 }
 
+#quick-search .drdn-items.projects > strong {
+	background-color: #efefef;
+	padding: 2px 8px;
+}
+#quick-search .drdn-items.projects > a {
+	padding: 1px 8px;
+}
+#quick-search .drdn-items.selection > .selected::before {
+    color: red;
+}
+
 /*******************************************************************************
  4. TOP-MENU */
 
@@ -375,15 +384,15 @@ div.wiki .external {
 	line-height: 31px;
 	background: #556372;
 	padding: 0;
- 	font-size: 0.9em;
+	font-size: 0.9em;
 }
 #top-menu ul {
 	margin: 0 30px;
 }
 #top-menu a {
 	margin-right: 15px;
- 	font-weight: normal;
- 	color: #aaa;
+	font-weight: normal;
+	color: #aaa;
 }
 #top-menu a:hover {
 	color: #fff;
@@ -578,7 +587,7 @@ ul.social-menu .social-link-mail:hover a {
 #sidebar {
 	background: #fff;
 	border-left: 0;
-	padding: 0 30px 0 0;
+	padding: 0 30px 60px 0;
 	line-height: 1.42857em;
 }
 #sidebar h3 {
@@ -690,20 +699,26 @@ ul.social-menu .social-link-mail:hover a {
 /*******************************************************************************
  9. NEWS */
 
-.news span.author,
-.news span.comments,
+#block-news span.author,
+#block-news span.comments,
 body.controller-news span.author {
-	font-size: 82%;
+	font-size: 13px;
 }
-.news span.summary,
+body.controller-news #comments > h4 {
+	font-size: 15px;
+}
+#block-news span.summary,
 body.controller-news #content > p > em {
 	color: #999;
 }
-.news > p > a {
+#block-news > p > a {
 	font-weight: bold;
 }
-.news > p > a:first-child {
+#block-news > p > a:first-child {
 	font-weight: normal;
+}
+article.news-article {
+	margin-bottom: 3em;
 }
 
 /*******************************************************************************
@@ -970,75 +985,44 @@ div#content .contacts-tags-edit ul.tagit {
 }
 
 /*******************************************************************************
- 15. CONTEXT-MENU */
+ 15. CONTEXTUAL-MENU */
 
 div#content > div.contextual:first-child,
 div.flash + div.contextual {
 	float: none;
 	text-align: right;
 	background-color: #f2f2f2;
-	margin-top: 0;
-	padding: 3px 8px;
-} /*
-div#content > div.contextual label[for="closed"],
-div#content > div.contextual:first-child a,
-div.flash + div.contextual a {
-	display: inline-block;
-	height: 33px;
-	line-height: 33px;
+	margin: 0;
+	padding: 0 8px;
 }
-div#content > div.contextual:first-child select,
-div.flash + div.contextual select {
-	margin: 3px 0;
-	height: 27px;
-	line-height: 1em;
+div#content > .contextual .drdn {
+	border: 0;
+	padding-left: 4px;
+	padding-right: 0;
 }
-div#content > div.contextual:first-child .icon,
-div.flash + div.contextual .icon {
-	padding: 0 3px 0 20px;
+a.icon-setprivate, a.icon-setpublic {
+	padding-left: 26px;
+	background-position-x: 6px;
 }
 
-div#content .context-menu-selection {
-	background-color: #2996cc !important;
-}
-div#content #context-menu ul {
-	border-radius: 4px;
-} */
-div#content #context-menu li a { /*
-	color: #333; */
+div#content #context-menu li a {
 	line-height: 1.12em;
-} /*
-div#content #context-menu li:hover {
-	background: #f2f4f5;
-	color: #3d454c;
-	border: 1px solid #f2f4f5;
-	border-radius: 0px;
 }
 
-div#content #context-menu a.disabled, div#content #context-menu a.disabled:hover {
-	color: #aaa;
-} */
-
-.contextual {
-	line-height: 1em;
-	min-height: 28px;
+.contextual > a,
+.contextual .drdn-trigger,
+.contextual #block-form {
+	line-height: 34px;
 }
-.contextual > a {
-	line-height: 26px;
+.contextual #block-form select {
+	vertical-align: baseline;
 }
-.contextual .drdn-items > a { /*
-	color: #333;
+.contextual .drdn-items > a {
 	padding-top: 2px;
-	padding-bottom: 2px; */
+	padding-bottom: 2px;
 	text-align: left;
-} /*
-.contextual .drdn-items>a:hover {
-	background-color: #f2f4f5;
-	color: #3d454c;
-	border: 1px solid #f2f4f5;
-	border-radius: 0;
 }
-*/
+
 /*******************************************************************************
  16. TIP */
 
@@ -1556,6 +1540,10 @@ tr.even.priority-lowest { background: #f2faff; }
 tr.priority-lowest a { color: #559; }
 tr.odd.priority-lowest td, tr.even.priority-lowest td { border-color: #d2eafa; }
 
+tr.issue.idnt-1 td.subject, tr.project.idnt-1 td.name { background-position: 8px .8em; }
+
+table.list.projects td.identifier { white-space: pre; text-align: left; }
+
 table td ul, table th ul { padding-left: 20px; }
 
 /*******************************************************************************
@@ -1614,56 +1602,53 @@ body.controller-repositories.action-revision div.changeset-comments {
 	margin-top: -10px;
 }
 body.controller-issues.action-show div.changeset-comments {
-	font-size: 12px;
+	font-size: 14px;
 	padding-bottom: 10px;
 }
 
 /*******************************************************************************
  28. GLOSSARY */
 
-#glossary_search_params {
-	margin: .5em 0 1.5em;
-}
-#glossary_search_params th {
-	text-align: left;
-	padding-right: 1em;
+body.controller-glossary_terms form[action$="glossary_terms"] input[type="submit"] {
+	margin-top: 10px;
 }
 
-table.term_items {
-	border-spacing: 0;
+body.controller-glossary_terms #sidebar > fieldset[class="collapsible"] > div {
+	margin: 10px -10px 0;
+}
+
+body.controller-glossary_terms #sidebar > h3 + table {
+	margin: 0 auto;
+	border-spacing: 3px;
+    border-collapse: separate;
+}
+body.controller-glossary_terms #sidebar > h3 + table td {
+	min-width: 1em;
+	text-align: center;
+	border: 1px solid #d5d5d5;
+	border-radius: 3px;
+	padding: 2px 5px;
+}
+body.controller-glossary_terms #sidebar > h3 + table td:hover {
+	background-color: #eee;
+}
+
+body.controller-glossary_terms table.term {
+	border-spacing: 4px;
+    border-collapse: separate;
+}
+body.controller-glossary_terms table.term th,
+body.controller-glossary_terms table.term td {
+	padding: 3px 8px;
+}
+body.controller-glossary_terms table.term th {
+	background-color: #efefef;
+}
+body.controller-glossary_terms table.term td .wiki p {
 	margin-bottom: 1em;
 }
-table.term_items tr th {
-	text-align: left;
-	padding-right: 1em;
-	padding-left: 0;
-}
-
-#glossary_style_project_scope {
-	margin-left: 1em;
-}
-form[class$="glossary_style"] #grouping {
-	margin-top: 4px;
-}
-form[class$="glossary_style"] #grouping label {
-	display: block;
-	text-transform: capitalize;
-}
-#show_desc {
-	line-height: 3em;
-}
-#glossary_import_csv,
-#glossary_term_categories {
-	line-height: 2em;
-	font-size: 92%;
-}
-#glossary_index td {
-	padding: 0 1px;
-	text-align: center;
-	line-height: 1.2em;
-}
-#glossary_index td:hover {
-	background-color: #efefef;
+body.controller-glossary_terms table.term td .wiki p:last-child {
+	margin-bottom: 0;
 }
 
 /*******************************************************************************
@@ -1710,18 +1695,22 @@ form[class$="glossary_style"] #grouping label {
 	#wrapper-header {
 		height: 64px;
 	}
-	body.action-login #wrapper-header {
-		height: 88px;
-	}
 	body #header {
 		margin-top: 31px;
-		height: 90px;
 	}
 	body #header #main-menu {
 		display: block;
 	}
 	body #main {
 		padding-top: 86px;
+	}
+	body.action-login #wrapper-header {
+		height: 88px;
+	}
+	body.controller-welcome.action-index #main,
+	body.controller-my.action-page #main,
+	body.controller-my.action-account #main {
+		padding-top: 52px;
 	}
 
 	#main-menu ul {
@@ -1734,11 +1723,22 @@ form[class$="glossary_style"] #grouping label {
 		padding: 4px 6px;
 	}
 
+	#main-menu .menu-children {
+		margin-top: 0;
+	}
+
 	div#content > div.contextual:first-child {
 		margin-top: 18px;
 	}
 	div#content > div.contextual a.icon {
 		padding-left: 25px !important;
+	}
+	div#content > div.contextual #block-form {
+		line-height: 62px;
+	}
+
+	ul.queries li a.icon-only {
+		display: none;
 	}
 }
 @media all and (max-width: 899px) {
@@ -1833,10 +1833,6 @@ form[class$="glossary_style"] #grouping label {
 	div#content > .contextual .drdn-content {
 		right: 0;
 		left: auto;
-	}
-
-	.icon-only {
-		height: 8px;
 	}
 
 	#footer div.bgl {

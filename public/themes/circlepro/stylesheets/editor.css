@@ -29,6 +29,24 @@ kbd {
 	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.25);
 }
 
+/* Preformatted text (application.css:1216) */
+.wiki pre {
+    margin: 1em 1em 1em 1.6em;
+    padding: 8px;
+    background-color: #fafafa;
+    border: 1px solid #e2e2e2;
+    border-radius: 3px;
+    width: auto;
+    overflow-x: auto;
+	overflow-y: hidden;
+
+	font-size: 15px;
+	line-height: 1.2em;
+}
+.hljs {
+    background-color: #fafafa !important;
+}
+
 /* Headers */
 h1, h2, h3, h4, h5, h6 {
 	font-family: Lato,HelveticaNeue,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -191,7 +209,7 @@ select.cke_dialog_ui_input_select {
 @media screen and (max-width: 767px) {
 	.wiki p, .wiki li {
 		text-align: left;
-	}	
+	}
 	body.wiki, .wiki p, .wiki li {
 		font-size: 16px;
 	}
