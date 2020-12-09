@@ -84,7 +84,11 @@ div#content h1 {
 	color: #b40b51;
 }
 
-div.journal div[id^="note-"] > h4:first-child {
+div.journal {
+	border-bottom: 1px solid #d5d5d5;
+	margin-bottom: 16px;
+}
+div.journal h4.note-header {
 	font-size: 13px;
 	padding-right: 0;
 	margin: 10px 0 20px;
@@ -2010,6 +2014,10 @@ body.controller-glossary_terms table.term td .wiki p:last-child {
 	table.list.glossary th,
 	table.list.glossary td {
 		text-align: left;
+	}
+
+	div.tab-content > div.journal:last-child {
+		border-bottom: 0;
 	}
 
 	#fp {
