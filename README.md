@@ -34,37 +34,38 @@ License v2* (GPL).
 
 ### Redmine Additionals plugin
 
-  * additionals 2.0.20
+  * additionals 3.0.0
   * https://alphanodes.com/redmine-additionals
   * https://github.com/alphanodes/additionals.git
 
 ### Redmine Checklists plugin (Light version)
 
-  * checklists 3.1.10
+  * checklists 3.1.18
   * https://www.redmine.org/plugins/redmine_checklists
   * https://www.redmineup.com/pages/plugins/checklists
 
 ### Redmine CKEditor plugin
 
-  * ckeditor 1.1.5
+  * ckeditor 1.2.3
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
 
 ### Redmine Glossary Plugin
 
-  * glossary 0.9.2
+  * glossary 1.1.0
   * https://www.r-labs.org/projects/rp-glossary/wiki/UsageEn
   * https://github.com/torutk/redmine_glossary
 
 ### Redmine Private Wiki Plugin
 
-  * private_wiki 0.2.0
+  * private_wiki 0.2.0 (mistraloz)
   * http://www.redmine.org/plugins/redmine_private_wiki
-  * https://github.com/BlueXML/redmine_private_wiki
+  * https://github.com/mistraloz/redmine_private_wiki (*fork* con ajustes para
+    Redmine >= 4.0.3)
 
 ### Redmine Q&A plugin
 
-  * questions 1.0.0
+  * questions 1.0.2
   * https://www.redmine.org/plugins/redmine_questions
   * http://www.redminecrm.com/projects/questions
 
