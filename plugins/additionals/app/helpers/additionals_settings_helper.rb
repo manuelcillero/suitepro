@@ -4,7 +4,6 @@ module AdditionalsSettingsHelper
             { name: 'wiki', partial: 'additionals/settings/wiki', label: :label_wiki },
             { name: 'macros', partial: 'additionals/settings/macros', label: :label_macro_plural },
             { name: 'rules', partial: 'additionals/settings/issues', label: :label_issue_plural },
-            { name: 'users', partial: 'additionals/settings/users', label: :label_user_plural },
             { name: 'web', partial: 'additionals/settings/web_apis', label: :label_web_apis }]
 
     unless Redmine::Plugin.installed? 'redmine_hrm'
@@ -44,6 +43,22 @@ module AdditionalsSettingsHelper
 
     safe_join [label_tag("settings[#{name}]", label_title),
                text_field_tag("settings[#{name}]", value, options)]
+  end
+
+  def additionals_settings_passwordfield(name, options = {})
+    label_title = options.delete(:label).presence || l("label_#{name}")
+    value = options.delete(:value).presence || @settings[name]
+
+    safe_join [label_tag("settings[#{name}]", label_title),
+               password_field_tag("settings[#{name}]", value, options)]
+  end
+
+  def additionals_settings_urlfield(name, options = {})
+    label_title = options.delete(:label).presence || l("label_#{name}")
+    value = options.delete(:value).presence || @settings[name]
+
+    safe_join [label_tag("settings[#{name}]", label_title),
+               url_field_tag("settings[#{name}]", value, options)]
   end
 
   def additionals_settings_textarea(name, options = {})

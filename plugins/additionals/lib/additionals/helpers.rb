@@ -1,5 +1,15 @@
 module Additionals
   module Helpers
+    def link_to_external(name, link, options = {})
+      options[:class] ||= 'external'
+      options[:class] << ' external' if options[:class].exclude? 'external'
+
+      options[:rel] ||= 'noopener'
+      options[:target] ||= '_blank'
+
+      link_to name, link, options
+    end
+
     def additionals_list_title(options)
       title = []
       if options[:issue]
@@ -116,16 +126,11 @@ module Additionals
       if uri.scheme.nil? && uri.path[0] != '/' && issue_id_parts.count == 2
         rc[:issue_id] = url
       else
-        if request.nil?
-          # this is used by mailer
-          return rc if url.exclude?(Setting.host_name)
-        elsif uri.host != URI.parse(request.original_url).host
-          return rc
-        end
+        s_pos = uri.path.rindex '/issues/'
+        return rc unless s_pos
 
-        s_pos = uri.path.rindex('/issues/')
         id_string = uri.path[s_pos + 8..-1]
-        e_pos = id_string.index('/')
+        e_pos = id_string.index '/'
         rc[:issue_id] = e_pos.nil? ? id_string : id_string[0..e_pos - 1]
         # check for comment_id
         rc[:comment_id] = uri.fragment[5..-1].to_i if comment_id.nil? && uri.fragment.present? && uri.fragment[0..4] == 'note-'
@@ -140,51 +145,6 @@ module Additionals
         s << send("additionals_load_#{module_name}")
       end
       safe_join s
-    end
-
-    def system_uptime
-      if windows_platform?
-        `net stats srv | find "Statist"`
-      elsif File.exist?('/proc/uptime')
-        secs = `cat /proc/uptime`.to_i
-        min = 0
-        hours = 0
-        days = 0
-        if secs.positive?
-          min = (secs / 60).round
-          hours = (secs / 3_600).round
-          days = (secs / 86_400).round
-        end
-        if days >= 1
-          "#{days} #{l(:days, count: days)}"
-        elsif hours >= 1
-          "#{hours} #{l(:hours, count: hours)}"
-        else
-          "#{min} #{l(:minutes, count: min)}"
-        end
-      else
-        # this should be mac os
-        seconds = `sysctl -n kern.boottime | awk '{print $4}'`.tr(',', '')
-        so = DateTime.strptime(seconds.strip, '%s')
-        if so.present?
-          time_tag(so)
-        else
-          days = `uptime | awk '{print $3}'`.to_i.round
-          "#{days} #{l(:days, count: days)}"
-        end
-      end
-    end
-
-    def system_info
-      if windows_platform?
-        'unknown'
-      else
-        `uname -a`
-      end
-    end
-
-    def windows_platform?
-      true if /cygwin|mswin|mingw|bccwin|wince|emx/.match?(RUBY_PLATFORM)
     end
 
     def autocomplete_select_entries(name, type, option_tags, options = {})
@@ -212,16 +172,23 @@ module Additionals
 
     def project_list_css_classes(project, level)
       classes = [cycle('odd', 'even')]
-      classes += project.css_classes.split(' ')
+      classes += project.css_classes.split
       if level.positive?
         classes << 'idnt'
         classes << "idnt-#{level}"
       end
-      classes.join(' ')
+      classes.join ' '
     end
 
     def addtionals_textarea_cols(text, options = {})
       [[(options[:min].presence || 8), text.to_s.length / 50].max, (options[:max].presence || 20)].min
+    end
+
+    def title_with_fontawesome(title, symbole, wrapper = 'span')
+      tag.send(wrapper) do
+        concat tag.i class: "#{symbole} for-fa-title", 'aria-hidden': 'true'
+        concat title
+      end
     end
 
     private
@@ -259,10 +226,6 @@ module Additionals
 
     def additionals_load_clipboardjs
       additionals_include_js 'clipboard.min'
-    end
-
-    def additionals_load_observe_field
-      additionals_include_js 'additionals_observe_field'
     end
 
     def additionals_load_font_awesome
@@ -311,12 +274,10 @@ module Additionals
       return if user.nil?
 
       if user.type == 'Group'
-        if options[:no_link]
+        if options[:no_link] || !Redmine::Plugin.installed?('redmine_hrm')
           user.name
-        elsif Redmine::Plugin.installed? 'redmine_hrm'
-          link_to_hrm_group user
         else
-          user.name
+          link_to_hrm_group user
         end
       else
         options[:size] = 14 if options[:size].nil?

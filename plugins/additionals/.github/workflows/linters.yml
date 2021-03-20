@@ -1,0 +1,47 @@
+name: Run Linters
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '30 5 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+        bundler-cache: true
+
+    - name: Set Gemfile
+      run: |
+        echo "">> Gemfile
+        echo "group :test do">> Gemfile
+        echo "  gem 'pandoc-ruby', require: false" >> Gemfile
+        echo "  gem 'rubocop', require: false" >> Gemfile
+        echo "  gem 'rubocop-performance', require: false" >> Gemfile
+        echo "  gem 'rubocop-rails', require: false" >> Gemfile
+        echo "  gem 'slim_lint', require: false" >> Gemfile
+        echo "end">> Gemfile
+
+    - name: Setup gems
+      run: |
+        bundle install --jobs 4 --retry 3
+
+    - name: Run RuboCop
+      run: |
+        bundle exec rubocop -S
+
+    - name: Run Slim-Lint
+      run: |
+        bundle exec slim-lint app/views
+      if: always()
+
+    - name: Run Brakeman
+      run: |
+        bundle exec brakeman -5

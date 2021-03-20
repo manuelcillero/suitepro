@@ -12,15 +12,15 @@ module Additionals
         end
       end
 
-      def issue_assignee
-        assignee_classes = ['User']
-        assignee_classes << 'Group' if Setting.issue_group_assignment?
+      def global_users
+        scope = Principal.assignable
+        @assignee = scope.like(params[:q]).sorted.limit(100).to_a
+        render layout: false, partial: 'issue_assignee'
+      end
 
-        scope = Principal.where(type: assignee_classes).limit(100)
-        scope = scope.member_of(project) if @project.present?
-        scope = scope.distinct
-        @assignee = scope.active.visible.sorted.like(params[:q]).to_a
-        @assignee = @assignee.sort! { |x, y| x.name <=> y.name }
+      def issue_assignee
+        scope = Principal.assignable_for_issues @project
+        @assignee = scope.like(params[:q]).sorted.limit(100).to_a
         render layout: false, partial: 'issue_assignee'
       end
     end

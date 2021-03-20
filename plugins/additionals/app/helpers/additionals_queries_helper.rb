@@ -4,8 +4,8 @@ module AdditionalsQueriesHelper
   end
 
   def additionals_retrieve_query(object_type, options = {})
-    session_key = additionals_query_session_key(object_type)
-    query_class = Object.const_get("#{object_type.camelcase}Query")
+    session_key = additionals_query_session_key object_type
+    query_class = Object.const_get "#{object_type.camelcase}Query"
     if params[:query_id].present?
       additionals_load_query_id(query_class, session_key, params[:query_id], options, object_type)
     elsif api_request? ||
@@ -28,7 +28,7 @@ module AdditionalsQueriesHelper
     else
       # retrieve from session
       @query = query_class.find_by(id: session[session_key][:id]) if session[session_key][:id]
-      session_data = Rails.cache.read(additionals_query_cache_key(object_type))
+      session_data = Rails.cache.read additionals_query_cache_key(object_type)
       @query ||= query_class.new(name: '_',
                                  filters: session_data.nil? ? nil : session_data[:filters],
                                  group_by: session_data.nil? ? nil : session_data[:group_by],
@@ -79,11 +79,11 @@ module AdditionalsQueriesHelper
   def additionals_select2_search_users(options = {})
     q = params[:q].to_s.strip
     exclude_id = params[:user_id].to_i
-    scope = User.active.where(type: 'User')
+    scope = User.active.where type: 'User'
     scope = scope.visible unless options[:all_visible]
     scope = scope.where.not(id: exclude_id) if exclude_id.positive?
     scope = scope.where(options[:where_filter], options[:where_params]) if options[:where_filter]
-    q.split(' ').map { |search_string| scope = scope.like(search_string) } if q.present?
+    q.split.map { |search_string| scope = scope.like(search_string) } if q.present?
     scope = scope.order(last_login_on: :desc)
                  .limit(Additionals::SELECT2_INIT_ENTRIES)
     @users = scope.to_a.sort! { |x, y| x.name <=> y.name }
@@ -140,13 +140,13 @@ module AdditionalsQueriesHelper
   def xlsx_write_header_row(workbook, worksheet, columns)
     columns_width = []
     columns.each_with_index do |c, index|
-      value = if c.class.name == 'String'
+      value = if c.is_a? String
                 c
               else
                 c.caption.to_s
               end
 
-      worksheet.write(0, index, value, workbook.add_format(xlsx_cell_format(:header)))
+      worksheet.write 0, index, value, workbook.add_format(xlsx_cell_format(:header))
       columns_width << xlsx_get_column_width(value)
     end
     columns_width
@@ -224,13 +224,11 @@ module AdditionalsQueriesHelper
 
   def xlsx_hyperlink_cell?(token)
     # Match http, https or ftp URL
-    if %r{\A[fh]tt?ps?://}.match?(token)
-      true
-      # Match mailto:
-    elsif token.present? && token.start_with?('mailto:')
-      true
-      # Match internal or external sheet link
-    elsif /\A(?:in|ex)ternal:/.match?(token)
+    if %r{\A[fh]tt?ps?://}.match?(token) ||
+       # Match mailto:
+       token.present? && token.start_with?('mailto:') ||
+       # Match internal or external sheet link
+       /\A(?:in|ex)ternal:/.match?(token)
       true
     end
   end

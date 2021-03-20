@@ -14,7 +14,7 @@ function filterAdditionalsFormatState (opt) {
 function additionals_transform_to_select2(field){
   var field_format = availableFilters[field]['field_format'];
   var initialized_select2 = $('#tr_' + field + ' .values .select2');
-  if (initialized_select2.length == 0 && $.inArray(field_format, additionals_field_formats) >= 0) {
+  if (initialized_select2.length == 0 && (typeof additionals_field_formats !== 'undefined') && $.inArray(field_format, additionals_field_formats) >= 0) {
     $('#tr_' + field + ' .toggle-multiselect').hide();
     $('#tr_' + field + ' .values .value').attr('multiple', 'multiple');
     $('#tr_' + field + ' .values .value').select2({
@@ -32,7 +32,7 @@ function additionals_transform_to_select2(field){
       },
       placeholder: ' ',
       minimumInputLength: 1,
-      width: '60%',
+      width: '90%',
       templateResult: filterAdditionalsFormatState
     }).on('select2:open', function (e) {
       $(this).parent('span').find('.select2-search__field').val(' ').trigger($.Event('input', { which: 13 })).val('');
@@ -168,7 +168,7 @@ function buildSelect2Options(options) {
     allowClear: !!options['allow_clear'],
     minimumInputLength: options['min_input_length'] || 0,
     templateResult: window[options['format_state']],
-    width: options['width'] || '60%'
+    width: options['width'] || '90%'
   };
 
   addDataSourceOptions(result, options);

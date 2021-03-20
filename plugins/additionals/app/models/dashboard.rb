@@ -4,6 +4,7 @@ class Dashboard < ActiveRecord::Base
   include Additionals::EntityMethods
 
   class SystemDefaultChangeException < StandardError; end
+
   class ProjectSystemDefaultChangeException < StandardError; end
 
   belongs_to :project
@@ -302,7 +303,10 @@ class Dashboard < ActiveRecord::Base
     config = { dashboard_id: id,
                block: block }
 
-    settings[:user_id] = User.current.id if !options.key?(:skip_user_id) || !options[:skip_user_id]
+    if !options.key?(:skip_user_id) || !options[:skip_user_id]
+      settings[:user_id] = User.current.id
+      settings[:user_is_admin] = User.current.admin?
+    end
 
     if settings.present?
       settings.each do |key, setting|
@@ -321,11 +325,11 @@ class Dashboard < ActiveRecord::Base
       unique_params = settings.flatten
       unique_params += options[:unique_params].reject(&:blank?) if options[:unique_params].present?
 
-      Rails.logger.debug "debug async_params for #{block}: unique_params=#{unique_params.inspect}"
+      # Rails.logger.debug "debug async_params for #{block}: unique_params=#{unique_params.inspect}"
       config[:unique_key] = Digest::SHA256.hexdigest(unique_params.join('_'))
     end
 
-    Rails.logger.debug "debug async_params for #{block}: config=#{config.inspect}"
+    # Rails.logger.debug "debug async_params for #{block}: config=#{config.inspect}"
 
     config
   end
@@ -358,7 +362,10 @@ class Dashboard < ActiveRecord::Base
   end
 
   def validate_system_default
-    return if new_record? || system_default_was == system_default || system_default?
+    return if new_record? ||
+              system_default_was == system_default ||
+              system_default? ||
+              project_id.present?
 
     raise SystemDefaultChangeException
   end

@@ -1,6 +1,33 @@
 Changelog
 =========
 
+3.0.2
++++++
+
+- d3plus to v2.0.0-alpha.30 support
+- Mermaid 8.9.1 support
+- Bug fix for select2 loading without named field
+- FontAwesome 5.15.2 support
+- D3 6.6.0 support
+- Fix news limit for welcome dashboard block
+- Frensh translation updated, thanks to Brice BEAUMESNIL!
+- clipboard.js updated to v2.0.8
+-
+3.0.1
++++++
+
+- Do not show "Assign to me" if assigned_to is disabled for tracker
+- FontAwesome 5.15.1 support
+- D3 6.3.1 support
+- Mermaid 8.8.4 support
+- add current_user as special login name for user macro (which shows current login user)
+- add text parameter to user macro (which disable link to user)
+- add asynchronous text block
+- gemify plugin to use it with Gemfile.local or other plugins
+- remove spam protection functionality
+- Chart.js 2.9.4 support
+- Allow overwrite mermaid theme and variables
+
 3.0.0
 +++++
 

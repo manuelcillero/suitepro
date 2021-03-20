@@ -322,8 +322,12 @@ Query: Issues
   You can configure the block content by selecting the *Issue Query* you want to display and choosing a number for *Maximum entries* to be displayed.
   Maximum number of such blocks per dashboard: **8**
 
-Long text
-  You can add individual text passages to your dashboard and use the wiki editor for structuring this text. Please note, that some macros are only usable in Wiki pages of a project, but not in issues or dashboard blocks. In that case no content will be displayed, but only the macro code.
+Text
+  You can add individual text passages to your dashboard and use the wiki editor for structuring this text. If you want to work with macros, that include large amount of information (e.g. issue lists), use the *Text (asynchronous)* block instead, because it is cached asyncronous for 30 seconds due to performance reasons.
+  Maximum number of such blocks per dashboard: **8**
+
+Text (asynchronous)
+  This block is perfect if you want to implement macros into your text area. You can add individual text passages to your dashboard and use the wiki editor for structuring this text. Please note, that some macros are only usable in Wiki pages of a project, but not in issues or dashboard blocks. In that case no content will be displayed, but only the macro code.
   Maximum number of such blocks per dashboard: **8**
 
 Latest news
@@ -380,3 +384,76 @@ Members
 
 .. note::
   Notes about caching: All blocks are cached asynchron (every 30 seconds). The RSS Feed blocks are cached asynchron (every 10 minutes). The time tracking block is chached asynchron (every 1 hour).
+
+
+Default Dashboards
+------------------
+
+When installing the Additionals plugin it comes with default dashboards for the Redmine *Home* page as well as the Redmine *Project overview* page. The typical default dashboard has the following key options:
+
+* Visible: *to any users*
+* Marked as *System default*
+
+In case you want to restore the default dashboard you can simply add a new one or arrange an existing one by using the following blocks and position them in the left or right area.
+
+Default Dashboard blocks: Home
+  Welcome (left), Standard content left (left), Standard content right (right)
+
+
+Default Dashboard blocks: Project overview
+  Project information (left), Issue tracking (left), Time tracking (left), Members (right), Sub projects (right)
+
+
+
+Dashboard FAQ
+-------------
+
+Is there a restore function?
+  No, there is no restore function for your default dashboard. If you add dashboard blocks you don't like, just remove them and add other ones.
+
+I messed up my default Dashboard
+  There is nothing bad about it. Just remove the dashboard blocks you don't like and start over. The best way to start a new default dashboard anyway is to create a new dashboard, first and add the blocks you like. If everything is the way you want it, make it "Default". Keep the old "Default" as backup.
+
+I accidently deleted a Dashboard block
+  This will always happen, if you work as user with the appropriate permission to do so (e.g. administration permissions). We recommend not do work with those permission in your regular work day. Create your dashboards one time and switch user permissions afterwards. So this will not happen again.
+
+How many default Dashboards can be created?
+  There is just one system default dashboard possible for every area. This means one default dashboard for the Redmine "Home" page. And one for the general project overview page. But you can create also one default for a specific project overview page, which will than be "Project default".
+
+Does every user sees the content of every Dashboard block?
+  You do not control the content a user in your project sees via the dashboard block you add, but still by setting up the correct user permissions in the administration area "Roles and permissions". Those permissions for a user role are relevant for the content a user can view in your project and must be set correctly.
+
+Developer Information
+---------------------
+
+You are a plugin developer and want to support Dashboards for your plugin as well? Great! Thank you for that.
+Learn how to implement Dashboard blocks in your plugins. There are only two things required for that:
+
+Create block template
+  Create a template for your block in *app/views/dashboards/blocks/*. The name of your template should be unique, that there are no conflicts with other blocks (e.g. from other plugins)
+
+  .. note::
+    Examples: Go to https://github.com/AlphaNodes/additionals/tree/master/app/views/dashboards/blocks for examples.
+
+Add block definitions
+  Add your block definition in *block_definitions*. This could be in:
+
+  * dashboard_content.rb (if your block should be available in all dashboards)
+  * dashboard_content_project.rb (if your block should be available in project dashboards only)
+  * dashboard_content_welcome.rb (if your block should be available in welcome dashboards only)
+
+  .. note::
+    Examples: Go to https://github.com/AlphaNodes/additionals/blob/master/app/models/dashboard_content.rb#L29 for examples for that.
+
+  Overwrite it with *prepend* (not alias_method) to get no conflicts with other plugins. See *redmine_git_hosting* [#githosting]_ for an example implementation for a *block template* [#blocktemplate]_ and a *block definition* [#blockdefinition]_
+
+That's it. As you can see, it's not so hard.
+In case of further questions use the issue tracking system for this project on GitHub.
+
+  .. rubric:: Footnotes
+
+  .. [#githosting] https://github.com/jbox-web/redmine_git_hosting
+
+  .. [#blocktemplate] https://github.com/jbox-web/redmine_git_hosting/blob/master/app/views/dashboards/blocks/_git_urls.html.slim
+
+  .. [#blockdefinition] https://github.com/jbox-web/redmine_git_hosting/blob/master/lib/redmine_git_hosting/patches/dashboard_content_project_patch.rb

@@ -70,3 +70,12 @@ Style/HashTransformKeys:
 
 Style/HashTransformValues:
   Enabled: false
+
+Naming/VariableNumber:
+  Enabled: true
+  Exclude:
+    - 'test/**/*'
+
+Style/StringConcatenation:
+  Exclude:
+    - 'app/views/additionals/_select2_ajax_call.*'

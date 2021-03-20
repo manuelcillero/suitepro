@@ -22,6 +22,17 @@ module AdditionalsQuery
     sql.join(' AND ')
   end
 
+  def fix_sql_for_text_field(field, operator, value, table_name = nil, target_field = nil)
+    table_name = queried_table_name if table_name.blank?
+    target_field = field if target_field.blank?
+
+    sql = []
+    sql << "(#{sql_for_field(field, operator, value, table_name, target_field)})"
+    sql << "#{table_name}.#{target_field} != ''" if operator == '*'
+
+    sql.join(' AND ')
+  end
+
   def initialize_ids_filter(options = {})
     if options[:label]
       add_available_filter 'ids', type: :integer, label: options[:label]
@@ -44,30 +55,44 @@ module AdditionalsQuery
     end
   end
 
+  def sql_for_project_identifier_field(field, operator, values)
+    value = values.first
+    values = value.split(',').map(&:strip) if ['=', '!'].include?(operator) && value.include?(',')
+    sql_for_field field, operator, values, Project.table_name, 'identifier'
+  end
+
   def sql_for_project_status_field(field, operator, value)
     sql_for_field field, operator, value, Project.table_name, 'status'
   end
 
-  def initialize_project_status_filter
-    return if project&.leaf?
+  def initialize_project_identifier_filter
+    return if project
 
-    add_available_filter('project.status',
+    add_available_filter 'project.identifier',
+                         type: :string,
+                         name: l(:label_attribute_of_project, name: l(:field_identifier))
+  end
+
+  def initialize_project_status_filter
+    return if project
+
+    add_available_filter 'project.status',
                          type: :list,
                          name: l(:label_attribute_of_project, name: l(:field_status)),
-                         values: -> { project_statuses_values })
+                         values: -> { project_statuses_values }
   end
 
   def initialize_project_filter(options = {})
     if project.nil? || options[:always]
-      add_available_filter('project_id', order: options[:position],
+      add_available_filter 'project_id', order: options[:position],
                                          type: :list,
-                                         values: -> { project_values })
+                                         values: -> { project_values }
     end
     return if project.nil? || project.leaf? || subproject_values.empty?
 
-    add_available_filter('subproject_id', order: options[:position],
+    add_available_filter 'subproject_id', order: options[:position],
                                           type: :list_subprojects,
-                                          values: -> { subproject_values })
+                                          values: -> { subproject_values }
   end
 
   def initialize_created_filter(options = {})
@@ -83,16 +108,9 @@ module AdditionalsQuery
   end
 
   def initialize_tags_filter(options = {})
-    values = if project
-               queried_class.available_tags(project: project.id)
-             else
-               queried_class.available_tags
-             end
-    return if values.blank?
-
     add_available_filter 'tags', order: options[:position],
-                                 type: :list,
-                                 values: values.collect { |t| [t.name, t.name] }
+                                 type: :list_optional,
+                                 values: -> { tag_values(project) }
   end
 
   def initialize_approved_filter
@@ -106,27 +124,35 @@ module AdditionalsQuery
   end
 
   def initialize_author_filter(options = {})
-    return if author_values.empty?
-
-    add_available_filter('author_id', order: options[:position],
+    add_available_filter 'author_id', order: options[:position],
                                       type: :list_optional,
-                                      values: options[:no_lambda].nil? ? author_values : -> { author_values })
+                                      values: -> { author_values }
   end
 
   def initialize_assignee_filter(options = {})
-    return if author_values.empty?
-
-    add_available_filter('assigned_to_id', order: options[:position],
+    add_available_filter 'assigned_to_id', order: options[:position],
                                            type: :list_optional,
-                                           values: options[:no_lambda] ? assigned_to_all_values : -> { assigned_to_all_values })
+                                           values: -> { assigned_to_all_values }
   end
 
   def initialize_watcher_filter(options = {})
-    return if watcher_values.empty? || !User.current.logged?
+    return unless User.current.logged?
 
-    add_available_filter('watcher_id', order: options[:position],
+    add_available_filter 'watcher_id', order: options[:position],
                                        type: :list,
-                                       values: options[:no_lambda] ? watcher_values : -> { watcher_values })
+                                       values: -> { watcher_values }
+  end
+
+  def tag_values(project)
+    values = if project
+               queried_class.available_tags project: project.id
+             else
+               queried_class.available_tags
+             end
+
+    return [] if values.blank?
+
+    values.collect { |t| [t.name, t.name] }
   end
 
   # issue independend values. Use  assigned_to_values from Redmine, if you want it only for issues
@@ -154,7 +180,7 @@ module AdditionalsQuery
   end
 
   def sql_for_tags_field(field, _operator, value)
-    AdditionalsTag.sql_for_tags_field(queried_class, operator_for(field), value)
+    AdditionalTags.sql_for_tags_field queried_class, operator_for(field), value
   end
 
   def sql_for_is_private_field(_field, operator, value)

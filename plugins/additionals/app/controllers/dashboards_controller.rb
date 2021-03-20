@@ -17,7 +17,6 @@ class DashboardsController < ApplicationController
   helper :dashboards
   helper :additionals_issues
   helper :additionals_queries
-  helper :additionals_tag
 
   include AdditionalsRoutesHelper
   include AdditionalsQueriesHelper
@@ -92,7 +91,7 @@ class DashboardsController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.xml {}
+      format.api
     end
   end
 
