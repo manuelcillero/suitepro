@@ -34,7 +34,7 @@ License v2* (GPL).
 
 ### Redmine Additionals plugin
 
-  * additionals 3.0.0
+  * additionals 3.0.2-master
   * https://alphanodes.com/redmine-additionals
   * https://github.com/alphanodes/additionals.git
 
@@ -49,6 +49,12 @@ License v2* (GPL).
   * ckeditor 1.2.3
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
+
+### Redmine Git Hosting plugin
+
+  * git_hosting 5.0.0
+  * http://redmine-git-hosting.io
+  * https://github.com/jbox-web/redmine_git_hosting
 
 ### Redmine Glossary Plugin
 

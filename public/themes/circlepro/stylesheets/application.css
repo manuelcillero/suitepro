@@ -99,6 +99,10 @@ div.journal h4.note-header {
 	padding-left: 25px;
 }
 
+div.autoscroll {
+	clear: both;
+}
+
 img.gravatar {
 	padding: 2px;
 	border: solid 1px #d5d5d5;
