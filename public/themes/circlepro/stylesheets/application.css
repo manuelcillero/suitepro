@@ -316,7 +316,6 @@ div.wiki .external {
 .icon-github:before { content: '\f09b'; }
 .icon-gitlab:before { content: '\f296'; }
 .icon-twitter:before { content: '\f309'; }
-.icon-facebook:before { content: '\f30c'; }
 .icon-linkedin:before { content: '\f318'; }
 
 /*******************************************************************************
@@ -448,9 +447,6 @@ ul.social-menu .social-link-blog:hover a {
 }
 ul.social-menu .social-link-twitter:hover a {
 	background-color: #46d4fe;
-}
-ul.social-menu .social-link-facebook:hover a {
-	background-color: #37589b;
 }
 ul.social-menu .social-link-linkedin:hover a {
 	background-color: #419cca;

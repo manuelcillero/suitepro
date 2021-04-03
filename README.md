@@ -50,12 +50,6 @@ License v2* (GPL).
   * https://www.redmine.org/plugins/redmine-ckeditor
   * http://github.com/a-ono/redmine_ckeditor
 
-### Redmine Git Hosting plugin
-
-  * git_hosting 5.0.0
-  * http://redmine-git-hosting.io
-  * https://github.com/jbox-web/redmine_git_hosting
-
 ### Redmine Glossary Plugin
 
   * glossary 1.1.0
