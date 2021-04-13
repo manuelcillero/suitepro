@@ -232,9 +232,14 @@ div#activity dt.icon {
 }
 
 div.wiki .external {
+	background: none;
 	padding-left: 0;
-	padding-right: 12px;
-	background-position: right 60%;
+}
+div.wiki .external:after {
+	content: "\2197";
+	font-size: 92%;
+	position: relative;
+	top: -0.5em;
 }
 
 /* Cookies notice */
