@@ -1305,6 +1305,10 @@ input[type="submit"].small {
 	font-size: 12px;
 }
 
+div.clone-wrapper .clone-button {
+	line-height: normal;
+}
+
 /*******************************************************************************
  19. GANTT CHART */
 
