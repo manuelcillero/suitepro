@@ -1,9 +1,0 @@
-es:
-  project_module_git_server: Git Server
-  clone: Clonar
-  clone_with_protocol: Clonar usando %{protocol}
-  use_git_with_this_web_url: Usar Git con esta URL.
-  url_copied: URL copiada al portapapeles
-  git_read_write_access: Acceso de lectura/escritura.
-  git_read_only_access: Acceso de sólo lectura.
-  empty_repository: Este repositorio está vacío.
