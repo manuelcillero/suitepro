@@ -28,7 +28,7 @@
 
 			return data;
 		};
-	}	
+	}
 */
 	var element = document.createElement( 'div' );
 	function decodeEntities( html ) {
@@ -105,7 +105,7 @@
 					return this.editor.lang.widget.label.replace( /%1/, this.data.name + ' ' + this.pathName );
 				}
 			} );
-			
+
 			editor.on( 'instanceReady', function() {
 				var config = {};
 
@@ -259,7 +259,7 @@
 					}
 					var suggestions = itemsArray.filter( function( item ) {
 						return item.title.indexOf( matchInfo.query.toLowerCase() ) == 0;
-					});	
+					});
 
 					callback( suggestions );
 

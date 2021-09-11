@@ -56,7 +56,7 @@ body {
 #wrapper-footer {
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 1240px;
+	max-width: 1480px;
 }
 #wrapper3 {
 	background: #e1e1e1 url(../images/bg_main.png) repeat-x center bottom -1px;
@@ -91,7 +91,7 @@ div.journal {
 div.journal h4.note-header {
 	font-size: 13px;
 	padding-right: 0;
-	margin: 10px 0 20px;
+	margin: 10px 0 25px;
 	line-height: 15px;
 }
 .journal-link {
@@ -208,7 +208,7 @@ abbr[title] {
 	border-radius: 6px;
 	background-color: #f2f2f2;
 }
-#projects-index ul.projects div.child a.project {
+#projects-index ul.projects a.project.child {
 	font-size: 34px;
 	line-height: 1.2em;
 }
@@ -661,6 +661,9 @@ ul.social-menu .social-link-mail:hover a {
 	background: url(../images/icon2top.png) no-repeat;
 	z-index: 999;
 }
+body.action-edit #scrollup {
+	display: none;
+}
 @media screen and (max-width: 899px) {
 	#scrollup {
 		bottom: 20px;
@@ -733,6 +736,9 @@ article.news-article {
 /*******************************************************************************
  10. WIKI */
 
+div.wiki p:empty {
+	margin: 0;
+}
 div.wiki ul.toc {
 	float: right;
 	margin-right: 0;
@@ -1569,6 +1575,9 @@ table td ul, table th ul { padding-left: 20px; }
 div#roadmap .related-issues td.assigned_to {
 	padding: 0 3px;
 }
+div#roadmap .version-article {
+	margin: .5em 0 2.5em;
+}
 
 /*******************************************************************************
  26. OBJECTS */
@@ -1663,17 +1672,17 @@ body.controller-glossary_terms table.term td .wiki p:last-child {
 /*******************************************************************************
  29. RESPONSIVE */
 
-@media screen and (min-width: 1240px) {
+@media screen and (min-width: 1480px) {
 	#main {
 		margin-left: auto;
 		margin-right: auto;
-		width: 1240px;
+		width: 1480px;
 	}
 	#sidebar {
 		width: 280px;
 	}
 }
-@media screen and (max-width: 1239px) {
+@media screen and (max-width: 1439px) {
 	#wrapper3 {
 		padding-bottom: 0;
 	}
@@ -2060,6 +2069,7 @@ body.controller-glossary_terms table.term td .wiki p:last-child {
 
 	#login-form a.lost_password,
 	#filters, #options,
+	div.flash,
 	a.icon, a.wiki-anchor,
 	body.controller-welcome.action-index #content section#one,
 	body.controller-welcome.action-index #content section#two,
