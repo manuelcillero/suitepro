@@ -50,6 +50,18 @@ body {
 	background-color: #182330;
 }
 
+html > body[class=""] #wrapper {
+	background: inherit;
+}
+html > body[class=""] #content {
+	min-height: 0px;
+	max-height: calc(100vh - 300px);
+}
+#wiki_form[class=""] p,
+#wiki_form[class=""] fieldset {
+	visibility: hidden;
+}
+
 #wrapper-top-menu,
 #wrapper-header,
 #wrapper-main-menu,
@@ -660,9 +672,6 @@ ul.social-menu .social-link-mail:hover a {
 	text-indent: -9999px;
 	background: url(../images/icon2top.png) no-repeat;
 	z-index: 999;
-}
-body.action-edit #scrollup {
-	display: none;
 }
 @media screen and (max-width: 899px) {
 	#scrollup {
