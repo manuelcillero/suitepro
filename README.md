@@ -13,7 +13,7 @@ En **SuitePro** concurren potencia y sencillez para planificar, compartir
 conocimiento, prestar soporte a clientes y acelerar la productividad, apremiando
 la finalización de las tareas y manteniendo la información en un único sitio.
 
-**SuitePro** está instalado y operativo en https://suitepro.cillero.es
+**SuitePro 2.0.2** está instalado y operativo en https://suitepro.cillero.es
 
 ## SuitePro es software libre
 
@@ -27,8 +27,8 @@ License v2* (GPL).
 
 # Código fuente
 
-  * Repositorio: https://suitepro.cillero.es/projects/suitepro/repository
-  * GitLab: https://gitlab.com/manuelcillero/suitepro
+  * Proyecto: https://suitepro.cillero.es/projects/suitepro
+  * Repositorio: https://github.com/manuelcillero/suitepro
 
 ## Plugins incluidos
 
