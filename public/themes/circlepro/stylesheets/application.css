@@ -333,6 +333,7 @@ div.wiki .external:after {
 .icon-github:before { content: '\f09b'; }
 .icon-gitlab:before { content: '\f296'; }
 .icon-twitter:before { content: '\f309'; }
+.icon-mastodon:before { content: '\e809'; }
 .icon-linkedin:before { content: '\f318'; }
 
 /*******************************************************************************
